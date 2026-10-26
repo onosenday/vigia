@@ -1,0 +1,22 @@
+# ono: beads
+.dolt/
+*.db
+.beads-credential-key
+
+# ono: secretos
+.env
+.env.*
+!.env.example
+
+# ono: python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
