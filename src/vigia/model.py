@@ -536,6 +536,8 @@ class Monitor(Base):
     """Añade `site: <id>` a las external_labels de Prometheus (federación, alertas)."""
     deploy: Deploy | None = None
     """Cómo se despliega el stack del monitor en su host."""
+    grafana_token: EnvVarName | None = None
+    """Variable con un token de cuenta de servicio de Grafana (Admin) para `vigia grafana-brand`."""
 
     @field_validator("imagenes")
     @classmethod

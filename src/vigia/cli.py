@@ -233,3 +233,21 @@ def bridges(site: SiteOpt = Path("site.yaml"), env_file: EnvOpt = None) -> None:
         encoding="utf-8",
     )
     typer.echo(f"{len(nets)} redes en {dest}")
+
+
+@app.command("grafana-brand")
+def grafana_brand(
+    site: SiteOpt = Path("site.yaml"),
+    env_file: EnvOpt = None,
+    yes: Annotated[bool, typer.Option("--yes", help="aplica el cambio")] = False,
+) -> None:
+    """Pone el nombre del sitio a la organización de Grafana (lo único de la marca que va por API)."""
+    from vigia.deploy import read_env_file  # noqa: PLC0415
+    from vigia.grafana import GrafanaError, brand  # noqa: PLC0415
+
+    s = _load(site)
+    try:
+        typer.echo(brand(s, read_env_file(env_file or _find_env_file(site)), yes))
+    except GrafanaError as e:
+        typer.echo(f"error: {e}", err=True)
+        raise typer.Exit(1) from None
