@@ -1,0 +1,155 @@
+{{ cabecera }}
+global:
+  scrape_interval: {{ s.monitor.intervalo }}
+  scrape_timeout: {{ s.monitor.timeout }}
+  evaluation_interval: {{ s.monitor.intervalo }}
+{% if s.monitor.etiqueta_sitio %}
+  external_labels:
+    site: {{ s.sitio.id }}
+{% endif %}
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: [localhost:9090]
+{% if s.modulos.blackbox %}
+
+  - job_name: blackbox
+    static_configs:
+      - targets: [blackbox:9115]
+{% endif %}
+{% if hay.node %}
+
+  # Servidores: node_exporter (CPU, RAM, discos, red, temperatura)
+  - job_name: node
+    file_sd_configs:
+      - files: [/etc/prometheus/targets/nodos.yml]
+    metric_relabel_configs:
+      # DSM monta cada carpeta compartida como otro sistema de ficheros sobre /volume*; en OMV,
+      # folder2ram son carpetas en RAM: se descartan para que cada disco salga una sola vez.
+      - source_labels: [__name__, mountpoint]
+        regex: 'node_filesystem_.+;(.+/@.+|/tmp/.+|/volume[0-9]+/.+|/var/folder2ram/.+)'
+        action: drop
+      # veth*: un extremo por contenedor, sin nombre útil; su tráfico ya está en cAdvisor.
+      - source_labels: [__name__, device]
+        regex: 'node_network_.+;veth.+'
+        action: drop
+{% if s.bridges %}
+      # br-<id> → docker:<red> (de `vigia bridges`)
+{% for b in s.bridges %}
+      - source_labels: [nombre, device]
+        regex: {{ b.host ~ ";br-" ~ b.id }}
+        target_label: device
+        replacement: {{ "docker:" ~ b.nombre }}
+{% endfor %}
+{% endif %}
+{% endif %}
+{% if hay.windows %}
+
+  # Equipos Windows: windows_exporter
+  - job_name: windows
+    file_sd_configs:
+      - files: [/etc/prometheus/targets/windows.yml]
+{% endif %}
+{% if hay.cadvisor %}
+
+  # Contenedores: cAdvisor
+  - job_name: cadvisor
+    scrape_interval: 60s
+    file_sd_configs:
+      - files: [/etc/prometheus/targets/cadvisor.yml]
+{% endif %}
+{% if s.modulos.pihole_exporter.activo %}
+
+  # Pi-hole: pihole-exporter (todas las instancias; etiqueta hostname)
+  - job_name: pihole
+    scrape_interval: 60s
+    static_configs:
+      - targets: [{{ "pihole-exporter:" ~ s.modulos.pihole_exporter.puerto }}]
+{% endif %}
+{% if s.modulos.netinv.activo %}
+
+  # Inventario de dispositivos (netinv, red del host)
+  - job_name: netinv
+    scrape_interval: 60s
+    static_configs:
+      - targets: [{{ s.monitor_host.ip ~ ":" ~ s.modulos.netinv.puerto }}]
+{% endif %}
+{% if hay.snmp %}
+
+  # Equipos por SNMP (NAS, switches, impresoras, SAI): módulo y autenticación por objetivo
+  - job_name: snmp
+    scrape_interval: 60s
+    metrics_path: /snmp
+    file_sd_configs:
+      - files: [/etc/prometheus/targets/snmp.yml]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: {{ "snmp-exporter:" ~ s.modulos.snmp.puerto }}
+{% endif %}
+{% if s.modulos.blackbox %}
+{% set ancla = namespace(puesta=false) %}
+{% if s.web.objetivos %}
+
+  # Webs por nombre (a través del proxy inverso)
+  - job_name: web
+    metrics_path: /probe
+    params: {module: [https_interno]}
+    file_sd_configs:
+      - files: [/etc/prometheus/targets/web.yml]
+    relabel_configs: &probe
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115
+{% set ancla.puesta = true %}
+{% endif %}
+{% for job, modulo, fichero, comentario in sondas %}
+
+  # {{ comentario | crudo }}
+  - job_name: {{ job }}
+    metrics_path: /probe
+    params: {module: [{{ modulo }}]}
+    file_sd_configs:
+      - files: [{{ "/etc/prometheus/targets/" ~ fichero }}]
+{% if ancla.puesta %}
+    relabel_configs: *probe
+{% else %}
+    relabel_configs: &probe
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115
+{% set ancla.puesta = true %}
+{% endif %}
+{% endfor %}
+{% if s.dns %}
+
+  # DNS: cada servidor resuelve el nombre de control a la IP esperada
+  - job_name: dns
+    metrics_path: /probe
+    params: {module: [dns_interno]}
+    static_configs:
+      - targets: {{ s.dns.servidores }}
+        labels: {servidor: {{ s.dns.etiqueta_servidor }}}
+{% if ancla.puesta %}
+    relabel_configs: *probe
+{% else %}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115
+{% endif %}
+{% endif %}
+{% endif %}

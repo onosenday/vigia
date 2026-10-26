@@ -1,0 +1,16 @@
+# Objetivos de Prometheus — generado por vigia 0.1.0 para «Oficina de ejemplo».
+# No editar: cambia site.yaml y ejecuta `vigia build`.
+- targets:
+  - 10.99.0.20
+  labels:
+    nombre: NAS
+    tipo: synology
+    __param_module: synology
+    __param_auth: nas
+- targets:
+  - 10.99.0.40
+  labels:
+    nombre: Impresora planta 1
+    tipo: impresora
+    __param_module: printer_mib
+    __param_auth: lectura

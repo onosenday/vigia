@@ -1,0 +1,21 @@
+# updates-exporter (host nodo1) — generado por vigia 0.1.0 para «Oficina de ejemplo».
+# No editar: cambia site.yaml y ejecuta `vigia build`.
+# Sondea por SSH (clave dedicada + forced-command + sudo acotado) las actualizaciones de SO de cada host
+# y publica /www/updates.json. La clave privada se monta :ro desde el host; nunca va en el compose ni en git.
+services:
+  updates-exporter:
+    build: .
+    container_name: "ejm-updates-exporter"
+    restart: unless-stopped
+    labels:
+      # imagen local (sin registry): watchtower no debe tocarla
+      - com.centurylinklabs.watchtower.enable=false
+    environment:
+      - "PORT=8099"
+      - "INTERVAL=3600"
+      # label:ip:puerto:usuario[:intervalo mínimo en s]
+      - "HOSTS_SPEC=nodo1:10.99.0.10:22:updexp nodo2:10.99.0.11:22:updexp nas1:10.99.0.20:22:updexp:21600"
+    volumes:
+      - "/opt/vigia/keys:/keys:ro"
+    ports:
+      - "8099:8099"

@@ -1,0 +1,14 @@
+# Autenticaciones SNMP (solo referencias ${VAR}) — generado por vigia 0.1.0 para «Oficina de ejemplo».
+# No editar: cambia site.yaml y ejecuta `vigia build`.
+auths:
+  nas:
+    version: 3
+    security_level: authPriv
+    username: ${SNMP_NAS_USUARIO}
+    auth_protocol: SHA256
+    password: ${SNMP_NAS_AUTH}
+    priv_protocol: AES
+    priv_password: ${SNMP_NAS_PRIV}
+  lectura:
+    version: 2
+    community: ${SNMP_COMUNIDAD}

@@ -1,0 +1,3 @@
+# Clasificación manual de dispositivos (sintética)
+dispositivos:
+  - {mac: "02:00:00:00:00:01", nombre: Equipo de prueba, tipo: pc}

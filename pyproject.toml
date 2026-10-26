@@ -26,6 +26,8 @@ build-backend = "uv_build"
 [tool.ruff]
 line-length = 110
 target-version = "py312"
+# Código de las imágenes (netinv, updates-exporter): se mantiene tal cual se migró.
+extend-exclude = ["src/vigia/images", "tests/golden"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "S", "SIM"]
@@ -36,6 +38,7 @@ ignore = ["S101"]
 
 [tool.mypy]
 strict = true
+exclude = ["src/vigia/images/", "tests/golden/"]
 plugins = ["pydantic.mypy"]
 
 [tool.pytest.ini_options]

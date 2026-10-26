@@ -1,0 +1,65 @@
+{{ cabecera }}
+modules:
+  # Webs por nombre tras el proxy inverso{% if ca %}: valida el certificado con la CA interna (para medir su caducidad){% endif %}.
+  https_interno:
+    prober: http
+    timeout: 10s
+    http:
+      valid_status_codes: [200, 301, 302, 303, 307, 308, 401]
+      follow_redirects: false
+      preferred_ip_protocol: ip4
+{% if ca %}
+      tls_config:
+        ca_file: /etc/blackbox/ca.crt
+{% endif %}
+  # Servicios por IP:puerto (HTTP plano o HTTPS autofirmado).
+  http_any:
+    prober: http
+    timeout: 10s
+    http:
+      valid_status_codes: [200, 301, 302, 303, 307, 308, 401, 403]
+      follow_redirects: false
+      preferred_ip_protocol: ip4
+      tls_config:
+        insecure_skip_verify: true
+  # Solo 200: para equipos cuyos discos hibernan (un 403/404 escribe en sus logs y los despierta).
+  http_200:
+    prober: http
+    timeout: 10s
+    http:
+      valid_status_codes: [200]
+      follow_redirects: false
+      preferred_ip_protocol: ip4
+      tls_config:
+        insecure_skip_verify: true
+  icmp:
+    prober: icmp
+    timeout: 5s
+    icmp:
+      preferred_ip_protocol: ip4
+{% if s.dns %}
+  # El DNS local resuelve los nombres internos.
+  dns_interno:
+    prober: dns
+    timeout: 5s
+    dns:
+      query_name: {{ s.dns.consulta }}
+      query_type: A
+      preferred_ip_protocol: ip4
+      valid_rcodes: [NOERROR]
+      validate_answer_rrs:
+        fail_if_not_matches_regexp: [{{ regex_dns }}]
+{% endif %}
+{% if minecraft %}
+  # Minecraft Java: saludo de estado mínimo + ping (todos los bytes < 0x80 para que no los recodifique
+  # UTF-8). El ping hace que el servidor cierre tras responder: blackbox lee por líneas y el JSON con
+  # "version" no acaba en \n.
+  minecraft:
+    prober: tcp
+    timeout: 5s
+    tcp:
+      preferred_ip_protocol: ip4
+      query_response:
+        - send: "\x08\x00\x05\x02mc\x00\x00\x01\x01\x00\x09\x01\x00\x00\x00\x00\x00\x00\x00\x00"
+        - expect: '"version"'
+{% endif %}

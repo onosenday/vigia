@@ -1,0 +1,40 @@
+# Agentes del host nodo2 — generado por vigia 0.1.0 para «Oficina de ejemplo».
+# No editar: cambia site.yaml y ejecuta `vigia build`.
+services:
+  # Métricas del host (CPU, RAM, discos, red, temperatura) en :9100
+  node-exporter:
+    image: "quay.io/prometheus/node-exporter"
+    container_name: "ejm-node-exporter"
+    restart: unless-stopped
+    command:
+      - '--path.rootfs=/host'
+      - '--collector.filesystem.mount-points-exclude=^/(dev|proc|run|sys|var/lib/docker/.+|srv/.+/docker/.+)($$|/)'
+    network_mode: host
+    pid: host
+    volumes:
+      - /:/host:ro,rslave
+
+
+  # Métricas por contenedor (CPU, RAM, red) en :9338
+  cadvisor:
+    image: "ghcr.io/google/cadvisor"
+    container_name: "ejm-cadvisor"
+    restart: unless-stopped
+    command:
+      - '--docker_only=true'
+      - '--housekeeping_interval=30s'
+      - '--store_container_labels=false'
+      - '--whitelisted_container_labels=com.docker.compose.project'
+      - '--disable_metrics=percpu,sched,tcp,udp,disk,diskIO,hugetlb,referenced_memory,cpu_topology,resctrl,advtcp,process'
+    privileged: true
+    devices:
+      - /dev/kmsg
+    ports:
+      - "9338:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - "/var/lib/docker:/var/lib/docker:ro"
+      - /dev/disk/:/dev/disk:ro
+

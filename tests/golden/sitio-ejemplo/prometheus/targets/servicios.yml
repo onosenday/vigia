@@ -1,0 +1,19 @@
+# Objetivos de Prometheus — generado por vigia 0.1.0 para «Oficina de ejemplo».
+# No editar: cambia site.yaml y ejecuta `vigia build`.
+- targets:
+  - http://10.99.0.11:8000
+  labels:
+    nombre: Panel nodo2
+    host: nodo2
+- targets:
+  - https://10.99.0.20:5001
+  labels:
+    nombre: DSM
+    host: nas1
+    __param_module: http_200
+- targets:
+  - 10.99.0.2:25565
+  labels:
+    nombre: Juego
+    host: vip
+    __param_module: minecraft

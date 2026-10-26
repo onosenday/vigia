@@ -1,0 +1,155 @@
+{% import "compose/_agentes.j2" as ag %}
+{{ cabecera }}
+services:
+  grafana:
+    image: {{ s.monitor.imagen("grafana") }}
+    container_name: {{ pre ~ "grafana" }}
+    restart: unless-stopped
+    environment:
+      - {{ "GF_SERVER_ROOT_URL=" ~ s.monitor.grafana_url }}
+{% if s.monitor.grafana_plugins %}
+      - {{ "GF_PLUGINS_PREINSTALL=" ~ s.monitor.grafana_plugins | join(",") }}
+{% endif %}
+{% if s.branding.grafana %}
+      - {{ "GF_INSTANCE_NAME=" ~ s.sitio.id }}
+      - {{ "GF_USERS_DEFAULT_THEME=" ~ s.branding.tema }}
+{% if s.branding.portada %}
+      - {{ "GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/var/lib/grafana-dashboards/inicio.json" }}
+{% endif %}
+{% endif %}
+    ports:
+      - {{ s.monitor.puertos.grafana ~ ":3000" }}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana-provisioning:/etc/grafana/provisioning:ro
+      - ./dashboards:/var/lib/grafana-dashboards:ro
+{% if s.branding.grafana and s.branding.logo %}
+      # Branding (Grafana OSS): el logo sustituye al icono del menú y del login; depende de la versión de
+      # Grafana, por eso la imagen va fijada y fuera de watchtower.
+      - ./branding/logo.svg:/usr/share/grafana/public/img/grafana_icon.svg:ro
+{% endif %}
+{% if s.branding.grafana and s.branding.favicon %}
+      - ./branding/favicon.png:/usr/share/grafana/public/img/fav32.png:ro
+      - ./branding/favicon.png:/usr/share/grafana/public/img/apple-touch-icon.png:ro
+{% endif %}
+{% if s.monitor.watchtower and not (s.branding.grafana and (s.branding.logo or s.branding.favicon)) %}
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+{% endif %}
+
+  prometheus:
+    image: {{ s.monitor.imagen("prometheus") }}
+    container_name: {{ pre ~ "prometheus" }}
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - {{ "--storage.tsdb.retention.time=" ~ s.monitor.retencion }}
+    ports:
+      - {{ s.monitor.puertos.prometheus ~ ":9090" }}
+    restart: unless-stopped
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+{{ ag.wt(s) | crudo }}
+{% if s.modulos.blackbox %}
+
+  # Sondas HTTP/ICMP/DNS/TCP de la red. Sin puerto publicado: solo lo usa Prometheus.
+  blackbox:
+    image: {{ s.monitor.imagen("blackbox") }}
+    container_name: {{ pre ~ "blackbox" }}
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/blackbox/blackbox.yml'
+    sysctls:
+      net.ipv4.ping_group_range: "0 2147483647"   # ping ICMP sin root (blackbox corre como nobody)
+{% if s.monitor.dns %}
+    dns:                   # el DNS de Docker no resuelve los nombres internos
+{% for ip in s.monitor.dns %}
+      - {{ ip }}
+{% endfor %}
+{% endif %}
+    volumes:
+      - ./blackbox:/etc/blackbox:ro
+{{ ag.wt(s) | crudo }}
+{% endif %}
+{% if nodo and nodo.node_exporter and nodo.node_exporter.gestion == "vigia" %}
+
+{{ ag.node_exporter(s, nodo, pre) | crudo }}
+{% endif %}
+{% if nodo and nodo.cadvisor and nodo.cadvisor.gestion == "vigia" %}
+
+{{ ag.cadvisor(s, nodo, pre) | crudo }}
+{% endif %}
+{% if s.modulos.pihole_exporter.activo %}
+
+  # Métricas de las Pi-hole (consultas, bloqueos, clientes). Las claves van en el env del stack.
+  pihole-exporter:
+    image: {{ s.monitor.imagen("pihole_exporter") }}
+    container_name: {{ pre ~ "pihole-exporter" }}
+    restart: unless-stopped
+    environment:
+      - {{ "PIHOLE_HOSTNAME=" ~ pihole.hosts }}
+      - {{ "PIHOLE_PORT=" ~ pihole.puertos }}
+      - {{ "PIHOLE_PROTOCOL=" ~ pihole.protocolos }}
+      - {{ "PIHOLE_PASSWORD=${" ~ s.modulos.pihole_exporter.secreto ~ "}" }}
+      - {{ "PORT=" ~ s.modulos.pihole_exporter.puerto }}
+{{ ag.wt(s) | crudo }}
+{% endif %}
+{% if s.modulos.snmp.activo %}
+
+  # Equipos por SNMP. Las credenciales se expanden desde el env del stack (auths.yml solo lleva ${VAR}).
+  snmp-exporter:
+    image: {{ s.monitor.imagen("snmp_exporter") }}
+    container_name: {{ pre ~ "snmp-exporter" }}
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/snmp_exporter/snmp.yml'
+      - '--config.file=/etc/snmp_exporter/auths/auths.yml'
+      - '--config.expand-environment-variables'
+      - {{ "--web.listen-address=:" ~ s.modulos.snmp.puerto }}
+    environment:
+{% for v in snmp_vars %}
+      - {{ v ~ "=${" ~ v ~ "}" }}
+{% endfor %}
+    volumes:
+      - ./snmp:/etc/snmp_exporter/auths:ro
+{{ ag.wt(s) | crudo }}
+{% endif %}
+{% if s.modulos.netinv.activo %}
+
+  # Inventario de dispositivos de la red (arp-scan, Pi-hole, mDNS/SSDP{% if s.modulos.netinv.nmap %}, nmap{% endif %}) en :{{ s.modulos.netinv.puerto | crudo }}
+  # (/metrics y /devices.json). Imagen local construida desde ./netinv.
+  netinv:
+    build: ./netinv
+    image: netinv:local
+    container_name: {{ pre ~ "netinv" }}
+    restart: unless-stopped
+    network_mode: host                 # ARP, multicast mDNS/SSDP
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    environment:
+      - {{ "SUBNET=" ~ s.red.subred }}
+{% if s.modulos.netinv.iface %}
+      - {{ "IFACE=" ~ s.modulos.netinv.iface }}
+{% endif %}
+      - {{ "LAN_IP=" ~ s.monitor_host.ip }}
+      - {{ "INTERVAL=" ~ s.modulos.netinv.intervalo }}
+      - {{ "PORT=" ~ s.modulos.netinv.puerto }}
+{% if not s.modulos.netinv.nmap %}
+      - NMAP=0
+{% endif %}
+{% if s.piholes %}
+      - {{ "PIHOLE_URLS=" ~ pihole.urls }}
+      - {{ "PIHOLE_PASSWORDS=${" ~ s.modulos.pihole_exporter.secreto ~ "}" }}
+{% endif %}
+    volumes:
+      - netinv_data:/data
+      - ./netinv:/etc/netinv:ro         # devices.yaml (clasificación manual del sitio)
+{% endif %}
+
+volumes:
+  grafana_data:
+  prometheus_data:
+{% if s.modulos.netinv.activo %}
+  netinv_data:
+{% endif %}

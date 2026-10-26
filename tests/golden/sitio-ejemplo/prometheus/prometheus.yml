@@ -1,0 +1,113 @@
+# Prometheus — generado por vigia 0.1.0 para «Oficina de ejemplo».
+# No editar: cambia site.yaml y ejecuta `vigia build`.
+global:
+  scrape_interval: "30s"
+  scrape_timeout: "10s"
+  evaluation_interval: "30s"
+  external_labels:
+    site: "ejemplo"
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: [localhost:9090]
+
+  - job_name: blackbox
+    static_configs:
+      - targets: [blackbox:9115]
+
+  # Servidores: node_exporter (CPU, RAM, discos, red, temperatura)
+  - job_name: node
+    file_sd_configs:
+      - files: [/etc/prometheus/targets/nodos.yml]
+    metric_relabel_configs:
+      # DSM monta cada carpeta compartida como otro sistema de ficheros sobre /volume*; en OMV,
+      # folder2ram son carpetas en RAM: se descartan para que cada disco salga una sola vez.
+      - source_labels: [__name__, mountpoint]
+        regex: 'node_filesystem_.+;(.+/@.+|/tmp/.+|/volume[0-9]+/.+|/var/folder2ram/.+)'
+        action: drop
+      # veth*: un extremo por contenedor, sin nombre útil; su tráfico ya está en cAdvisor.
+      - source_labels: [__name__, device]
+        regex: 'node_network_.+;veth.+'
+        action: drop
+      # br-<id> → docker:<red> (de `vigia bridges`)
+      - source_labels: [nombre, device]
+        regex: "nodo1;br-0123456789ab"
+        target_label: device
+        replacement: "docker:ejemplo_default"
+
+  # Equipos Windows: windows_exporter
+  - job_name: windows
+    file_sd_configs:
+      - files: [/etc/prometheus/targets/windows.yml]
+
+  # Contenedores: cAdvisor
+  - job_name: cadvisor
+    scrape_interval: 60s
+    file_sd_configs:
+      - files: [/etc/prometheus/targets/cadvisor.yml]
+
+  # Pi-hole: pihole-exporter (todas las instancias; etiqueta hostname)
+  - job_name: pihole
+    scrape_interval: 60s
+    static_configs:
+      - targets: ["pihole-exporter:9617"]
+
+  # Inventario de dispositivos (netinv, red del host)
+  - job_name: netinv
+    scrape_interval: 60s
+    static_configs:
+      - targets: ["10.99.0.10:9877"]
+
+  # Equipos por SNMP (NAS, switches, impresoras, SAI): módulo y autenticación por objetivo
+  - job_name: snmp
+    scrape_interval: 60s
+    metrics_path: /snmp
+    file_sd_configs:
+      - files: [/etc/prometheus/targets/snmp.yml]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: "snmp-exporter:9116"
+
+  # Webs por nombre (a través del proxy inverso)
+  - job_name: web
+    metrics_path: /probe
+    params: {module: [https_interno]}
+    file_sd_configs:
+      - files: [/etc/prometheus/targets/web.yml]
+    relabel_configs: &probe
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115
+
+  # Servicios por IP:puerto (paneles de administración, APIs)
+  - job_name: "servicio"
+    metrics_path: /probe
+    params: {module: ["http_any"]}
+    file_sd_configs:
+      - files: ["/etc/prometheus/targets/servicios.yml"]
+    relabel_configs: *probe
+
+  # Equipos de la red (ping)
+  - job_name: "ping"
+    metrics_path: /probe
+    params: {module: ["icmp"]}
+    file_sd_configs:
+      - files: ["/etc/prometheus/targets/hosts.yml"]
+    relabel_configs: *probe
+
+  # DNS: cada servidor resuelve el nombre de control a la IP esperada
+  - job_name: dns
+    metrics_path: /probe
+    params: {module: [dns_interno]}
+    static_configs:
+      - targets: ["10.99.0.2", "10.99.0.10"]
+        labels: {servidor: "dns"}
+    relabel_configs: *probe

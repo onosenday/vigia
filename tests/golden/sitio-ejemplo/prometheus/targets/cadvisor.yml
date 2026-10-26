@@ -1,0 +1,10 @@
+# Objetivos de Prometheus — generado por vigia 0.1.0 para «Oficina de ejemplo».
+# No editar: cambia site.yaml y ejecuta `vigia build`.
+- targets:
+  - 10.99.0.10:9338
+  labels:
+    nombre: Nodo 1
+- targets:
+  - 10.99.0.11:9338
+  labels:
+    nombre: nodo2

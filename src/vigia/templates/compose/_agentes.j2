@@ -1,0 +1,49 @@
+{% macro wt(s) %}
+{% if s.monitor.watchtower %}
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+{% endif %}
+{% endmacro %}
+{% macro node_exporter(s, h, pre) %}
+  # Métricas del host (CPU, RAM, discos, red, temperatura) en :{{ h.node_exporter.puerto | crudo }}
+  node-exporter:
+    image: {{ s.monitor.imagen("node_exporter") }}
+    container_name: {{ pre ~ "node-exporter" }}
+    restart: unless-stopped
+    command:
+      - '--path.rootfs=/host'
+{% if h.node_exporter.puerto != 9100 %}
+      - {{ "--web.listen-address=:" ~ h.node_exporter.puerto }}
+{% endif %}
+      - '--collector.filesystem.mount-points-exclude=^/(dev|proc|run|sys|var/lib/docker/.+|srv/.+/docker/.+)($$|/)'
+    network_mode: host
+    pid: host
+    volumes:
+      - /:/host:ro,rslave
+{{ wt(s) | crudo }}
+{%- endmacro %}
+{% macro cadvisor(s, h, pre) %}
+  # Métricas por contenedor (CPU, RAM, red) en :{{ h.cadvisor.puerto | crudo }}
+  cadvisor:
+    image: {{ s.monitor.imagen("cadvisor") }}
+    container_name: {{ pre ~ "cadvisor" }}
+    restart: unless-stopped
+    command:
+      - '--docker_only=true'
+      - '--housekeeping_interval=30s'
+      - '--store_container_labels=false'
+      - '--whitelisted_container_labels=com.docker.compose.project'
+      - '--disable_metrics=percpu,sched,tcp,udp,disk,diskIO,hugetlb,referenced_memory,cpu_topology,resctrl,advtcp,process'
+    privileged: true
+    devices:
+      - /dev/kmsg
+    ports:
+      - {{ h.cadvisor.puerto ~ ":8080" }}
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - {{ h.docker_root ~ ":/var/lib/docker:ro" }}
+      - /dev/disk/:/dev/disk:ro
+{{ wt(s) | crudo }}
+{%- endmacro %}

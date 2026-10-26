@@ -1,0 +1,150 @@
+# Stack ejemplo_monitor (host nodo1) — generado por vigia 0.1.0 para «Oficina de ejemplo».
+# No editar: cambia site.yaml y ejecuta `vigia build`.
+services:
+  grafana:
+    image: "grafana/grafana-oss:12.2.1"
+    container_name: "ejm-grafana"
+    restart: unless-stopped
+    environment:
+      - "GF_SERVER_ROOT_URL=https://grafana.ejemplo.lan/"
+      - "GF_INSTANCE_NAME=ejemplo"
+      - "GF_USERS_DEFAULT_THEME=dark"
+      - "GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/var/lib/grafana-dashboards/inicio.json"
+    ports:
+      - "3300:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana-provisioning:/etc/grafana/provisioning:ro
+      - ./dashboards:/var/lib/grafana-dashboards:ro
+      # Branding (Grafana OSS): el logo sustituye al icono del menú y del login; depende de la versión de
+      # Grafana, por eso la imagen va fijada y fuera de watchtower.
+      - ./branding/logo.svg:/usr/share/grafana/public/img/grafana_icon.svg:ro
+      - ./branding/favicon.png:/usr/share/grafana/public/img/fav32.png:ro
+      - ./branding/favicon.png:/usr/share/grafana/public/img/apple-touch-icon.png:ro
+
+  prometheus:
+    image: "prom/prometheus:v3.7.2"
+    container_name: "ejm-prometheus"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - "--storage.tsdb.retention.time=90d"
+    ports:
+      - "9390:9090"
+    restart: unless-stopped
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+
+
+  # Sondas HTTP/ICMP/DNS/TCP de la red. Sin puerto publicado: solo lo usa Prometheus.
+  blackbox:
+    image: "prom/blackbox-exporter"
+    container_name: "ejm-blackbox"
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/blackbox/blackbox.yml'
+    sysctls:
+      net.ipv4.ping_group_range: "0 2147483647"   # ping ICMP sin root (blackbox corre como nobody)
+    dns:                   # el DNS de Docker no resuelve los nombres internos
+      - "10.99.0.2"
+    volumes:
+      - ./blackbox:/etc/blackbox:ro
+
+
+  # Métricas del host (CPU, RAM, discos, red, temperatura) en :9100
+  node-exporter:
+    image: "quay.io/prometheus/node-exporter"
+    container_name: "ejm-node-exporter"
+    restart: unless-stopped
+    command:
+      - '--path.rootfs=/host'
+      - '--collector.filesystem.mount-points-exclude=^/(dev|proc|run|sys|var/lib/docker/.+|srv/.+/docker/.+)($$|/)'
+    network_mode: host
+    pid: host
+    volumes:
+      - /:/host:ro,rslave
+
+
+  # Métricas por contenedor (CPU, RAM, red) en :9338
+  cadvisor:
+    image: "ghcr.io/google/cadvisor"
+    container_name: "ejm-cadvisor"
+    restart: unless-stopped
+    command:
+      - '--docker_only=true'
+      - '--housekeeping_interval=30s'
+      - '--store_container_labels=false'
+      - '--whitelisted_container_labels=com.docker.compose.project'
+      - '--disable_metrics=percpu,sched,tcp,udp,disk,diskIO,hugetlb,referenced_memory,cpu_topology,resctrl,advtcp,process'
+    privileged: true
+    devices:
+      - /dev/kmsg
+    ports:
+      - "9338:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - "/var/lib/docker:/var/lib/docker:ro"
+      - /dev/disk/:/dev/disk:ro
+
+
+  # Métricas de las Pi-hole (consultas, bloqueos, clientes). Las claves van en el env del stack.
+  pihole-exporter:
+    image: "ekofr/pihole-exporter"
+    container_name: "ejm-pihole-exporter"
+    restart: unless-stopped
+    environment:
+      - "PIHOLE_HOSTNAME=10.99.0.10"
+      - "PIHOLE_PORT=8081"
+      - "PIHOLE_PROTOCOL=http"
+      - "PIHOLE_PASSWORD=${PIHOLE_PASSWORDS}"
+      - "PORT=9617"
+
+
+  # Equipos por SNMP. Las credenciales se expanden desde el env del stack (auths.yml solo lleva ${VAR}).
+  snmp-exporter:
+    image: "prom/snmp-exporter"
+    container_name: "ejm-snmp-exporter"
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/snmp_exporter/snmp.yml'
+      - '--config.file=/etc/snmp_exporter/auths/auths.yml'
+      - '--config.expand-environment-variables'
+      - "--web.listen-address=:9116"
+    environment:
+      - "SNMP_NAS_USUARIO=${SNMP_NAS_USUARIO}"
+      - "SNMP_NAS_AUTH=${SNMP_NAS_AUTH}"
+      - "SNMP_NAS_PRIV=${SNMP_NAS_PRIV}"
+      - "SNMP_COMUNIDAD=${SNMP_COMUNIDAD}"
+    volumes:
+      - ./snmp:/etc/snmp_exporter/auths:ro
+
+
+  # Inventario de dispositivos de la red (arp-scan, Pi-hole, mDNS/SSDP) en :9877
+  # (/metrics y /devices.json). Imagen local construida desde ./netinv.
+  netinv:
+    build: ./netinv
+    image: netinv:local
+    container_name: "ejm-netinv"
+    restart: unless-stopped
+    network_mode: host                 # ARP, multicast mDNS/SSDP
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    environment:
+      - "SUBNET=10.99.0.0/24"
+      - "LAN_IP=10.99.0.10"
+      - "INTERVAL=900"
+      - "PORT=9877"
+      - NMAP=0
+      - "PIHOLE_URLS=http://10.99.0.10:8081"
+      - "PIHOLE_PASSWORDS=${PIHOLE_PASSWORDS}"
+    volumes:
+      - netinv_data:/data
+      - ./netinv:/etc/netinv:ro         # devices.yaml (clasificación manual del sitio)
+
+volumes:
+  grafana_data:
+  prometheus_data:
+  netinv_data:
