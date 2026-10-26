@@ -1,0 +1,53 @@
+# Sitio «{{ nombre | raw }}» para vigia. Fuente de verdad de la monitorización de esta red:
+# editar aquí, `uv run vigia validate` y `uv run vigia deploy <unidad>` (ver CLAUDE.md).
+vigia: ">=0.1,<0.2"
+
+sitio:
+  id: {{ id }}
+  nombre: {{ nombre }}
+
+branding:
+  nombre: {{ marca }}
+  prefijo_titulo: {{ marca ~ " · " }}
+  carpeta: {{ "Infraestructura " ~ marca }}
+  uid_prefijo: {{ id }}
+  tag: {{ marca }}
+  # logo: assets/logo.svg
+  # favicon: assets/favicon.png
+
+red:
+  subred: {{ subred }}
+  dominio: {{ dominio }}
+
+monitor:
+  host: {{ monitor_id }}
+  proyecto: {{ id ~ "_monitor" }}
+  prefijo_contenedores: {{ id ~ "-" }}
+  grafana_url: {{ "https://grafana." ~ dominio ~ "/" }}
+  imagenes:                       # versiones fijas (el branding de Grafana depende de la suya)
+    grafana: grafana/grafana-oss:13.0.2
+    prometheus: prom/prometheus:v3.15.1
+    blackbox: prom/blackbox-exporter:v0.29.1
+    node_exporter: quay.io/prometheus/node-exporter:v1.12.1
+    cadvisor: ghcr.io/google/cadvisor:v0.60.6
+  # grafana_token: GRAFANA_TOKEN  # para `vigia grafana-brand`
+  deploy: {adaptador: compose, dir: {{ "/opt/" ~ id ~ "-monitor" }}}
+
+# Orden = orden de los servidores en los paneles.
+hosts:
+  - id: {{ monitor_id }}
+    tipo: {{ monitor_tipo }}
+    ip: {{ monitor_ip }}
+    node_exporter: {puerto: 9100}
+    cadvisor: {puerto: 9338}
+    ssh: {usuario: {{ usuario }}}
+
+ping:
+  - host: {{ monitor_id }}
+
+servicios: []
+
+modulos:
+  blackbox: true
+  netinv:
+    activo: false   # descubrimiento activo: solo con autorización escrita del responsable de la red

@@ -251,3 +251,59 @@ def grafana_brand(
     except GrafanaError as e:
         typer.echo(f"error: {e}", err=True)
         raise typer.Exit(1) from None
+
+
+@app.command("new-site")
+def new_site(
+    dest: Annotated[Path, typer.Argument(help="carpeta del repo del sitio (se crea si no existe)")],
+    id_: Annotated[str, typer.Option("--id", help="id corto del sitio (minúsculas): uid, contenedores…")],
+    name: Annotated[str, typer.Option("--name", help="nombre largo («Red de la oficina»)")],
+    brand: Annotated[str, typer.Option("--brand", help="marca corta para títulos y alertas («Oficina»)")],
+    subnet: Annotated[str, typer.Option("--subnet", help="subred, p. ej. 10.0.0.0/24")],
+    domain: Annotated[str, typer.Option("--domain", help="dominio interno, p. ej. oficina.lan")],
+    monitor_ip: Annotated[
+        str, typer.Option("--monitor-ip", help="IP del host que ejecutará la monitorización")
+    ],
+    ssh_user: Annotated[str, typer.Option("--ssh-user", help="usuario SSH de ese host")],
+    monitor_id: Annotated[str, typer.Option("--monitor-id", help="id del host del monitor")] = "monitor",
+    monitor_type: Annotated[
+        str, typer.Option("--monitor-type", help="tipo del host (linux, omv…)")
+    ] = "linux",
+    sensitive: Annotated[bool, typer.Option("--sensitive", help="el sitio trata datos sensibles")] = False,
+    vigia_path: Annotated[str | None, typer.Option(help="usar una copia local de vigia")] = None,
+) -> None:
+    """Crea el esqueleto de un sitio: site.yaml válido, CLAUDE.md, skill de vigia, .gitignore y pyproject."""
+    from vigia.newsite import NewSite, create  # noqa: PLC0415
+
+    try:
+        p = NewSite(
+            id=id_,
+            nombre=name,
+            marca=brand,
+            subred=subnet,
+            dominio=domain,
+            monitor_id=monitor_id,
+            monitor_ip=monitor_ip,
+            monitor_tipo=monitor_type,
+            usuario=ssh_user,
+            sensible=sensitive,
+            vigia_path=vigia_path,
+        )
+        res = create(p, dest)
+    except ValidationError as e:
+        for err in e.errors():
+            typer.echo(f"  - {'.'.join(str(x) for x in err['loc'])}: {err['msg']}", err=True)
+        raise typer.Exit(1) from None
+    except (FileExistsError, ValueError) as e:
+        typer.echo(f"error: {e}", err=True)
+        raise typer.Exit(1) from None
+    typer.echo(f"sitio «{name}» creado en {res.root}: {', '.join(res.files)}")
+    typer.echo("siguiente: completar hosts/servicios en site.yaml, `uv sync`, `uv run vigia validate`")
+
+
+@app.command()
+def skill(dest: Annotated[Path, typer.Argument(help="repo del sitio")] = Path(".")) -> None:
+    """Instala o actualiza la skill de vigia para Claude Code en `.claude/skills/vigia/` del sitio."""
+    from vigia.newsite import install_skill  # noqa: PLC0415
+
+    typer.echo(f"skill actualizada: {install_skill(dest)}")

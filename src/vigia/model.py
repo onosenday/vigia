@@ -86,7 +86,7 @@ Iface = Annotated[str, StringConstraints(pattern=r"^[A-Za-z0-9._-]{1,15}$")]
 _IMAGE_RE = r"^[a-z0-9][a-z0-9._/-]*(:[A-Za-z0-9._-]+)?(@sha256:[0-9a-f]{64})?$"
 ImageRef = Annotated[str, StringConstraints(pattern=_IMAGE_RE)]
 _UUID_RE = r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
-_FQDN_RE = r"^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$"
+FQDN_RE = r"^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$"
 
 
 def _ip(v: str) -> str:
@@ -414,7 +414,7 @@ class DnsServer(Base):
 
 
 class Dns(Base):
-    consulta: Annotated[str, StringConstraints(pattern=_FQDN_RE)]
+    consulta: Annotated[str, StringConstraints(pattern=FQDN_RE)]
     espera: IP
     servidores: list[IP]
     etiqueta_servidor: Id = "dns"

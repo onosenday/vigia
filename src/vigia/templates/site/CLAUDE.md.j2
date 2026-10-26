@@ -1,0 +1,37 @@
+# {{ nombre }} — monitorización con vigia
+
+Repo del sitio **{{ id }}** de [vigia](https://github.com/onosenday/vigia): la monitorización de la red
+`{{ subred }}` (dominio `{{ dominio }}`). Todo lo que corre en los hosts se genera desde `site.yaml`.
+
+## Cómo se trabaja aquí
+
+- Skill **vigia** (`.claude/skills/vigia/SKILL.md`): flujo de cambios, reglas y lo aprendido de cada
+  plataforma. Leerla antes de tocar nada. Se actualiza con `uv run vigia skill`.
+- Ciclo: editar `site.yaml` → `uv run vigia validate` → `uv run vigia deploy <unidad>` (diff) → **OK del
+  usuario** → `--yes` → verificar (diff a 0, objetivos `up` iguales) → commit.
+- Nunca se edita a mano lo desplegado en los hosts ni `build/`.
+- Cambios en hosts solo con OK explícito para esa operación, con la copia y el rollback de vigia por delante.
+
+## Secretos
+
+En el fichero de entorno del repo (nunca versionado); `.env.example` lista los nombres. Claude no lo lee ni
+muestra sus valores: si falta uno, lo pide. En `site.yaml` solo van nombres de variables.
+
+## Datos
+
+{% if sensible %}
+Este sitio trata **datos sensibles**. Ningún dato de personas sale de sus sistemas: ni a métricas,
+etiquetas, nombres de paneles o alertas, ni a issues, commits, la conversación o servicios externos. Equipos y
+servicios se nombran por su función, nunca por una persona.
+{% else %}
+Nombres de dispositivos o de personas no van a alertas, issues ni servicios externos.
+{% endif %}
+
+## Descubrimiento de la red
+
+netinv (arp-scan, mDNS, nmap) y cualquier escaneo solo con `modulos.netinv.autorizacion` en `site.yaml`
+(responsable, fecha y referencia de la autorización escrita del responsable de la red).
+
+## Reglas propias de este sitio
+
+(Añadir aquí lo específico: responsables, ventanas de mantenimiento, equipos delicados, contactos.)
