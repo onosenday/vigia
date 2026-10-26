@@ -7,6 +7,7 @@ Los secretos nunca están en el modelo: solo el nombre de la variable de entorno
 from __future__ import annotations
 
 import ipaddress
+import posixpath
 import re
 from datetime import date
 from enum import StrEnum
@@ -42,7 +43,45 @@ EnvVarName = Annotated[str, StringConstraints(pattern=r"^[A-Z][A-Z0-9_]{1,63}$")
 Duration = Annotated[str, StringConstraints(pattern=r"^[1-9][0-9]{0,5}(ms|s|m|h|d|w|y)$")]
 Port = Annotated[int, Field(ge=1, le=65535)]
 Color = Annotated[str, StringConstraints(pattern=r"^#[0-9a-fA-F]{6}$")]
-RemotePath = Annotated[str, StringConstraints(pattern=r"^/[A-Za-z0-9._/@+-]*$", max_length=255)]
+_FORBIDDEN_DIRS = {
+    "/bin",
+    "/boot",
+    "/dev",
+    "/etc",
+    "/home",
+    "/lib",
+    "/lib64",
+    "/opt",
+    "/proc",
+    "/root",
+    "/run",
+    "/sbin",
+    "/srv",
+    "/sys",
+    "/tmp",  # noqa: S108 - lista de rutas prohibidas
+    "/usr",
+    "/var",
+    "/volume1",
+    "/mnt",
+    "/media",
+}
+
+
+def _remote_path(v: str) -> str:
+    """Ruta absoluta normalizada y con al menos dos niveles: sobre ella se borra y se copia como root."""
+    if posixpath.normpath(v) != v or "//" in v or v.endswith("/"):
+        raise ValueError(f"ruta remota no normalizada: {v!r}")
+    parts = [p for p in v.split("/") if p]
+    if len(parts) < 2 or any(p in (".", "..") for p in parts) or v in _FORBIDDEN_DIRS:
+        raise ValueError(f"ruta remota demasiado general o peligrosa: {v!r}")
+    return v
+
+
+RemotePath = Annotated[
+    str,
+    StringConstraints(pattern=r"^/[A-Za-z0-9._/@+-]*$", max_length=255),
+    AfterValidator(_remote_path),
+]
 Iface = Annotated[str, StringConstraints(pattern=r"^[A-Za-z0-9._-]{1,15}$")]
 _IMAGE_RE = r"^[a-z0-9][a-z0-9._/-]*(:[A-Za-z0-9._-]+)?(@sha256:[0-9a-f]{64})?$"
 ImageRef = Annotated[str, StringConstraints(pattern=_IMAGE_RE)]
@@ -199,9 +238,30 @@ class Updates(Base):
     """Segundos mínimos entre consultas (para equipos cuyos discos hibernan)."""
 
 
+UserName = Annotated[str, StringConstraints(pattern=r"^[a-z_][a-z0-9_-]{0,31}$")]
+StackName = Annotated[str, StringConstraints(pattern=r"^[a-z][a-z0-9_-]{0,39}$")]
+
+
+class SshAccess(Base):
+    """Cómo entra vigia en el host para desplegar. Solo nombres de variables, nunca valores."""
+
+    usuario: UserName
+    clave: bool = True
+    """Autenticación por clave SSH (BatchMode). Si es `false`, contraseña de `secreto` con sshpass."""
+    secreto: EnvVarName | None = None
+    sudo_secreto: list[EnvVarName] = []
+    """Variables con la contraseña de sudo (se usa la primera que tenga valor); vacía = sin sudo."""
+
+    @model_validator(mode="after")
+    def _password_needs_secret(self) -> SshAccess:
+        if not self.clave and not self.secreto:
+            raise ValueError("ssh sin clave necesita `secreto` (variable con la contraseña)")
+        return self
+
+
 class DeployOMV(Base):
     adaptador: Literal["omv"]
-    stack: Annotated[str, StringConstraints(pattern=r"^[a-z][a-z0-9_-]{0,39}$")]
+    stack: StackName
     uuid: Annotated[str, StringConstraints(pattern=_UUID_RE)]
     dir: RemotePath | None = None
     """Carpeta del stack (la de los ficheros que monta el compose); no hace falta si solo hay body."""
@@ -210,13 +270,16 @@ class DeployOMV(Base):
 class DeployCompose(Base):
     adaptador: Literal["compose"]
     dir: RemotePath
-    usuario: Annotated[str, StringConstraints(pattern=r"^[a-z_][a-z0-9_-]{0,31}$")]
+    proyecto: StackName | None = None
+    """Proyecto de compose; por defecto, el de la unidad (monitor.proyecto, `<host>-agentes`…)."""
 
 
 class DeploySynology(Base):
+    """Container Manager de DSM: docker en /usr/local/bin y siempre con sudo."""
+
     adaptador: Literal["synology"]
     dir: RemotePath
-    usuario: Annotated[str, StringConstraints(pattern=r"^[a-z_][a-z0-9_-]{0,31}$")]
+    proyecto: StackName | None = None
 
 
 Deploy = Annotated[DeployOMV | DeployCompose | DeploySynology, Field(discriminator="adaptador")]
@@ -242,6 +305,7 @@ class Host(Base):
     grupo: Id | None = None
     """Grupo en el panel de ping; por defecto, el del perfil del tipo."""
     ssh_puerto: Port = 22
+    ssh: SshAccess | None = None
     node_exporter: Exporter | None = None
     windows_exporter: Exporter | None = None
     cadvisor: Exporter | None = None
@@ -398,6 +462,7 @@ class UpdatesExporter(Base):
     intervalo: int = Field(default=3600, ge=600, le=86400)
     claves: RemotePath | None = None
     """Carpeta del host con la clave SSH dedicada (montada :ro, nunca en git)."""
+    deploy: Deploy | None = None
 
 
 class SnmpAuth(Base):
@@ -469,6 +534,8 @@ class Monitor(Base):
     """Etiqueta los contenedores para que watchtower los actualice."""
     etiqueta_sitio: bool = True
     """Añade `site: <id>` a las external_labels de Prometheus (federación, alertas)."""
+    deploy: Deploy | None = None
+    """Cómo se despliega el stack del monitor en su host."""
 
     @field_validator("imagenes")
     @classmethod

@@ -8,11 +8,22 @@ from __future__ import annotations
 
 import difflib
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 import yaml
+
+_SECRET_KEY = re.compile(r"(pass|pwd|token|secret|key|clave|community|comunidad|auth|priv)", re.I)
+
+
+def mask(line: str) -> str:
+    """Oculta valores de claves con pinta de secreto y quita caracteres de control (salida a terminal)."""
+    line = "".join(c for c in line if c.isprintable() or c == "\t")
+    if _SECRET_KEY.search(line):
+        return re.split(r"[:=]", line, maxsplit=1)[0] + ": ***"
+    return line
 
 
 @dataclass(frozen=True)
@@ -83,7 +94,7 @@ def compare(
                 for x in difflib.unified_diff(tb, ta, "referencia", "generado", lineterm="", n=0)
                 if not x.startswith(("---", "+++", "@@"))
             ]
-            out.append(Difference(path, "distinto", "\n".join(lines[:max_detail])))
+            out.append(Difference(path, "distinto", "\n".join(mask(x) for x in lines[:max_detail])))
             continue
         pa, pb = _flatten(a), _flatten(b)
         lines = []
@@ -91,7 +102,7 @@ def compare(
             if pa.get(k, "∅") != pb.get(k, "∅"):
                 lines.append(f"{k}: {pb.get(k, '∅')!r} → {pa.get(k, '∅')!r}")
         extra = f"\n… y {len(lines) - max_detail} más" if len(lines) > max_detail else ""
-        out.append(Difference(path, "distinto", "\n".join(lines[:max_detail]) + extra))
+        out.append(Difference(path, "distinto", "\n".join(mask(x) for x in lines[:max_detail]) + extra))
     return out
 
 
