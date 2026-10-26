@@ -153,5 +153,7 @@ def test_bridges(example_data: dict[str, Any]) -> None:
 
     s = Site.model_validate(example_data)
     nets = collect(s, SECRETS, Docker())
-    assert nets == [{"host": "nodo1", "id": "fedcba987654", "nombre": "web_default"},
-                    {"host": "nodo2", "id": "fedcba987654", "nombre": "web_default"}]
+    assert nets == [
+        {"host": "nodo1", "id": "fedcba987654", "nombre": "web_default"},
+        {"host": "nodo2", "id": "fedcba987654", "nombre": "web_default"},
+    ]

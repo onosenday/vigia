@@ -26,3 +26,17 @@ def test_undefined_template_variable() -> None:
 
     with pytest.raises(jinja2.UndefinedError):
         render_template("grafana/dashboards.yml.j2")
+
+
+def test_diff_listas_por_contenido() -> None:
+    from vigia.diffing import _changes
+
+    a = {"r": [{"regex": "x", "t": 1}, {"regex": "y", "t": 2}]}
+    assert _changes(a, {"r": [{"regex": "y", "t": 2}, {"regex": "x", "t": 1}]}) == [
+        "r: mismo contenido, otro orden"
+    ]
+    nuevo = {"r": [{"regex": "y", "t": 2}, {"regex": "z", "t": 3}, {"regex": "x", "t": 1}]}
+    assert _changes(a, nuevo) == ["r[regex=z]: añadido"]
+    sin_id = {"r": [{"t": 1}, {"t": 2}]}
+    assert _changes(sin_id, {"r": [{"t": 1}, {"t": 3}]}) == ['r: - {"t": 2}', 'r: + {"t": 3}']
+    assert _changes({"a": 1}, {"a": 2}) == ["a: 1 → 2"]

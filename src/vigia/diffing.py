@@ -67,6 +67,88 @@ def _flatten(v: Any, prefix: str = "") -> dict[str, Any]:
     return out
 
 
+def _identity(old: list[Any], new: list[Any]) -> str | None:
+    """Clave que identifica cada elemento de una lista de mapas (única en cada lado)."""
+    for k in ("job_name", "uid", "id", "refId", "name", "regex"):
+        if (
+            all(isinstance(x.get(k), str | int) for x in old + new)
+            and len({x[k] for x in old}) == len(old)
+            and len({x[k] for x in new}) == len(new)
+        ):
+            return k
+    return None
+
+
+def _key(v: Any) -> str:
+    return json.dumps(v, sort_keys=True, ensure_ascii=False)
+
+
+def _changes(old: Any, new: Any, prefix: str = "") -> list[str]:
+    """Líneas legibles con lo que cambia de `old` a `new`.
+
+    Las listas de mapas (reglas, paneles, objetivos) se comparan por contenido: lo añadido y lo quitado,
+    y un aviso si solo cambia el orden, en vez de una diferencia por cada posición desplazada.
+    """
+    if isinstance(old, dict) and isinstance(new, dict):
+        out: list[str] = []
+        for k in list(old) + [k for k in new if k not in old]:
+            p = f"{prefix}.{k}" if prefix else str(k)
+            if k not in new:
+                out.append(f"{p}: quitado")
+            elif k not in old:
+                out.append(f"{p}: añadido {_short(new[k])}")
+            elif old[k] != new[k]:
+                out += _changes(old[k], new[k], p)
+        return out
+    if (
+        isinstance(old, list)
+        and isinstance(new, list)
+        and len(old) + len(new) > 0
+        and all(isinstance(x, dict) for x in old + new)
+    ):
+        ko, kn = [_key(x) for x in old], [_key(x) for x in new]
+        if sorted(ko) == sorted(kn):
+            return [f"{prefix}: mismo contenido, otro orden"]
+        ident = _identity(old, new)
+        if ident:
+            mo, mn = {x[ident]: x for x in old}, {x[ident]: x for x in new}
+            out = []
+            for k in list(mo) + [k for k in mn if k not in mo]:
+                p = f"{prefix}[{ident}={k}]"
+                if k not in mn:
+                    out.append(f"{p}: quitado")
+                elif k not in mo:
+                    out.append(f"{p}: añadido")
+                elif mo[k] != mn[k]:
+                    out += _changes(mo[k], mn[k], p)
+            return out or [f"{prefix}: mismo contenido, otro orden"]
+        if len(old) == len(new) and not any(x in kn for x in ko):
+            pass  # todo distinto: mejor por posición
+        else:
+            out = [f"{prefix}: - {_short(x)}" for x, k in zip(old, ko, strict=True) if k not in kn]
+            out += [f"{prefix}: + {_short(x)}" for x, k in zip(new, kn, strict=True) if k not in ko]
+            if not out:
+                out = [f"{prefix}: mismo contenido, otro orden (con repetidos)"]
+            return out
+    if isinstance(old, list) and isinstance(new, list) and len(old) == len(new):
+        out = []
+        for i, (x, y) in enumerate(zip(old, new, strict=True)):
+            if x != y:
+                out += _changes(x, y, f"{prefix}[{i}]")
+        return out
+    po, pn = _flatten(old, prefix), _flatten(new, prefix)
+    return [
+        f"{k}: {po.get(k, '∅')!r} → {pn.get(k, '∅')!r}"
+        for k in sorted(set(po) | set(pn))
+        if po.get(k, "∅") != pn.get(k, "∅")
+    ]
+
+
+def _short(v: Any, n: int = 140) -> str:
+    t = _key(v) if isinstance(v, dict | list) else repr(v)
+    return t if len(t) <= n else t[: n - 1] + "…"
+
+
 def compare(
     generated: dict[str, bytes],
     reference: dict[str, bytes],
@@ -96,11 +178,7 @@ def compare(
             ]
             out.append(Difference(path, "distinto", "\n".join(mask(x) for x in lines[:max_detail])))
             continue
-        pa, pb = _flatten(a), _flatten(b)
-        lines = []
-        for k in sorted(set(pa) | set(pb)):
-            if pa.get(k, "∅") != pb.get(k, "∅"):
-                lines.append(f"{k}: {pb.get(k, '∅')!r} → {pa.get(k, '∅')!r}")
+        lines = _changes(b, a)
         extra = f"\n… y {len(lines) - max_detail} más" if len(lines) > max_detail else ""
         out.append(Difference(path, "distinto", "\n".join(mask(x) for x in lines[:max_detail]) + extra))
     return out
