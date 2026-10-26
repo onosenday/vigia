@@ -1,0 +1,42 @@
+[project]
+name = "vigia"
+version = "0.1.0"
+description = "Monitorización de redes por sitio: Prometheus, Grafana, blackbox, SNMP e inventario, parametrizados por site.yaml y con branding propio"
+readme = "README.md"
+authors = [{ name = "onosenday" }]
+license = "MIT"
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.9",
+    "jinja2>=3.1",
+    "pyyaml>=6.0",
+    "typer>=0.12",
+]
+
+[project.scripts]
+vigia = "vigia.cli:app"
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.6", "mypy>=1.11", "types-pyyaml"]
+
+[build-system]
+requires = ["uv_build>=0.11.11,<0.12.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "SIM"]
+ignore = ["S101"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S"]
+
+[tool.mypy]
+strict = true
+plugins = ["pydantic.mypy"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
