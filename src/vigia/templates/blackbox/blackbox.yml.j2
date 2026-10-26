@@ -1,4 +1,4 @@
-{{ cabecera }}
+{{ header }}
 modules:
   # Webs por nombre tras el proxy inverso{% if ca %}: valida el certificado con la CA interna (para medir su caducidad){% endif %}.
   https_interno:
@@ -48,7 +48,7 @@ modules:
       preferred_ip_protocol: ip4
       valid_rcodes: [NOERROR]
       validate_answer_rrs:
-        fail_if_not_matches_regexp: [{{ regex_dns }}]
+        fail_if_not_matches_regexp: [{{ dns_regex }}]
 {% endif %}
 {% if minecraft %}
   # Minecraft Java: saludo de estado mínimo + ping (todos los bytes < 0x80 para que no los recodifique

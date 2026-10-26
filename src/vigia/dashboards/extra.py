@@ -4,25 +4,25 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from vigia.dashboards.base import PCT, RED_GREEN, TEMP, UPDOWN, Panel, ordenar, panel, row
-from vigia.model import Site, Tipo
+from vigia.dashboards.base import PCT, RED_GREEN, TEMP, UPDOWN, Panel, order_series, panel, row
+from vigia.model import DeviceType, Site
 
 if TYPE_CHECKING:
-    from vigia.dashboards import Marca
+    from vigia.dashboards import Brand
 
 HZ = {"orientation": "horizontal", "displayMode": "gradient"}
 ST = {"showValue": "never", "mergeValues": True, "rowHeight": 0.8}
 
 
-def _snmp(s: Site, *tipos: Tipo) -> list[tuple[str, str]]:
-    return [(h.visible, h.visible) for h in s.hosts if h.snmp and h.tipo in tipos]
+def _snmp_items(s: Site, *types: DeviceType) -> list[tuple[str, str]]:
+    return [(h.display_name, h.display_name) for h in s.hosts if h.snmp and h.tipo in types]
 
 
-def snmp(s: Site, m: Marca) -> dict[str, Any] | None:
+def snmp(s: Site, m: Brand) -> dict[str, Any] | None:
     """NAS, switches, impresoras y SAI medidos por SNMP: una sección por tipo presente."""
     if not (s.modulos.snmp.activo and any(h.snmp for h in s.hosts)):
         return None
-    todos = [(h.visible, h.visible) for h in s.hosts if h.snmp]
+    all_items = [(h.display_name, h.display_name) for h in s.hosts if h.snmp]
     panels: list[Panel] = [
         row(1, "Alcance", 0),
         panel(
@@ -33,18 +33,18 @@ def snmp(s: Site, m: Marca) -> dict[str, Any] | None:
             0,
             1,
             24,
-            2 + len(todos),
+            2 + len(all_items),
             mappings=UPDOWN,
             thresholds=RED_GREEN,
             options=ST,
         ),
     ]
-    ordenar(panels, {2}, "snmp", "nombre", todos)
-    y = 3 + len(todos)
-    nas = _snmp(s, Tipo.synology)
+    order_series(panels, {2}, "snmp", "nombre", all_items)
+    y = 3 + len(all_items)
+    nas = _snmp_items(s, DeviceType.synology)
     if nas:
         sj = 'job="snmp",tipo="synology"'
-        estado = [
+        status_map = [
             {
                 "type": "value",
                 "options": {
@@ -53,7 +53,7 @@ def snmp(s: Site, m: Marca) -> dict[str, Any] | None:
                 },
             }
         ]
-        sec = [
+        section = [
             row(10, "NAS Synology", y),
             panel(
                 11,
@@ -65,7 +65,7 @@ def snmp(s: Site, m: Marca) -> dict[str, Any] | None:
                 6,
                 4,
                 instant=True,
-                mappings=estado,
+                mappings=status_map,
                 options={"textMode": "value_and_name"},
             ),
             panel(
@@ -135,13 +135,13 @@ def snmp(s: Site, m: Marca) -> dict[str, Any] | None:
                 options={**HZ, "min": 20, "max": 70},
             ),
         ]
-        ordenar(sec, {11, 12}, "snmp", "nombre", nas)
-        panels += sec
+        order_series(section, {11, 12}, "snmp", "nombre", nas)
+        panels += section
         y += 9
-    red = _snmp(s, Tipo.switch, Tipo.qnap)
-    if red:
+    net_items = _snmp_items(s, DeviceType.switch, DeviceType.qnap)
+    if net_items:
         ij = 'job="snmp"'
-        sec = [
+        section = [
             row(20, "Interfaces (switches y otros equipos SNMP)", y),
             panel(
                 21,
@@ -168,10 +168,10 @@ def snmp(s: Site, m: Marca) -> dict[str, Any] | None:
                 unit="bps",
             ),
         ]
-        panels += sec
+        panels += section
         y += 9
-    imp = _snmp(s, Tipo.impresora)
-    if imp:
+    printers = _snmp_items(s, DeviceType.impresora)
+    if printers:
         pj = 'job="snmp",tipo="impresora"'
         panels += [
             row(30, "Impresoras", y),
@@ -196,8 +196,8 @@ def snmp(s: Site, m: Marca) -> dict[str, Any] | None:
             ),
         ]
         y += 9
-    sai = _snmp(s, Tipo.sai)
-    if sai:
+    ups = _snmp_items(s, DeviceType.sai)
+    if ups:
         uj = 'job="snmp",tipo="sai"'
         panels += [
             row(40, "SAI", y),
@@ -250,8 +250,8 @@ def snmp(s: Site, m: Marca) -> dict[str, Any] | None:
     return m.dash("equipos-snmp", "Equipos SNMP", panels)
 
 
-def windows(s: Site, m: Marca) -> dict[str, Any] | None:
-    items = [(h.visible, h.visible) for h in s.hosts if h.windows_exporter]
+def windows(s: Site, m: Brand) -> dict[str, Any] | None:
+    items = [(h.display_name, h.display_name) for h in s.hosts if h.windows_exporter]
     if not items:
         return None
     wj = 'job="windows"'
@@ -337,24 +337,24 @@ def windows(s: Site, m: Marca) -> dict[str, Any] | None:
             ],
         ),
     ]
-    ordenar(panels, {2, 3, 4, 11, 12}, "windows", "nombre", items)
+    order_series(panels, {2, 3, 4, 11, 12}, "windows", "nombre", items)
     return m.dash("windows", "Equipos Windows", panels)
 
 
-def inicio(s: Site, m: Marca) -> dict[str, Any]:
+def home(s: Site, m: Brand) -> dict[str, Any]:
     """Portada con la marca del sitio: logo, nombre, lo que falla y enlaces a los paneles."""
     b = s.branding
     logo = "![logo](public/img/grafana_icon.svg)\n\n" if (b.grafana and b.logo) else ""
-    texto = (
+    text = (
         f"{logo}# {b.nombre}\n\n**{s.sitio.nombre}** · red `{s.red.subred}` · dominio `{s.red.dominio}`\n\n"
         f"Paneles en la carpeta **{b.carpeta}**."
     )
-    cabecera = panel(1, "", "text", "", 0, 0, 8, 7, legend="", options={"mode": "markdown", "content": texto})
-    del cabecera["targets"]
+    header = panel(1, "", "text", "", 0, 0, 8, 7, legend="", options={"mode": "markdown", "content": text})
+    del header["targets"]
     color = {"color": {"mode": "fixed", "fixedColor": b.colores.primario}}
-    panels: list[Panel] = [cabecera]
+    panels: list[Panel] = [header]
     if s.modulos.blackbox:
-        caidos = panel(
+        down = panel(
             2,
             "Elementos caídos ahora",
             "stat",
@@ -368,10 +368,10 @@ def inicio(s: Site, m: Marca) -> dict[str, Any]:
             thresholds=[{"color": "green", "value": None}, {"color": "red", "value": 1}],
             options={"textMode": "value", "colorMode": "background", "graphMode": "none"},
         )
-        panels.append(caidos)
-    servidores = [h for h in s.hosts if h.node_exporter or h.windows_exporter or h.snmp]
-    if servidores:
-        vivos = panel(
+        panels.append(down)
+    servers = [h for h in s.hosts if h.node_exporter or h.windows_exporter or h.snmp]
+    if servers:
+        alive = panel(
             3,
             "Equipos que reportan métricas",
             "stat",
@@ -384,9 +384,9 @@ def inicio(s: Site, m: Marca) -> dict[str, Any]:
             instant=True,
             options={"textMode": "value", "colorMode": "value", "graphMode": "none"},
         )
-        vivos["fieldConfig"]["defaults"].update(color)
-        panels.append(vivos)
-    lista = panel(
+        alive["fieldConfig"]["defaults"].update(color)
+        panels.append(alive)
+    dash_list = panel(
         4,
         "Paneles",
         "dashlist",
@@ -406,9 +406,9 @@ def inicio(s: Site, m: Marca) -> dict[str, Any]:
             "query": "",
         },
     )
-    del lista["targets"]
-    panels.append(lista)
-    d = m.dash("inicio", "", panels, refresh="1m", desde="now-1h")
+    del dash_list["targets"]
+    panels.append(dash_list)
+    d = m.dash("inicio", "", panels, refresh="1m", time_from="now-1h")
     d["title"] = f"{b.nombre} · Inicio"
     d.pop("links", None)
     return d

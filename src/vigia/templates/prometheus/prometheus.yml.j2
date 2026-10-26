@@ -1,4 +1,4 @@
-{{ cabecera }}
+{{ header }}
 global:
   scrape_interval: {{ s.monitor.intervalo }}
   scrape_timeout: {{ s.monitor.timeout }}
@@ -18,7 +18,7 @@ scrape_configs:
     static_configs:
       - targets: [blackbox:9115]
 {% endif %}
-{% if hay.node %}
+{% if present.node %}
 
   # Servidores: node_exporter (CPU, RAM, discos, red, temperatura)
   - job_name: node
@@ -44,14 +44,14 @@ scrape_configs:
 {% endfor %}
 {% endif %}
 {% endif %}
-{% if hay.windows %}
+{% if present.windows %}
 
   # Equipos Windows: windows_exporter
   - job_name: windows
     file_sd_configs:
       - files: [/etc/prometheus/targets/windows.yml]
 {% endif %}
-{% if hay.cadvisor %}
+{% if present.cadvisor %}
 
   # Contenedores: cAdvisor
   - job_name: cadvisor
@@ -75,7 +75,7 @@ scrape_configs:
     static_configs:
       - targets: [{{ s.monitor_host.ip ~ ":" ~ s.modulos.netinv.puerto }}]
 {% endif %}
-{% if hay.snmp %}
+{% if present.snmp %}
 
   # Equipos por SNMP (NAS, switches, impresoras, SAI): módulo y autenticación por objetivo
   - job_name: snmp
@@ -92,7 +92,7 @@ scrape_configs:
         replacement: {{ "snmp-exporter:" ~ s.modulos.snmp.puerto }}
 {% endif %}
 {% if s.modulos.blackbox %}
-{% set ancla = namespace(puesta=false) %}
+{% set anchor = namespace(defined=false) %}
 {% if s.web.objetivos %}
 
   # Webs por nombre (a través del proxy inverso)
@@ -108,17 +108,17 @@ scrape_configs:
         target_label: instance
       - target_label: __address__
         replacement: blackbox:9115
-{% set ancla.puesta = true %}
+{% set anchor.defined = true %}
 {% endif %}
-{% for job, modulo, fichero, comentario in sondas %}
+{% for job, module, file, comment in probes %}
 
-  # {{ comentario | crudo }}
+  # {{ comment | raw }}
   - job_name: {{ job }}
     metrics_path: /probe
-    params: {module: [{{ modulo }}]}
+    params: {module: [{{ module }}]}
     file_sd_configs:
-      - files: [{{ "/etc/prometheus/targets/" ~ fichero }}]
-{% if ancla.puesta %}
+      - files: [{{ "/etc/prometheus/targets/" ~ file }}]
+{% if anchor.defined %}
     relabel_configs: *probe
 {% else %}
     relabel_configs: &probe
@@ -128,7 +128,7 @@ scrape_configs:
         target_label: instance
       - target_label: __address__
         replacement: blackbox:9115
-{% set ancla.puesta = true %}
+{% set anchor.defined = true %}
 {% endif %}
 {% endfor %}
 {% if s.dns %}
@@ -140,7 +140,7 @@ scrape_configs:
     static_configs:
       - targets: {{ s.dns.servidores }}
         labels: {servidor: {{ s.dns.etiqueta_servidor }}}
-{% if ancla.puesta %}
+{% if anchor.defined %}
     relabel_configs: *probe
 {% else %}
     relabel_configs:

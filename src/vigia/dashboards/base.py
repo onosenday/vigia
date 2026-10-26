@@ -18,7 +18,7 @@ TEMP = [{"color": "green", "value": None}, {"color": "orange", "value": 65}, {"c
 Panel = dict[str, Any]
 
 
-def promql_str(v: str) -> str:
+def promql_escape(v: str) -> str:
     """Escapa un valor para ponerlo entre comillas dobles en PromQL."""
     return v.replace("\\", "\\\\").replace('"', '\\"')
 
@@ -84,7 +84,7 @@ def row(pid: int, title: str, y: int) -> Panel:
     }
 
 
-def ordenar(
+def order_series(
     panels: list[Panel],
     ids: set[int],
     job: str,
@@ -105,7 +105,7 @@ def ordenar(
                 **base,
                 "refId": chr(65 + i),
                 "legendFormat": legend.format(name),
-                "expr": base["expr"].replace(f'job="{job}"', f'job="{job}",{label}="{promql_str(val)}"'),
+                "expr": base["expr"].replace(f'job="{job}"', f'job="{job}",{label}="{promql_escape(val)}"'),
             }
             for i, (val, name) in enumerate(items)
         ]
@@ -119,7 +119,7 @@ def dashboard(
     tag: str,
     panels: list[Panel],
     refresh: str = "1m",
-    desde: str = "now-24h",
+    time_from: str = "now-24h",
     links: list[Any] | None = None,
 ) -> dict[str, Any]:
     d: dict[str, Any] = {
@@ -131,7 +131,7 @@ def dashboard(
         "version": 1,
         "refresh": refresh,
         "editable": False,
-        "time": {"from": desde, "to": "now"},
+        "time": {"from": time_from, "to": "now"},
         "panels": panels,
     }
     if links:

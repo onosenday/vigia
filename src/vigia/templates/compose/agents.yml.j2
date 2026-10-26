@@ -1,0 +1,10 @@
+{% import "compose/_agents.j2" as ag %}
+{{ header }}
+services:
+{% if node.node_exporter and node.node_exporter.gestion == "vigia" %}
+{{ ag.node_exporter(s, node, prefix) | raw }}
+{% endif %}
+{% if node.cadvisor and node.cadvisor.gestion == "vigia" %}
+
+{{ ag.cadvisor(s, node, prefix) | raw }}
+{% endif %}

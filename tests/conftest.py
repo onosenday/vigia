@@ -7,11 +7,11 @@ from typing import Any
 import pytest
 import yaml
 
-RAIZ = Path(__file__).resolve().parents[1]
-EJEMPLO = RAIZ / "examples" / "sitio-ejemplo"
+ROOT = Path(__file__).resolve().parents[1]
+EXAMPLE = ROOT / "examples" / "sitio-ejemplo"
 
 
 @pytest.fixture
-def datos_ejemplo() -> dict[str, Any]:
+def example_data() -> dict[str, Any]:
     """site.yaml del ejemplo como dict, para mutarlo en cada test."""
-    return copy.deepcopy(yaml.safe_load((EJEMPLO / "site.yaml").read_text(encoding="utf-8")))
+    return copy.deepcopy(yaml.safe_load((EXAMPLE / "site.yaml").read_text(encoding="utf-8")))

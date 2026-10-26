@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
-from vigia.dashboards import dispositivos, extra
+from vigia.dashboards import devices, extra
 from vigia.dashboards.base import (
     DS,
     PCT,
@@ -21,31 +21,31 @@ from vigia.dashboards.base import (
     UPDOWN,
     Panel,
     dashboard,
-    ordenar,
+    order_series,
     panel,
-    promql_str,
+    promql_escape,
     row,
 )
 from vigia.model import Site
 
 
-class Marca:
+class Brand:
     """Aplica el branding del sitio a títulos, uid y tags."""
 
     def __init__(self, s: Site) -> None:
         self.s = s
         b = s.branding
-        self.prefijo, self.tag, self.uid_prefijo = b.prefijo_titulo, b.tag, b.uid_prefijo
-        self.portada = b.portada
+        self.prefix, self.tag, self.uid_prefix = b.prefijo_titulo, b.tag, b.uid_prefijo
+        self.home_enabled = b.portada
 
     def uid(self, slug: str) -> str:
-        return f"{self.uid_prefijo}-{slug}"
+        return f"{self.uid_prefix}-{slug}"
 
-    def titulo(self, t: str) -> str:
-        return self.prefijo + t
+    def title(self, t: str) -> str:
+        return self.prefix + t
 
     def links(self) -> list[Any] | None:
-        if not self.portada:
+        if not self.home_enabled:
             return None
         return [
             {
@@ -58,7 +58,7 @@ class Marca:
         ]
 
     def dash(self, slug: str, title: str, panels: list[Panel], **kw: Any) -> dict[str, Any]:
-        return dashboard(self.uid(slug), self.titulo(title), self.tag, panels, links=self.links(), **kw)
+        return dashboard(self.uid(slug), self.title(title), self.tag, panels, links=self.links(), **kw)
 
 
 def _json(d: dict[str, Any]) -> str:
@@ -68,7 +68,7 @@ def _json(d: dict[str, Any]) -> str:
 # --- Red y servicios (blackbox) ---------------------------------------------------------------------
 
 
-def contador(pid: int, title: str, job: str, x: int, y: int, color: str = "red") -> Panel:
+def down_counter(pid: int, title: str, job: str, x: int, y: int, color: str = "red") -> Panel:
     """Número de elementos caídos de un tipo, en pequeño (el detalle está en «Qué falla ahora»)."""
     return panel(
         pid,
@@ -91,7 +91,7 @@ def contador(pid: int, title: str, job: str, x: int, y: int, color: str = "red")
     )
 
 
-def falla_ahora(pid: int, x: int, y: int, w: int, h: int) -> Panel:
+def failing_now(pid: int, x: int, y: int, w: int, h: int) -> Panel:
     """Tabla con una fila por web, servicio o equipo caído (tipo, nombre, host)."""
     p = panel(
         pid,
@@ -135,26 +135,26 @@ def falla_ahora(pid: int, x: int, y: int, w: int, h: int) -> Panel:
     return p
 
 
-def nombre_ip(s: Site, ip: str) -> str:
+def ip_name(s: Site, ip: str) -> str:
     for v in s.vips:
         if v.ip == ip:
             return v.nombre
     for h in s.hosts:
         if ip in h.ips:
-            return h.visible
+            return h.display_name
     return ip
 
 
-def red_servicios(s: Site, m: Marca) -> dict[str, Any] | None:
-    hay_web, hay_srv, hay_ping, hay_dns = bool(s.web.objetivos), bool(s.servicios), bool(s.ping), bool(s.dns)
-    if not s.modulos.blackbox or not (hay_web or hay_srv or hay_ping or hay_dns):
+def network_services(s: Site, m: Brand) -> dict[str, Any] | None:
+    has_web, has_srv, has_ping, has_dns = bool(s.web.objetivos), bool(s.servicios), bool(s.ping), bool(s.dns)
+    if not s.modulos.blackbox or not (has_web or has_srv or has_ping or has_dns):
         return None
     st = {"showValue": "never", "mergeValues": True, "rowHeight": 0.8}
     panels: list[Panel] = [
         row(1, "Resumen", 0),
-        contador(2, "Webs caídas", "web", 0, 1),
-        contador(3, "Servicios caídos", "servicio", 4, 1),
-        contador(4, "Equipos sin ping", "ping", 0, 4, color="orange"),
+        down_counter(2, "Webs caídas", "web", 0, 1),
+        down_counter(3, "Servicios caídos", "servicio", 4, 1),
+        down_counter(4, "Equipos sin ping", "ping", 0, 4, color="orange"),
         panel(
             5,
             "Certificado caduca en",
@@ -174,7 +174,7 @@ def red_servicios(s: Site, m: Marca) -> dict[str, Any] | None:
             ],
             options={"graphMode": "none", "text": {"titleSize": 12, "valueSize": 26}},
         ),
-        falla_ahora(6, 8, 1, 16, 6),
+        failing_now(6, 8, 1, 16, 6),
         row(10, f"Webs *.{s.red.dominio} (vía proxy inverso)", 5),
         panel(
             11,
@@ -264,7 +264,7 @@ def red_servicios(s: Site, m: Marca) -> dict[str, Any] | None:
         panels += [
             panel(
                 33,
-                f"DNS: resuelve {s.dns.consulta} → {nombre_ip(s, s.dns.espera)}",
+                f"DNS: resuelve {s.dns.consulta} → {ip_name(s, s.dns.espera)}",
                 "state-timeline",
                 'probe_success{job="dns"}',
                 0,
@@ -289,46 +289,46 @@ def red_servicios(s: Site, m: Marca) -> dict[str, Any] | None:
                 unit="s",
             ),
         ]
-    fuera = set()
-    if not hay_web:
-        fuera |= {2, 5, 10, 11, 12}
-    if not hay_srv:
-        fuera |= {3, 20, 21, 22}
-    if not hay_ping:
-        fuera |= {4, 31, 32}
-    if not hay_ping and not hay_dns:
-        fuera.add(30)
-    panels = [p for p in panels if p["id"] not in fuera]
+    hidden = set()
+    if not has_web:
+        hidden |= {2, 5, 10, 11, 12}
+    if not has_srv:
+        hidden |= {3, 20, 21, 22}
+    if not has_ping:
+        hidden |= {4, 31, 32}
+    if not has_ping and not has_dns:
+        hidden.add(30)
+    panels = [p for p in panels if p["id"] not in hidden]
     for p in panels:  # el resumen ocupa 7 filas de rejilla: lo demás baja 2
         if p["id"] >= 10:
             p["gridPos"]["y"] += 2
 
-    ordenar(panels, {31, 32}, "ping", "nombre", [(n, n) for _, n, _ in s.ping_resuelto()])
+    order_series(panels, {31, 32}, "ping", "nombre", [(n, n) for _, n, _ in s.resolved_pings()])
     if s.dns:
-        ordenar(panels, {33, 34}, "dns", "instance", servidores_dns(s))
+        order_series(panels, {33, 34}, "dns", "instance", dns_servers(s))
     return m.dash("red", "Red y servicios", panels)
 
 
-def servidores_dns(s: Site) -> list[tuple[str, str]]:
+def dns_servers(s: Site) -> list[tuple[str, str]]:
     """Servidores DNS en orden: VIPs primero y luego los hosts en el orden del sitio."""
     assert s.dns
-    orden = [v.ip for v in s.vips] + [ip for h in s.hosts for ip in h.ips]
-    ips = sorted(s.dns.servidores, key=lambda ip: orden.index(ip) if ip in orden else len(orden))
-    return [(ip, nombre_ip(s, ip)) for ip in ips]
+    order = [v.ip for v in s.vips] + [ip for h in s.hosts for ip in h.ips]
+    ips = sorted(s.dns.servidores, key=lambda ip: order.index(ip) if ip in order else len(order))
+    return [(ip, ip_name(s, ip)) for ip in ips]
 
 
 # --- Servidores (node_exporter) ---------------------------------------------------------------------
 
 FS = 'fstype!~"tmpfs|overlay|squashfs|ramfs|devtmpfs|fuse.*|nfs.*|cifs"'
-RED_IGNORA = 'device!~"lo|veth.*|docker.*|br-.*|cni.*|flannel.*"'
+NET_IFACE_FILTER = 'device!~"lo|veth.*|docker.*|br-.*|cni.*|flannel.*"'
 
 
-def servidores_node(s: Site) -> list[tuple[str, str]]:
-    return [(h.visible, h.visible) for h in s.hosts if h.node_exporter]
+def node_servers(s: Site) -> list[tuple[str, str]]:
+    return [(h.display_name, h.display_name) for h in s.hosts if h.node_exporter]
 
 
-def servidores(s: Site, m: Marca) -> dict[str, Any] | None:
-    items = servidores_node(s)
+def servers(s: Site, m: Brand) -> dict[str, Any] | None:
+    items = node_servers(s)
     if not items:
         return None
     hz = {"orientation": "horizontal", "displayMode": "gradient", "min": 0, "max": 100}
@@ -414,7 +414,7 @@ def servidores(s: Site, m: Marca) -> dict[str, Any] | None:
             13,
             "Red recibida",
             "timeseries",
-            f'sum by (nombre) (rate(node_network_receive_bytes_total{{job="node",{RED_IGNORA}}}[5m]))',
+            f'sum by (nombre) (rate(node_network_receive_bytes_total{{job="node",{NET_IFACE_FILTER}}}[5m]))',
             0,
             19,
             12,
@@ -425,7 +425,7 @@ def servidores(s: Site, m: Marca) -> dict[str, Any] | None:
             14,
             "Red enviada",
             "timeseries",
-            f'sum by (nombre) (rate(node_network_transmit_bytes_total{{job="node",{RED_IGNORA}}}[5m]))',
+            f'sum by (nombre) (rate(node_network_transmit_bytes_total{{job="node",{NET_IFACE_FILTER}}}[5m]))',
             12,
             19,
             12,
@@ -467,7 +467,7 @@ def servidores(s: Site, m: Marca) -> dict[str, Any] | None:
             ],
         ),
     ]
-    ordenar(panels, {2, 3, 4, 5, 6, 7, 11, 12, 13, 14, 15, 16}, "node", "nombre", items)
+    order_series(panels, {2, 3, 4, 5, 6, 7, 11, 12, 13, 14, 15, 16}, "node", "nombre", items)
     return m.dash("servidores", "Servidores", panels)
 
 
@@ -502,16 +502,16 @@ def gauge(
     return p
 
 
-def vista_rapida(s: Site, m: Marca) -> dict[str, Any] | None:
+def quick_view(s: Site, m: Brand) -> dict[str, Any] | None:
     """Los gauges de Node Exporter Full para todos los servidores a la vez."""
-    items = servidores_node(s)
+    items = node_servers(s)
     if not items:
         return None
     quick: list[Panel] = []
     pid = 100
     for i, (h, _) in enumerate(items):
         y = i * 6
-        n = f'job="node",nombre="{promql_str(h)}"'
+        n = f'job="node",nombre="{promql_escape(h)}"'
         fs = f"{n},{FS}"
         quick.append(row(pid, h, y))
         pid += 1
@@ -609,14 +609,14 @@ def vista_rapida(s: Site, m: Marca) -> dict[str, Any] | None:
         ]
         quick.append(info)
         pid += 10
-    return m.dash("vista-rapida", "Vista rápida de servidores", quick, refresh="30s", desde="now-1h")
+    return m.dash("vista-rapida", "Vista rápida de servidores", quick, refresh="30s", time_from="now-1h")
 
 
 # --- Contenedores (cAdvisor) ------------------------------------------------------------------------
 
 
-def contenedores(s: Site, m: Marca) -> dict[str, Any] | None:
-    docker = [(h.visible, h.visible) for h in s.hosts if h.cadvisor]
+def containers(s: Site, m: Brand) -> dict[str, Any] | None:
+    docker = [(h.display_name, h.display_name) for h in s.hosts if h.cadvisor]
     if not docker:
         return None
     c = 'job="cadvisor",name!=""'
@@ -747,22 +747,22 @@ def contenedores(s: Site, m: Marca) -> dict[str, Any] | None:
             unit="Bps",
         ),
     ]
-    ordenar(ctr, {2}, "cadvisor", "nombre", docker)
+    order_series(ctr, {2}, "cadvisor", "nombre", docker)
     return m.dash("contenedores", "Contenedores", ctr)
 
 
 # --- Pi-hole ----------------------------------------------------------------------------------------
 
 
-def pihole(s: Site, m: Marca) -> dict[str, Any] | None:
+def pihole(s: Site, m: Brand) -> dict[str, Any] | None:
     if not s.modulos.pihole_exporter.activo or not s.piholes:
         return None
-    piholes = [(urlsplit(h.pihole.url).hostname or "", h.visible) for h in s.piholes if h.pihole]
-    primaria = next(
+    piholes = [(urlsplit(h.pihole.url).hostname or "", h.display_name) for h in s.piholes if h.pihole]
+    primary = next(
         (urlsplit(h.pihole.url).hostname for h in s.piholes if h.pihole and h.pihole.primaria), piholes[0][0]
     )
     ph = 'job="pihole"'
-    php = f'{ph},hostname="{promql_str(primaria or "")}"'
+    php = f'{ph},hostname="{promql_escape(primary or "")}"'
     hl = "{{hostname}}"
     stat = {"textMode": "value_and_name", "colorMode": "none"}
     panels = [
@@ -920,39 +920,39 @@ def pihole(s: Site, m: Marca) -> dict[str, Any] | None:
             options={"orientation": "horizontal", "displayMode": "basic"},
         ),
     ]
-    ordenar(panels, {2, 3, 4, 5, 6, 7, 11, 12}, "pihole", "hostname", piholes)
-    ordenar(panels, {13}, "pihole", "hostname", piholes, legend="{{{{destination}}}} ({})")
+    order_series(panels, {2, 3, 4, 5, 6, 7, 11, 12}, "pihole", "hostname", piholes)
+    order_series(panels, {13}, "pihole", "hostname", piholes, legend="{{{{destination}}}} ({})")
     return m.dash("pihole", "Pi-hole", panels)
 
 
 # --- conjunto ---------------------------------------------------------------------------------------
 
 
-def node_exporter_full(s: Site, m: Marca) -> dict[str, Any] | None:
+def node_exporter_full(s: Site, m: Brand) -> dict[str, Any] | None:
     """Panel de terceros (ver externos/NOTICE.md): conserva su uid y solo lleva el prefijo de título."""
-    if not servidores_node(s):
+    if not node_servers(s):
         return None
-    texto = files("vigia").joinpath("dashboards", "externos", "node-exporter-full.json").read_text("utf-8")
-    d: dict[str, Any] = json.loads(texto)
-    d["title"] = m.titulo(d["title"])
+    text = files("vigia").joinpath("dashboards", "externos", "node-exporter-full.json").read_text("utf-8")
+    d: dict[str, Any] = json.loads(text)
+    d["title"] = m.title(d["title"])
     return d
 
 
-def paneles(s: Site, raiz_sitio: Path) -> dict[str, str]:
+def dashboards_for(s: Site, site_root: Path) -> dict[str, str]:
     """{nombre de fichero: JSON} de los paneles del sitio."""
-    m = Marca(s)
+    m = Brand(s)
     gen = {
-        "red-y-servicios.json": red_servicios(s, m),
-        "servidores.json": servidores(s, m),
-        "vista-rapida.json": vista_rapida(s, m),
-        "contenedores.json": contenedores(s, m),
+        "red-y-servicios.json": network_services(s, m),
+        "servidores.json": servers(s, m),
+        "vista-rapida.json": quick_view(s, m),
+        "contenedores.json": containers(s, m),
         "pihole.json": pihole(s, m),
-        "dispositivos.json": dispositivos.dispositivos(s, m) if s.modulos.netinv.activo else None,
+        "dispositivos.json": devices.devices(s, m) if s.modulos.netinv.activo else None,
         "equipos-snmp.json": extra.snmp(s, m),
         "windows.json": extra.windows(s, m),
         "node-exporter-full.json": node_exporter_full(s, m),
     }
     out = {k: _json(v) for k, v in gen.items() if v is not None}
     if s.branding.portada:
-        out["inicio.json"] = _json(extra.inicio(s, m))
+        out["inicio.json"] = _json(extra.home(s, m))
     return out

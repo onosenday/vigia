@@ -8,7 +8,7 @@ from vigia.dashboards.base import DS, Panel, panel, row
 from vigia.model import Site
 
 if TYPE_CHECKING:
-    from vigia.dashboards import Marca
+    from vigia.dashboards import Brand
 
 COLS = [
     "ip",
@@ -44,7 +44,7 @@ NAMES = {
 }
 
 
-def tabla_disp(pid: int, title: str, expr: str, y: int, h: int) -> Panel:
+def device_table(pid: int, title: str, expr: str, y: int, h: int) -> Panel:
     p = panel(pid, title, "table", expr, 0, y, 24, h, legend="", instant=True)
     p["targets"].append(
         {
@@ -89,7 +89,7 @@ def tabla_disp(pid: int, title: str, expr: str, y: int, h: int) -> Panel:
     return p
 
 
-def cuenta(pid: int, title: str, expr: str, x: int, color: str = "text") -> Panel:
+def count_stat(pid: int, title: str, expr: str, x: int, color: str = "text") -> Panel:
     return panel(
         pid,
         title,
@@ -110,9 +110,9 @@ Q24 = "netinv_device_dns_queries_24h"
 PCT_DNS = f"100 * {Q24} / scalar(sum({Q24}))"
 
 
-def tabla_resumen(pid: int, y: int, h: int) -> Panel:
+def summary_table(pid: int, y: int, h: int) -> Panel:
     """Lo de cada día: encendido, nombre, tipo, IP y hace cuánto se vio."""
-    p = tabla_disp(pid, "Dispositivos (vistos en 30 días)", "netinv_device_info", y, h)
+    p = device_table(pid, "Dispositivos (vistos en 30 días)", "netinv_device_info", y, h)
     p["targets"].append(
         {
             "refId": "C",
@@ -192,7 +192,7 @@ def tabla_resumen(pid: int, y: int, h: int) -> Panel:
     return p
 
 
-def tabla_nubes(pid: int, y: int, h: int) -> Panel:
+def iot_cloud_table(pid: int, y: int, h: int) -> Panel:
     """Aparatos que hablan con nubes de fabricantes IoT y cuántas consultas DNS han hecho en 24 h."""
     p = panel(
         pid,
@@ -254,7 +254,7 @@ def tabla_nubes(pid: int, y: int, h: int) -> Panel:
     return p
 
 
-def dispositivos(s: Site, m: Marca) -> dict[str, Any]:
+def devices(s: Site, m: Brand) -> dict[str, Any]:
     top_dns = panel(
         13,
         "Más consultas DNS en 24 h (% del total)",
@@ -270,36 +270,38 @@ def dispositivos(s: Site, m: Marca) -> dict[str, Any]:
         thresholds=[{"color": "blue", "value": None}],
     )
     top_dns["fieldConfig"]["defaults"].update({"decimals": 1, "unit": "percent"})
-    detalle = row(20, "Detalle técnico (MAC, fabricante, nombres, nubes IoT, mDNS, UPnP, puertos, SO)", 43)
-    detalle["collapsed"] = True
-    detalle["panels"] = [tabla_disp(21, "Detalle técnico", "netinv_device_info", 44, 18)]
-    disp = [
+    details = row(20, "Detalle técnico (MAC, fabricante, nombres, nubes IoT, mDNS, UPnP, puertos, SO)", 43)
+    details["collapsed"] = True
+    details["panels"] = [device_table(21, "Detalle técnico", "netinv_device_info", 44, 18)]
+    device_panels = [
         row(1, "Resumen", 0),
-        cuenta(2, "Encendidos (24 h)", "count(netinv_device_info == 1) or vector(0)", 0),
-        cuenta(
+        count_stat(2, "Encendidos (24 h)", "count(netinv_device_info == 1) or vector(0)", 0),
+        count_stat(
             3, "Sin clasificar", 'count(netinv_device_info{clasificado="no"} == 1) or vector(0)', 6, "orange"
         ),
-        cuenta(
+        count_stat(
             4,
             "Nuevos en 24 h",
             "count(netinv_device_first_seen_seconds > time() - 86400) or vector(0)",
             12,
             "blue",
         ),
-        cuenta(5, "Hablan con nubes IoT", 'count(netinv_device_info{nubes_iot!=""} == 1) or vector(0)', 18),
+        count_stat(
+            5, "Hablan con nubes IoT", 'count(netinv_device_info{nubes_iot!=""} == 1) or vector(0)', 18
+        ),
         row(9, "Dispositivos", 4),
-        tabla_resumen(11, 5, 18),
+        summary_table(11, 5, 18),
         row(12, "Nubes IoT y actividad DNS (Pi-hole ve consultas, no bytes)", 23),
-        tabla_nubes(14, 24, 9),
+        iot_cloud_table(14, 24, 9),
         top_dns,
         row(15, "Sin clasificar (encendidos en 24 h)", 34),
-        tabla_disp(
+        device_table(
             16,
             "Pendientes de clasificar (devices.yaml del sitio)",
             'netinv_device_info{clasificado="no"} == 1',
             35,
             8,
         ),
-        detalle,
+        details,
     ]
-    return m.dash("dispositivos", "Dispositivos", disp, refresh="5m", desde="now-1h")
+    return m.dash("dispositivos", "Dispositivos", device_panels, refresh="5m", time_from="now-1h")

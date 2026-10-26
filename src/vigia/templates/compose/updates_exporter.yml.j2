@@ -1,10 +1,10 @@
-{{ cabecera }}
+{{ header }}
 # Sondea por SSH (clave dedicada + forced-command + sudo acotado) las actualizaciones de SO de cada host
 # y publica /www/updates.json. La clave privada se monta :ro desde el host; nunca va en el compose ni en git.
 services:
   updates-exporter:
     build: .
-    container_name: {{ pre ~ "updates-exporter" }}
+    container_name: {{ prefix ~ "updates-exporter" }}
     restart: unless-stopped
     labels:
       # imagen local (sin registry): watchtower no debe tocarla

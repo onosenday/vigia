@@ -3,26 +3,26 @@ from __future__ import annotations
 import pytest
 import yaml
 
-from vigia.render import Crudo, escalar, plantilla
+from vigia.render import Raw, render_template, to_scalar
 
 
-@pytest.mark.parametrize("valor", ["a: b", "x\n  inyectada: 1", '"; rm -rf /', "${SECRETO}", "{{ 7*7 }}"])
-def test_escalar_no_rompe_yaml(valor: str) -> None:
-    doc = yaml.safe_load(f"clave: {escalar(valor)}\notra: 1\n")
-    assert doc == {"clave": valor, "otra": 1}
+@pytest.mark.parametrize("value", ["a: b", "x\n  inyectada: 1", '"; rm -rf /', "${SECRETO}", "{{ 7*7 }}"])
+def test_scalar_does_not_break_yaml(value: str) -> None:
+    doc = yaml.safe_load(f"clave: {to_scalar(value)}\notra: 1\n")
+    assert doc == {"clave": value, "otra": 1}
 
 
-def test_crudo_sin_comillas() -> None:
-    assert escalar(Crudo("# hola")) == "# hola"
+def test_raw_unquoted() -> None:
+    assert to_scalar(Raw("# hola")) == "# hola"
 
 
-def test_tipo_no_permitido() -> None:
+def test_disallowed_type() -> None:
     with pytest.raises(TypeError):
-        escalar(object())
+        to_scalar(object())
 
 
-def test_plantilla_indefinida() -> None:
+def test_undefined_template_variable() -> None:
     import jinja2
 
     with pytest.raises(jinja2.UndefinedError):
-        plantilla("grafana/dashboards.yml.j2")
+        render_template("grafana/dashboards.yml.j2")

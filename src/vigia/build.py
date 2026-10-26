@@ -12,26 +12,26 @@ from urllib.parse import urlsplit
 
 from vigia import __version__
 from vigia.model import Host, Site
-from vigia.render import Crudo, plantilla, volcar_yaml
+from vigia.render import Raw, dump_yaml, render_template
 
 
 @dataclass(frozen=True)
-class Hay:
+class Present:
     node: bool
     windows: bool
     cadvisor: bool
     snmp: bool
 
 
-def _cabecera(s: Site, que: str) -> Crudo:
-    return Crudo(
-        f"# {que} — generado por vigia {__version__} para «{s.sitio.nombre}».\n"
+def _header(s: Site, what: str) -> Raw:
+    return Raw(
+        f"# {what} — generado por vigia {__version__} para «{s.sitio.nombre}».\n"
         "# No editar: cambia site.yaml y ejecuta `vigia build`."
     )
 
 
-def hay(s: Site) -> Hay:
-    return Hay(
+def present(s: Site) -> Present:
+    return Present(
         node=any(h.node_exporter for h in s.hosts),
         windows=any(h.windows_exporter for h in s.hosts),
         cadvisor=any(h.cadvisor for h in s.hosts),
@@ -39,7 +39,7 @@ def hay(s: Site) -> Hay:
     )
 
 
-def _modulo_servicio(s: Site, srv: Any) -> str | None:
+def _service_module(s: Site, srv: Any) -> str | None:
     if srv.modulo and srv.modulo != "http_any":
         return str(srv.modulo)
     if srv.espera_200:
@@ -50,65 +50,65 @@ def _modulo_servicio(s: Site, srv: Any) -> str | None:
 # --- objetivos (file_sd) ----------------------------------------------------------------------------
 
 
-def objetivos(s: Site) -> dict[str, Any]:
+def targets(s: Site) -> dict[str, Any]:
     """Ficheros de prometheus/targets/: nombre -> lista de grupos de objetivos."""
     out: dict[str, Any] = {}
-    nodos = [h for h in s.hosts if h.node_exporter]
-    if nodos:
+    nodes = [h for h in s.hosts if h.node_exporter]
+    if nodes:
         out["nodos.yml"] = [
-            {"targets": [f"{h.ip}:{h.node_exporter.puerto}"], "labels": {"nombre": h.visible}}
-            for h in nodos
+            {"targets": [f"{h.ip}:{h.node_exporter.puerto}"], "labels": {"nombre": h.display_name}}
+            for h in nodes
             if h.node_exporter
         ]
     win = [h for h in s.hosts if h.windows_exporter]
     if win:
         out["windows.yml"] = [
-            {"targets": [f"{h.ip}:{h.windows_exporter.puerto}"], "labels": {"nombre": h.visible}}
+            {"targets": [f"{h.ip}:{h.windows_exporter.puerto}"], "labels": {"nombre": h.display_name}}
             for h in win
             if h.windows_exporter
         ]
     cad = [h for h in s.hosts if h.cadvisor]
     if cad:
         out["cadvisor.yml"] = [
-            {"targets": [f"{h.ip}:{h.cadvisor.puerto}"], "labels": {"nombre": h.visible}}
+            {"targets": [f"{h.ip}:{h.cadvisor.puerto}"], "labels": {"nombre": h.display_name}}
             for h in cad
             if h.cadvisor
         ]
-    if hay(s).snmp:
-        grupos = []
+    if present(s).snmp:
+        groups = []
         for h in s.hosts:
             if not h.snmp:
                 continue
-            modulo = h.snmp.modulo or h.perfil.snmp_modulo or "if_mib"
-            etiquetas = {
-                "nombre": h.visible,
+            module = h.snmp.modulo or h.profile.snmp_module or "if_mib"
+            snmp_labels = {
+                "nombre": h.display_name,
                 "tipo": h.tipo.value,
-                "__param_module": modulo,
+                "__param_module": module,
                 "__param_auth": h.snmp.auth,
             }
-            grupos.append({"targets": [h.ip], "labels": etiquetas})
-        out["snmp.yml"] = grupos
+            groups.append({"targets": [h.ip], "labels": snmp_labels})
+        out["snmp.yml"] = groups
     if s.modulos.blackbox:
         if s.ping:
             out["hosts.yml"] = [
-                {"targets": [ip], "labels": {"nombre": nombre, "grupo": grupo}}
-                for ip, nombre, grupo in s.ping_resuelto()
+                {"targets": [ip], "labels": {"nombre": name, "grupo": group}}
+                for ip, name, group in s.resolved_pings()
             ]
         if s.servicios:
-            grupos = []
+            groups = []
             for srv in s.servicios:
                 labels: dict[str, str] = {"nombre": srv.nombre, "host": srv.host}
-                mod = _modulo_servicio(s, srv)
+                mod = _service_module(s, srv)
                 if mod:
                     labels["__param_module"] = mod
-                grupos.append({"targets": [srv.url], "labels": labels})
-            out["servicios.yml"] = grupos
+                groups.append({"targets": [srv.url], "labels": labels})
+            out["servicios.yml"] = groups
         if s.web.objetivos:
             out["web.yml"] = [{"targets": [w.url], "labels": {"nombre": w.nombre}} for w in s.web.objetivos]
     return out
 
 
-def _sondas(s: Site) -> list[tuple[str, str, str, str]]:
+def _probes(s: Site) -> list[tuple[str, str, str, str]]:
     """(job, módulo, fichero, comentario) de los jobs de blackbox además de `web` y `dns`."""
     out = []
     if s.servicios:
@@ -128,13 +128,13 @@ def _sondas(s: Site) -> list[tuple[str, str, str, str]]:
 # --- contexto de compose ----------------------------------------------------------------------------
 
 
-def _pihole(s: Site) -> dict[str, str]:
-    partes = [urlsplit(h.pihole.url) for h in s.piholes if h.pihole]
+def _pihole_params(s: Site) -> dict[str, str]:
+    parts = [urlsplit(h.pihole.url) for h in s.piholes if h.pihole]
     return {
-        "hosts": ",".join(p.hostname or "" for p in partes),
-        "puertos": ",".join(str(p.port or (443 if p.scheme == "https" else 80)) for p in partes),
-        "protocolos": ",".join(p.scheme for p in partes),
-        "urls": ",".join(f"{p.scheme}://{p.netloc}" for p in partes),
+        "hosts": ",".join(p.hostname or "" for p in parts),
+        "ports": ",".join(str(p.port or (443 if p.scheme == "https" else 80)) for p in parts),
+        "protocols": ",".join(p.scheme for p in parts),
+        "urls": ",".join(f"{p.scheme}://{p.netloc}" for p in parts),
     }
 
 
@@ -147,7 +147,7 @@ def _snmp_vars(s: Site) -> list[str]:
     return vs
 
 
-def _auths_snmp(s: Site) -> str:
+def _snmp_auths(s: Site) -> str:
     auths: dict[str, Any] = {}
     for a in s.modulos.snmp.auths:
         if a.version == "v3":
@@ -162,11 +162,11 @@ def _auths_snmp(s: Site) -> str:
             }
         else:
             auths[a.nombre] = {"version": 2, "community": f"${{{a.comunidad}}}"}
-    return volcar_yaml({"auths": auths}, _cabecera(s, "Autenticaciones SNMP (solo referencias ${VAR})"))
+    return dump_yaml({"auths": auths}, _header(s, "Autenticaciones SNMP (solo referencias ${VAR})"))
 
 
 def hosts_spec(s: Site) -> str:
-    partes = []
+    parts = []
     for h in s.hosts:
         a = h.actualizaciones
         if not a:
@@ -174,130 +174,132 @@ def hosts_spec(s: Site) -> str:
         spec = f"{h.id}:{h.ip}:{h.ssh_puerto}:{a.usuario}"
         if a.intervalo_min:
             spec += f":{a.intervalo_min}"
-        partes.append(spec)
-    return " ".join(partes)
+        parts.append(spec)
+    return " ".join(parts)
 
 
-def _regex_dns(ip: str) -> str:
+def _dns_regex(ip: str) -> str:
     return ".*\\t" + re.escape(ip) + "$"
 
 
 # --- build ------------------------------------------------------------------------------------------
 
 
-def construir(s: Site, raiz_sitio: Path) -> dict[str, str | bytes]:
+def build_site(s: Site, site_root: Path) -> dict[str, str | bytes]:
     """Devuelve {ruta relativa: contenido} de todo lo generado (sin escribir nada)."""
     out: dict[str, str | bytes] = {}
-    pre = s.monitor.prefijo_contenedores
-    h = hay(s)
+    prefix = s.monitor.prefijo_contenedores
+    h = present(s)
     mon = s.monitor_host
 
-    out["prometheus/prometheus.yml"] = plantilla(
-        "prometheus/prometheus.yml.j2", s=s, hay=h, sondas=_sondas(s), cabecera=_cabecera(s, "Prometheus")
+    out["prometheus/prometheus.yml"] = render_template(
+        "prometheus/prometheus.yml.j2", s=s, present=h, probes=_probes(s), header=_header(s, "Prometheus")
     )
-    for nombre, grupos in objetivos(s).items():
-        out[f"prometheus/targets/{nombre}"] = volcar_yaml(grupos, _cabecera(s, "Objetivos de Prometheus"))
+    for name, groups in targets(s).items():
+        out[f"prometheus/targets/{name}"] = dump_yaml(groups, _header(s, "Objetivos de Prometheus"))
 
     if s.modulos.blackbox:
-        out["blackbox/blackbox.yml"] = plantilla(
+        out["blackbox/blackbox.yml"] = render_template(
             "blackbox/blackbox.yml.j2",
             s=s,
             ca=s.web.ca is not None,
             minecraft=any(x.modulo == "minecraft" for x in s.servicios),
-            regex_dns=_regex_dns(s.dns.espera) if s.dns else "",
-            cabecera=_cabecera(s, "blackbox_exporter"),
+            dns_regex=_dns_regex(s.dns.espera) if s.dns else "",
+            header=_header(s, "blackbox_exporter"),
         )
         if s.web.ca:
-            out["blackbox/ca.crt"] = (raiz_sitio / s.web.ca).read_bytes()
+            out["blackbox/ca.crt"] = (site_root / s.web.ca).read_bytes()
 
-    out["grafana-provisioning/datasources/prometheus.yml"] = plantilla("grafana/datasources.yml.j2", s=s)
-    out["grafana-provisioning/dashboards/vigia.yml"] = plantilla("grafana/dashboards.yml.j2", s=s)
+    out["grafana-provisioning/datasources/prometheus.yml"] = render_template(
+        "grafana/datasources.yml.j2", s=s
+    )
+    out["grafana-provisioning/dashboards/vigia.yml"] = render_template("grafana/dashboards.yml.j2", s=s)
     if s.branding.grafana and s.branding.logo:
-        out["branding/logo.svg"] = (raiz_sitio / s.branding.logo).read_bytes()
+        out["branding/logo.svg"] = (site_root / s.branding.logo).read_bytes()
     if s.branding.grafana and s.branding.favicon:
-        out["branding/favicon.png"] = (raiz_sitio / s.branding.favicon).read_bytes()
+        out["branding/favicon.png"] = (site_root / s.branding.favicon).read_bytes()
 
     if s.modulos.snmp.activo:
-        out["snmp/auths.yml"] = _auths_snmp(s)
+        out["snmp/auths.yml"] = _snmp_auths(s)
 
     if s.modulos.netinv.activo:
-        out.update(_imagen("netinv", "netinv"))
+        out.update(_bundled_image("netinv", "netinv"))
         if s.modulos.netinv.dispositivos:
-            out["netinv/devices.yaml"] = (raiz_sitio / s.modulos.netinv.dispositivos).read_bytes()
+            out["netinv/devices.yaml"] = (site_root / s.modulos.netinv.dispositivos).read_bytes()
 
-    out[f"{s.monitor.proyecto}.yml"] = plantilla(
+    out[f"{s.monitor.proyecto}.yml"] = render_template(
         "compose/monitor.yml.j2",
         s=s,
-        pre=pre,
-        nodo=mon,
-        pihole=_pihole(s),
+        prefix=prefix,
+        node=mon,
+        pihole=_pihole_params(s),
         snmp_vars=_snmp_vars(s),
-        cabecera=_cabecera(s, f"Stack {s.monitor.proyecto} (host {mon.id})"),
+        header=_header(s, f"Stack {s.monitor.proyecto} (host {mon.id})"),
     )
 
     for hst in s.hosts:
-        if hst.id != mon.id and _agentes(hst):
-            out[f"agentes/{hst.id}.yml"] = plantilla(
-                "compose/agentes.yml.j2",
+        if hst.id != mon.id and _has_agents(hst):
+            out[f"agentes/{hst.id}.yml"] = render_template(
+                "compose/agents.yml.j2",
                 s=s,
-                pre=pre,
-                nodo=hst,
-                cabecera=_cabecera(s, f"Agentes del host {hst.id}"),
+                prefix=prefix,
+                node=hst,
+                header=_header(s, f"Agentes del host {hst.id}"),
             )
 
     u = s.modulos.updates_exporter
     if u.activo:
-        out["updates-exporter/docker-compose.yml"] = plantilla(
+        out["updates-exporter/docker-compose.yml"] = render_template(
             "compose/updates_exporter.yml.j2",
             u=u,
-            pre=pre,
+            prefix=prefix,
             hosts_spec=hosts_spec(s),
-            cabecera=_cabecera(s, f"updates-exporter (host {u.host})"),
+            header=_header(s, f"updates-exporter (host {u.host})"),
         )
         out.update(
             {
                 k.replace("updates_exporter/", "updates-exporter/"): v
-                for k, v in _imagen("updates_exporter", "updates_exporter").items()
+                for k, v in _bundled_image("updates_exporter", "updates_exporter").items()
             }
         )
 
-    from vigia.dashboards import paneles  # noqa: PLC0415 - evita el ciclo con dashboards
+    from vigia.dashboards import dashboards_for  # noqa: PLC0415 - evita el ciclo con dashboards
 
-    for nombre, contenido in paneles(s, raiz_sitio).items():
-        out[f"dashboards/{nombre}"] = contenido
+    for name, content in dashboards_for(s, site_root).items():
+        out[f"dashboards/{name}"] = content
     return out
 
 
-def _agentes(h: Host) -> bool:
+def _has_agents(h: Host) -> bool:
     return bool(
         (h.node_exporter and h.node_exporter.gestion == "vigia")
         or (h.cadvisor and h.cadvisor.gestion == "vigia")
     )
 
 
-def _imagen(nombre: str, destino: str) -> dict[str, str | bytes]:
+def _bundled_image(name: str, dest: str) -> dict[str, str | bytes]:
     out: dict[str, str | bytes] = {}
-    base = files("vigia").joinpath("images", nombre)
-    with as_file(base) as ruta:
-        for f in sorted(Path(ruta).rglob("*")):
+    base = files("vigia").joinpath("images", name)
+    with as_file(base) as path:
+        for f in sorted(Path(path).rglob("*")):
             if f.is_file() and "__pycache__" not in f.parts:
-                out[f"{destino}/{f.relative_to(ruta).as_posix()}"] = f.read_bytes()
+                out[f"{dest}/{f.relative_to(path).as_posix()}"] = f.read_bytes()
     return out
 
 
-def escribir(contenido: dict[str, str | bytes], destino: Path) -> None:
+def write_build(content: dict[str, str | bytes], dest: Path) -> None:
     """Sustituye `destino` por lo generado (solo ficheros de vigia: se limpia entero)."""
-    marca = destino / ".vigia-build"
-    if destino.exists():
-        if not marca.exists():
-            raise RuntimeError(f"{destino} existe y no lo generó vigia: no se toca")
-        shutil.rmtree(destino)
-    destino.mkdir(parents=True)
-    marca.write_text("generado por vigia; se regenera entero en cada build\n", encoding="utf-8")
-    for rel, datos in sorted(contenido.items()):
-        f = destino / rel
+    marker = dest / ".vigia-build"
+    if dest.exists():
+        if not marker.exists():
+            raise RuntimeError(f"{dest} existe y no lo generó vigia: no se toca")
+        shutil.rmtree(dest)
+    dest.mkdir(parents=True)
+    marker.write_text("generado por vigia; se regenera entero en cada build\n", encoding="utf-8")
+    for rel, data in sorted(content.items()):
+        f = dest / rel
         f.parent.mkdir(parents=True, exist_ok=True)
-        if isinstance(datos, bytes):
-            f.write_bytes(datos)
+        if isinstance(data, bytes):
+            f.write_bytes(data)
         else:
-            f.write_text(datos, encoding="utf-8")
+            f.write_text(data, encoding="utf-8")

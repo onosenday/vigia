@@ -9,8 +9,8 @@ import typer
 from pydantic import ValidationError
 
 from vigia import __version__
-from vigia.build import construir, escribir
-from vigia.model import Site, cargar
+from vigia.build import build_site, write_build
+from vigia.model import Site, load_site
 
 app = typer.Typer(no_args_is_help=True, help="Monitorización de redes por sitio.")
 
@@ -30,14 +30,14 @@ def version() -> None:
     typer.echo(__version__)
 
 
-def _cargar(site: Path) -> Site:
+def _load(site: Path) -> Site:
     try:
-        return cargar(site)
+        return load_site(site)
     except ValidationError as e:
         typer.echo(f"{site}: no es válido", err=True)
         for err in e.errors():
-            donde = ".".join(str(x) for x in err["loc"]) or "(sitio)"
-            typer.echo(f"  - {donde}: {err['msg']}", err=True)
+            where = ".".join(str(x) for x in err["loc"]) or "(sitio)"
+            typer.echo(f"  - {where}: {err['msg']}", err=True)
         raise typer.Exit(1) from None
     except (OSError, ValueError) as e:
         typer.echo(f"{site}: {e}", err=True)
@@ -47,9 +47,9 @@ def _cargar(site: Path) -> Site:
 @app.command()
 def validate(site: SiteOpt = Path("site.yaml")) -> None:
     """Valida el site.yaml."""
-    s = _cargar(site)
-    for aviso in s.avisos():
-        typer.echo(f"aviso: {aviso}", err=True)
+    s = _load(site)
+    for warning in s.warnings():
+        typer.echo(f"aviso: {warning}", err=True)
     typer.echo(
         f"«{s.sitio.nombre}»: válido ({len(s.hosts)} hosts, {len(s.servicios)} servicios, "
         f"{len(s.web.objetivos)} webs, {len(s.ping)} pings)"
@@ -59,40 +59,40 @@ def validate(site: SiteOpt = Path("site.yaml")) -> None:
 @app.command()
 def build(
     site: SiteOpt = Path("site.yaml"),
-    salida: Annotated[Path, typer.Option("--salida", "-o", help="carpeta generada")] = Path("build"),
+    output: Annotated[Path, typer.Option("--output", "-o", help="carpeta generada")] = Path("build"),
 ) -> None:
     """Genera en `build/` todo lo desplegable del sitio."""
-    s = _cargar(site)
-    contenido = construir(s, site.parent)
-    destino = salida if salida.is_absolute() else site.parent / salida
-    escribir(contenido, destino)
-    typer.echo(f"«{s.sitio.nombre}»: {len(contenido)} ficheros en {destino}")
+    s = _load(site)
+    content = build_site(s, site.parent)
+    dest = output if output.is_absolute() else site.parent / output
+    write_build(content, dest)
+    typer.echo(f"«{s.sitio.nombre}»: {len(content)} ficheros en {dest}")
 
 
 @app.command()
 def diff(
-    contra: Annotated[
-        Path, typer.Option("--contra", "-c", help="carpeta de referencia", exists=True, file_okay=False)
+    against: Annotated[
+        Path, typer.Option("--against", "-a", help="carpeta de referencia", exists=True, file_okay=False)
     ],
     site: SiteOpt = Path("site.yaml"),
-    equivale: Annotated[
+    mapping: Annotated[
         list[str] | None,
-        typer.Option("--equivale", "-e", help="generado=referencia, para ficheros con otro nombre"),
+        typer.Option("--map", "-m", help="generado=referencia, para ficheros con otro nombre"),
     ] = None,
-    solo_comunes: Annotated[bool, typer.Option(help="ignora ficheros que solo estén en un lado")] = False,
+    only_common: Annotated[bool, typer.Option(help="ignora ficheros que solo estén en un lado")] = False,
 ) -> None:
     """Diff semántico entre lo que se generaría y una carpeta de referencia."""
-    from vigia.diffing import comparar, leer_carpeta  # noqa: PLC0415
+    from vigia.diffing import compare, read_dir  # noqa: PLC0415
 
-    s = _cargar(site)
-    gen = {k: v if isinstance(v, bytes) else v.encode("utf-8") for k, v in construir(s, site.parent).items()}
-    eq = dict(x.split("=", 1) for x in (equivale or []))
-    difs = comparar(gen, leer_carpeta(contra), eq)
-    if solo_comunes:
-        difs = [d for d in difs if d.tipo == "distinto"]
-    for d in difs:
-        typer.echo(f"[{d.tipo}] {d.ruta}")
-        if d.detalle:
-            typer.echo("    " + d.detalle.replace("\n", "\n    "))
-    typer.echo(f"«{s.sitio.nombre}»: {len(difs)} diferencias")
-    raise typer.Exit(1 if difs else 0)
+    s = _load(site)
+    gen = {k: v if isinstance(v, bytes) else v.encode("utf-8") for k, v in build_site(s, site.parent).items()}
+    eq = dict(x.split("=", 1) for x in (mapping or []))
+    diffs = compare(gen, read_dir(against), eq)
+    if only_common:
+        diffs = [d for d in diffs if d.kind == "distinto"]
+    for d in diffs:
+        typer.echo(f"[{d.kind}] {d.path}")
+        if d.detail:
+            typer.echo("    " + d.detail.replace("\n", "\n    "))
+    typer.echo(f"«{s.sitio.nombre}»: {len(diffs)} diferencias")
+    raise typer.Exit(1 if diffs else 0)

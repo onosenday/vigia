@@ -1,14 +1,14 @@
-{% macro wt(s) %}
+{% macro watchtower_labels(s) %}
 {% if s.monitor.watchtower %}
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
 {% endif %}
 {% endmacro %}
-{% macro node_exporter(s, h, pre) %}
-  # Métricas del host (CPU, RAM, discos, red, temperatura) en :{{ h.node_exporter.puerto | crudo }}
+{% macro node_exporter(s, h, prefix) %}
+  # Métricas del host (CPU, RAM, discos, red, temperatura) en :{{ h.node_exporter.puerto | raw }}
   node-exporter:
-    image: {{ s.monitor.imagen("node_exporter") }}
-    container_name: {{ pre ~ "node-exporter" }}
+    image: {{ s.monitor.image("node_exporter") }}
+    container_name: {{ prefix ~ "node-exporter" }}
     restart: unless-stopped
     command:
       - '--path.rootfs=/host'
@@ -20,13 +20,13 @@
     pid: host
     volumes:
       - /:/host:ro,rslave
-{{ wt(s) | crudo }}
+{{ watchtower_labels(s) | raw }}
 {%- endmacro %}
-{% macro cadvisor(s, h, pre) %}
-  # Métricas por contenedor (CPU, RAM, red) en :{{ h.cadvisor.puerto | crudo }}
+{% macro cadvisor(s, h, prefix) %}
+  # Métricas por contenedor (CPU, RAM, red) en :{{ h.cadvisor.puerto | raw }}
   cadvisor:
-    image: {{ s.monitor.imagen("cadvisor") }}
-    container_name: {{ pre ~ "cadvisor" }}
+    image: {{ s.monitor.image("cadvisor") }}
+    container_name: {{ prefix ~ "cadvisor" }}
     restart: unless-stopped
     command:
       - '--docker_only=true'
@@ -45,5 +45,5 @@
       - /sys:/sys:ro
       - {{ h.docker_root ~ ":/var/lib/docker:ro" }}
       - /dev/disk/:/dev/disk:ro
-{{ wt(s) | crudo }}
+{{ watchtower_labels(s) | raw }}
 {%- endmacro %}
