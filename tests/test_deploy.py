@@ -140,3 +140,18 @@ def test_diff_oculta_secretos() -> None:
     assert mask("PIHOLE_PASSWORD=algo") == "PIHOLE_PASSWORD: ***"
     assert mask("basic_auth.password: 'x' → 'y'") == "basic_auth.password: ***"
     assert mask("nombre: \x1b[31mrojo") == "nombre: [31mrojo"
+
+
+def test_bridges(example_data: dict[str, Any]) -> None:
+    from vigia.bridges import collect
+
+    class Docker(FakeRunner):
+        def __call__(self, argv: list[str], stdin: bytes, env: Mapping[str, str]) -> tuple[int, bytes, bytes]:
+            self.calls.append((argv, stdin, dict(env)))
+            out = "0123456789abcdef bridge\nfedcba9876543210ff web_default\nmala línea\n"
+            return 0, out.encode(), b""
+
+    s = Site.model_validate(example_data)
+    nets = collect(s, SECRETS, Docker())
+    assert nets == [{"host": "nodo1", "id": "fedcba987654", "nombre": "web_default"},
+                    {"host": "nodo2", "id": "fedcba987654", "nombre": "web_default"}]

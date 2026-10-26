@@ -212,3 +212,24 @@ def rollback(
     except RemoteError as e:
         typer.echo(f"error: {e}", err=True)
         raise typer.Exit(1) from None
+
+
+@app.command()
+def bridges(site: SiteOpt = Path("site.yaml"), env_file: EnvOpt = None) -> None:
+    """Lee las redes Docker de los hosts y las guarda en bridges.yaml (junto a site.yaml)."""
+    from vigia.bridges import collect  # noqa: PLC0415
+    from vigia.deploy import RemoteError, read_env_file  # noqa: PLC0415
+    from vigia.render import dump_yaml  # noqa: PLC0415
+
+    s = _load(site)
+    try:
+        nets = collect(s, read_env_file(env_file or _find_env_file(site)))
+    except RemoteError as e:
+        typer.echo(f"error: {e}", err=True)
+        raise typer.Exit(1) from None
+    dest = site.parent / "bridges.yaml"
+    dest.write_text(
+        dump_yaml(nets, "# Redes Docker por host (salida de `vigia bridges`): nombran las br-<id>."),
+        encoding="utf-8",
+    )
+    typer.echo(f"{len(nets)} redes en {dest}")
