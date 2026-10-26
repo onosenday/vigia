@@ -1,0 +1,1098 @@
+{
+ "uid": "ejm-dispositivos",
+ "title": "Ejemplo · Dispositivos",
+ "tags": [
+  "Ejemplo"
+ ],
+ "timezone": "browser",
+ "schemaVersion": 39,
+ "version": 1,
+ "refresh": "5m",
+ "editable": false,
+ "time": {
+  "from": "now-1h",
+  "to": "now"
+ },
+ "panels": [
+  {
+   "id": 1,
+   "type": "row",
+   "title": "Resumen",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "id": 2,
+   "title": "Encendidos (24 h)",
+   "type": "stat",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 1,
+    "w": 6,
+    "h": 3
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "count(netinv_device_info == 1) or vector(0)",
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "text",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "graphMode": "none",
+    "colorMode": "value",
+    "text": {
+     "titleSize": 12,
+     "valueSize": 26
+    }
+   }
+  },
+  {
+   "id": 3,
+   "title": "Sin clasificar",
+   "type": "stat",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 6,
+    "y": 1,
+    "w": 6,
+    "h": 3
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "count(netinv_device_info{clasificado=\"no\"} == 1) or vector(0)",
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "orange",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "graphMode": "none",
+    "colorMode": "value",
+    "text": {
+     "titleSize": 12,
+     "valueSize": 26
+    }
+   }
+  },
+  {
+   "id": 4,
+   "title": "Nuevos en 24 h",
+   "type": "stat",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 1,
+    "w": 6,
+    "h": 3
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "count(netinv_device_first_seen_seconds > time() - 86400) or vector(0)",
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "blue",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "graphMode": "none",
+    "colorMode": "value",
+    "text": {
+     "titleSize": 12,
+     "valueSize": 26
+    }
+   }
+  },
+  {
+   "id": 5,
+   "title": "Hablan con nubes IoT",
+   "type": "stat",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 18,
+    "y": 1,
+    "w": 6,
+    "h": 3
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "count(netinv_device_info{nubes_iot!=\"\"} == 1) or vector(0)",
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "text",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "graphMode": "none",
+    "colorMode": "value",
+    "text": {
+     "titleSize": 12,
+     "valueSize": 26
+    }
+   }
+  },
+  {
+   "id": 9,
+   "type": "row",
+   "title": "Dispositivos",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 4,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "id": 11,
+   "title": "Dispositivos (vistos en 30 días)",
+   "type": "table",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 5,
+    "w": 24,
+    "h": 18
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "netinv_device_info",
+     "legendFormat": "",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "netinv_device_last_seen_seconds * 1000",
+     "format": "table",
+     "instant": true,
+     "range": false,
+     "legendFormat": ""
+    },
+    {
+     "refId": "C",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "100 * netinv_device_dns_queries_24h / scalar(sum(netinv_device_dns_queries_24h))",
+     "format": "table",
+     "instant": true,
+     "range": false,
+     "legendFormat": ""
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "custom": {
+      "align": "left",
+      "filterable": true
+     },
+     "noValue": "—"
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": " "
+      },
+      "properties": [
+       {
+        "id": "custom.width",
+        "value": 36
+       },
+       {
+        "id": "mappings",
+        "value": [
+         {
+          "type": "value",
+          "options": {
+           "●": {
+            "color": "green",
+            "index": 0
+           },
+           "○": {
+            "color": "text",
+            "index": 1
+           }
+          }
+         }
+        ]
+       },
+       {
+        "id": "custom.cellOptions",
+        "value": {
+         "type": "color-text"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Visto"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "dateTimeFromNow"
+       },
+       {
+        "id": "custom.width",
+        "value": 130
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "IP"
+      },
+      "properties": [
+       {
+        "id": "custom.width",
+        "value": 130
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Tipo"
+      },
+      "properties": [
+       {
+        "id": "custom.width",
+        "value": 120
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "% consultas DNS (24 h)"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "percent"
+       },
+       {
+        "id": "decimals",
+        "value": 1
+       },
+       {
+        "id": "min",
+        "value": 0
+       },
+       {
+        "id": "max",
+        "value": 100
+       },
+       {
+        "id": "custom.width",
+        "value": 230
+       },
+       {
+        "id": "custom.cellOptions",
+        "value": {
+         "type": "gauge",
+         "mode": "basic"
+        }
+       },
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "blue"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "showHeader": true,
+    "cellHeight": "sm",
+    "footer": {
+     "show": false
+    }
+   },
+   "transformations": [
+    {
+     "id": "merge",
+     "options": {}
+    },
+    {
+     "id": "sortBy",
+     "options": {
+      "sort": [
+       {
+        "field": "orden"
+       }
+      ]
+     }
+    },
+    {
+     "id": "organize",
+     "options": {
+      "includeByName": {
+       "encendido": true,
+       "mostrar": true,
+       "tipo": true,
+       "ip": true,
+       "Value #C": true,
+       "Value #B": true
+      },
+      "indexByName": {
+       "encendido": 0,
+       "mostrar": 1,
+       "tipo": 2,
+       "ip": 3,
+       "Value #C": 4,
+       "Value #B": 5
+      },
+      "renameByName": {
+       "encendido": " ",
+       "mostrar": "Nombre",
+       "tipo": "Tipo",
+       "ip": "IP",
+       "Value #C": "% consultas DNS (24 h)",
+       "Value #B": "Visto"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "type": "row",
+   "title": "Nubes IoT y actividad DNS (Pi-hole ve consultas, no bytes)",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 23,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "id": 14,
+   "title": "Nubes IoT (aparatos que hablan con la nube de un fabricante)",
+   "type": "table",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 24,
+    "w": 12,
+    "h": 9
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "netinv_device_info{nubes_iot!=\"\"}",
+     "legendFormat": "",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "netinv_device_dns_queries_24h",
+     "format": "table",
+     "instant": true,
+     "range": false,
+     "legendFormat": ""
+    },
+    {
+     "refId": "C",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "100 * netinv_device_dns_queries_24h / scalar(sum(netinv_device_dns_queries_24h))",
+     "format": "table",
+     "instant": true,
+     "range": false,
+     "legendFormat": ""
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "custom": {
+      "align": "left"
+     },
+     "noValue": "—",
+     "decimals": 0
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "% del total"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "percent"
+       },
+       {
+        "id": "decimals",
+        "value": 1
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "showHeader": true,
+    "cellHeight": "sm",
+    "footer": {
+     "show": false
+    }
+   },
+   "transformations": [
+    {
+     "id": "merge",
+     "options": {}
+    },
+    {
+     "id": "filterByValue",
+     "options": {
+      "type": "include",
+      "match": "any",
+      "filters": [
+       {
+        "fieldName": "mostrar",
+        "config": {
+         "id": "regex",
+         "options": {
+          "value": ".+"
+         }
+        }
+       }
+      ]
+     }
+    },
+    {
+     "id": "sortBy",
+     "options": {
+      "sort": [
+       {
+        "field": "Value #B",
+        "desc": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "organize",
+     "options": {
+      "includeByName": {
+       "mostrar": true,
+       "nubes_iot": true,
+       "Value #B": true,
+       "Value #C": true
+      },
+      "indexByName": {
+       "mostrar": 0,
+       "nubes_iot": 1,
+       "Value #B": 2,
+       "Value #C": 3
+      },
+      "renameByName": {
+       "mostrar": "Dispositivo",
+       "nubes_iot": "Nubes",
+       "Value #B": "Consultas DNS 24 h",
+       "Value #C": "% del total"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "title": "Más consultas DNS en 24 h (% del total)",
+   "type": "bargauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 24,
+    "w": 12,
+    "h": 9
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "topk(15, 100 * netinv_device_dns_queries_24h / scalar(sum(netinv_device_dns_queries_24h)) * on (mac) group_left (mostrar) max by (mac, mostrar) (netinv_device_info))",
+     "legendFormat": "{{mostrar}}",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "blue",
+        "value": null
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "decimals": 1,
+     "unit": "percent"
+    },
+    "overrides": []
+   },
+   "options": {
+    "orientation": "horizontal",
+    "displayMode": "basic",
+    "showUnfilled": false
+   }
+  },
+  {
+   "id": 15,
+   "type": "row",
+   "title": "Sin clasificar (encendidos en 24 h)",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 34,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "id": 16,
+   "title": "Pendientes de clasificar (devices.yaml del sitio)",
+   "type": "table",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 35,
+    "w": 24,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "netinv_device_info{clasificado=\"no\"} == 1",
+     "legendFormat": "",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "netinv_device_last_seen_seconds * 1000",
+     "format": "table",
+     "instant": true,
+     "range": false,
+     "legendFormat": ""
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "custom": {
+      "align": "left",
+      "filterable": true
+     },
+     "noValue": "—"
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Visto"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "dateTimeFromNow"
+       },
+       {
+        "id": "custom.width",
+        "value": 110
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "IP"
+      },
+      "properties": [
+       {
+        "id": "custom.width",
+        "value": 110
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Nubes IoT"
+      },
+      "properties": [
+       {
+        "id": "custom.cellOptions",
+        "value": {
+         "type": "color-text"
+        }
+       },
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "orange"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "showHeader": true,
+    "cellHeight": "sm",
+    "footer": {
+     "show": false
+    }
+   },
+   "transformations": [
+    {
+     "id": "joinByField",
+     "options": {
+      "byField": "mac",
+      "mode": "inner"
+     }
+    },
+    {
+     "id": "sortBy",
+     "options": {
+      "sort": [
+       {
+        "field": "orden"
+       }
+      ]
+     }
+    },
+    {
+     "id": "organize",
+     "options": {
+      "includeByName": {
+       "ip": true,
+       "nombre": true,
+       "tipo": true,
+       "ubicacion": true,
+       "fabricante": true,
+       "nombres": true,
+       "nubes_iot": true,
+       "modelo": true,
+       "mdns": true,
+       "puertos": true,
+       "so": true,
+       "mac": true,
+       "aleatoria": true,
+       "Value #B": true
+      },
+      "indexByName": {
+       "ip": 0,
+       "nombre": 1,
+       "tipo": 2,
+       "ubicacion": 3,
+       "fabricante": 4,
+       "nombres": 5,
+       "nubes_iot": 6,
+       "modelo": 7,
+       "mdns": 8,
+       "puertos": 9,
+       "so": 10,
+       "mac": 11,
+       "aleatoria": 12,
+       "Value #B": 13
+      },
+      "renameByName": {
+       "ip": "IP",
+       "nombre": "Nombre",
+       "tipo": "Tipo",
+       "ubicacion": "Ubicación",
+       "fabricante": "Fabricante",
+       "nombres": "Nombres anunciados",
+       "nubes_iot": "Nubes IoT",
+       "modelo": "Modelo / UPnP",
+       "mdns": "mDNS",
+       "puertos": "Puertos",
+       "so": "SO (nmap)",
+       "mac": "MAC",
+       "aleatoria": "MAC aleatoria",
+       "Visto": "Visto",
+       "Value #B": "Visto"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "type": "row",
+   "title": "Detalle técnico (MAC, fabricante, nombres, nubes IoT, mDNS, UPnP, puertos, SO)",
+   "collapsed": true,
+   "gridPos": {
+    "x": 0,
+    "y": 43,
+    "w": 24,
+    "h": 1
+   },
+   "panels": [
+    {
+     "id": 21,
+     "title": "Detalle técnico",
+     "type": "table",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "gridPos": {
+      "x": 0,
+      "y": 44,
+      "w": 24,
+      "h": 18
+     },
+     "targets": [
+      {
+       "refId": "A",
+       "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+       },
+       "expr": "netinv_device_info",
+       "legendFormat": "",
+       "instant": true,
+       "range": false,
+       "format": "table"
+      },
+      {
+       "refId": "B",
+       "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+       },
+       "expr": "netinv_device_last_seen_seconds * 1000",
+       "format": "table",
+       "instant": true,
+       "range": false,
+       "legendFormat": ""
+      }
+     ],
+     "fieldConfig": {
+      "defaults": {
+       "custom": {
+        "align": "left",
+        "filterable": true
+       },
+       "noValue": "—"
+      },
+      "overrides": [
+       {
+        "matcher": {
+         "id": "byName",
+         "options": "Visto"
+        },
+        "properties": [
+         {
+          "id": "unit",
+          "value": "dateTimeFromNow"
+         },
+         {
+          "id": "custom.width",
+          "value": 110
+         }
+        ]
+       },
+       {
+        "matcher": {
+         "id": "byName",
+         "options": "IP"
+        },
+        "properties": [
+         {
+          "id": "custom.width",
+          "value": 110
+         }
+        ]
+       },
+       {
+        "matcher": {
+         "id": "byName",
+         "options": "Nubes IoT"
+        },
+        "properties": [
+         {
+          "id": "custom.cellOptions",
+          "value": {
+           "type": "color-text"
+          }
+         },
+         {
+          "id": "color",
+          "value": {
+           "mode": "fixed",
+           "fixedColor": "orange"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     "options": {
+      "showHeader": true,
+      "cellHeight": "sm",
+      "footer": {
+       "show": false
+      }
+     },
+     "transformations": [
+      {
+       "id": "joinByField",
+       "options": {
+        "byField": "mac",
+        "mode": "inner"
+       }
+      },
+      {
+       "id": "sortBy",
+       "options": {
+        "sort": [
+         {
+          "field": "orden"
+         }
+        ]
+       }
+      },
+      {
+       "id": "organize",
+       "options": {
+        "includeByName": {
+         "ip": true,
+         "nombre": true,
+         "tipo": true,
+         "ubicacion": true,
+         "fabricante": true,
+         "nombres": true,
+         "nubes_iot": true,
+         "modelo": true,
+         "mdns": true,
+         "puertos": true,
+         "so": true,
+         "mac": true,
+         "aleatoria": true,
+         "Value #B": true
+        },
+        "indexByName": {
+         "ip": 0,
+         "nombre": 1,
+         "tipo": 2,
+         "ubicacion": 3,
+         "fabricante": 4,
+         "nombres": 5,
+         "nubes_iot": 6,
+         "modelo": 7,
+         "mdns": 8,
+         "puertos": 9,
+         "so": 10,
+         "mac": 11,
+         "aleatoria": 12,
+         "Value #B": 13
+        },
+        "renameByName": {
+         "ip": "IP",
+         "nombre": "Nombre",
+         "tipo": "Tipo",
+         "ubicacion": "Ubicación",
+         "fabricante": "Fabricante",
+         "nombres": "Nombres anunciados",
+         "nubes_iot": "Nubes IoT",
+         "modelo": "Modelo / UPnP",
+         "mdns": "mDNS",
+         "puertos": "Puertos",
+         "so": "SO (nmap)",
+         "mac": "MAC",
+         "aleatoria": "MAC aleatoria",
+         "Visto": "Visto",
+         "Value #B": "Visto"
+        }
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "links": [
+  {
+   "title": "Inicio · Ejemplo",
+   "type": "link",
+   "icon": "dashboard",
+   "url": "/d/ejm-inicio",
+   "targetBlank": false
+  }
+ ]
+}

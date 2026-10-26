@@ -1,0 +1,756 @@
+{
+ "uid": "ejm-servidores",
+ "title": "Ejemplo · Servidores",
+ "tags": [
+  "Ejemplo"
+ ],
+ "timezone": "browser",
+ "schemaVersion": 39,
+ "version": 1,
+ "refresh": "1m",
+ "editable": false,
+ "time": {
+  "from": "now-24h",
+  "to": "now"
+ },
+ "panels": [
+  {
+   "id": 1,
+   "type": "row",
+   "title": "Ahora",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "id": 2,
+   "title": "CPU",
+   "type": "bargauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 1,
+    "w": 6,
+    "h": 6
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "100 * (1 - avg by (nombre) (rate(node_cpu_seconds_total{job=\"node\",nombre=\"Nodo 1\",mode=\"idle\"}[5m])))",
+     "legendFormat": "Nodo 1",
+     "instant": true,
+     "range": false
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "100 * (1 - avg by (nombre) (rate(node_cpu_seconds_total{job=\"node\",nombre=\"nodo2\",mode=\"idle\"}[5m])))",
+     "legendFormat": "nodo2",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 75
+       },
+       {
+        "color": "red",
+        "value": 90
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "orientation": "horizontal",
+    "displayMode": "gradient",
+    "min": 0,
+    "max": 100
+   }
+  },
+  {
+   "id": 3,
+   "title": "RAM",
+   "type": "bargauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 6,
+    "y": 1,
+    "w": 6,
+    "h": 6
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "100 * (1 - node_memory_MemAvailable_bytes{job=\"node\",nombre=\"Nodo 1\"} / node_memory_MemTotal_bytes{job=\"node\",nombre=\"Nodo 1\"})",
+     "legendFormat": "Nodo 1",
+     "instant": true,
+     "range": false
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "100 * (1 - node_memory_MemAvailable_bytes{job=\"node\",nombre=\"nodo2\"} / node_memory_MemTotal_bytes{job=\"node\",nombre=\"nodo2\"})",
+     "legendFormat": "nodo2",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 75
+       },
+       {
+        "color": "red",
+        "value": 90
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "orientation": "horizontal",
+    "displayMode": "gradient",
+    "min": 0,
+    "max": 100
+   }
+  },
+  {
+   "id": 4,
+   "title": "Disco más lleno",
+   "type": "bargauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 1,
+    "w": 6,
+    "h": 6
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max by (nombre) (100 * (1 - node_filesystem_avail_bytes{job=\"node\",nombre=\"Nodo 1\",fstype!~\"tmpfs|overlay|squashfs|ramfs|devtmpfs|fuse.*|nfs.*|cifs\"} / node_filesystem_size_bytes{job=\"node\",nombre=\"Nodo 1\",fstype!~\"tmpfs|overlay|squashfs|ramfs|devtmpfs|fuse.*|nfs.*|cifs\"}))",
+     "legendFormat": "Nodo 1",
+     "instant": true,
+     "range": false
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max by (nombre) (100 * (1 - node_filesystem_avail_bytes{job=\"node\",nombre=\"nodo2\",fstype!~\"tmpfs|overlay|squashfs|ramfs|devtmpfs|fuse.*|nfs.*|cifs\"} / node_filesystem_size_bytes{job=\"node\",nombre=\"nodo2\",fstype!~\"tmpfs|overlay|squashfs|ramfs|devtmpfs|fuse.*|nfs.*|cifs\"}))",
+     "legendFormat": "nodo2",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 75
+       },
+       {
+        "color": "red",
+        "value": 90
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "orientation": "horizontal",
+    "displayMode": "gradient",
+    "min": 0,
+    "max": 100
+   }
+  },
+  {
+   "id": 5,
+   "title": "Temperatura máxima",
+   "type": "bargauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 18,
+    "y": 1,
+    "w": 6,
+    "h": 6
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max by (nombre) (node_hwmon_temp_celsius{job=\"node\",nombre=\"Nodo 1\"}) or max by (nombre) (node_thermal_zone_temp{job=\"node\",nombre=\"Nodo 1\"})",
+     "legendFormat": "Nodo 1",
+     "instant": true,
+     "range": false
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max by (nombre) (node_hwmon_temp_celsius{job=\"node\",nombre=\"nodo2\"}) or max by (nombre) (node_thermal_zone_temp{job=\"node\",nombre=\"nodo2\"})",
+     "legendFormat": "nodo2",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "celsius",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 65
+       },
+       {
+        "color": "red",
+        "value": 80
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "orientation": "horizontal",
+    "displayMode": "gradient",
+    "min": 20,
+    "max": 100
+   }
+  },
+  {
+   "id": 6,
+   "title": "Encendido desde hace",
+   "type": "stat",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 7,
+    "w": 12,
+    "h": 3
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "time() - node_boot_time_seconds{job=\"node\",nombre=\"Nodo 1\"}",
+     "legendFormat": "Nodo 1",
+     "instant": true,
+     "range": false
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "time() - node_boot_time_seconds{job=\"node\",nombre=\"nodo2\"}",
+     "legendFormat": "nodo2",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s"
+    },
+    "overrides": []
+   },
+   "options": {
+    "colorMode": "none",
+    "textMode": "value_and_name"
+   }
+  },
+  {
+   "id": 7,
+   "title": "Carga (1 min) por núcleo",
+   "type": "stat",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 7,
+    "w": 12,
+    "h": 3
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "node_load1{job=\"node\",nombre=\"Nodo 1\"} / on (nombre) count by (nombre) (node_cpu_seconds_total{job=\"node\",nombre=\"Nodo 1\",mode=\"idle\"})",
+     "legendFormat": "Nodo 1",
+     "instant": true,
+     "range": false
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "node_load1{job=\"node\",nombre=\"nodo2\"} / on (nombre) count by (nombre) (node_cpu_seconds_total{job=\"node\",nombre=\"nodo2\",mode=\"idle\"})",
+     "legendFormat": "nodo2",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 0.8
+       },
+       {
+        "color": "red",
+        "value": 1.5
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "textMode": "value_and_name"
+   }
+  },
+  {
+   "id": 10,
+   "type": "row",
+   "title": "Histórico",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 10,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "id": 11,
+   "title": "CPU",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 11,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "100 * (1 - avg by (nombre) (rate(node_cpu_seconds_total{job=\"node\",nombre=\"Nodo 1\",mode=\"idle\"}[5m])))",
+     "legendFormat": "Nodo 1",
+     "instant": false,
+     "range": true
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "100 * (1 - avg by (nombre) (rate(node_cpu_seconds_total{job=\"node\",nombre=\"nodo2\",mode=\"idle\"}[5m])))",
+     "legendFormat": "nodo2",
+     "instant": false,
+     "range": true
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent"
+    },
+    "overrides": []
+   },
+   "options": {}
+  },
+  {
+   "id": 12,
+   "title": "RAM usada",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 11,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "100 * (1 - node_memory_MemAvailable_bytes{job=\"node\",nombre=\"Nodo 1\"} / node_memory_MemTotal_bytes{job=\"node\",nombre=\"Nodo 1\"})",
+     "legendFormat": "Nodo 1",
+     "instant": false,
+     "range": true
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "100 * (1 - node_memory_MemAvailable_bytes{job=\"node\",nombre=\"nodo2\"} / node_memory_MemTotal_bytes{job=\"node\",nombre=\"nodo2\"})",
+     "legendFormat": "nodo2",
+     "instant": false,
+     "range": true
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent"
+    },
+    "overrides": []
+   },
+   "options": {}
+  },
+  {
+   "id": 13,
+   "title": "Red recibida",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 19,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "sum by (nombre) (rate(node_network_receive_bytes_total{job=\"node\",nombre=\"Nodo 1\",device!~\"lo|veth.*|docker.*|br-.*|cni.*|flannel.*\"}[5m]))",
+     "legendFormat": "Nodo 1",
+     "instant": false,
+     "range": true
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "sum by (nombre) (rate(node_network_receive_bytes_total{job=\"node\",nombre=\"nodo2\",device!~\"lo|veth.*|docker.*|br-.*|cni.*|flannel.*\"}[5m]))",
+     "legendFormat": "nodo2",
+     "instant": false,
+     "range": true
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "Bps"
+    },
+    "overrides": []
+   },
+   "options": {}
+  },
+  {
+   "id": 14,
+   "title": "Red enviada",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 19,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "sum by (nombre) (rate(node_network_transmit_bytes_total{job=\"node\",nombre=\"Nodo 1\",device!~\"lo|veth.*|docker.*|br-.*|cni.*|flannel.*\"}[5m]))",
+     "legendFormat": "Nodo 1",
+     "instant": false,
+     "range": true
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "sum by (nombre) (rate(node_network_transmit_bytes_total{job=\"node\",nombre=\"nodo2\",device!~\"lo|veth.*|docker.*|br-.*|cni.*|flannel.*\"}[5m]))",
+     "legendFormat": "nodo2",
+     "instant": false,
+     "range": true
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "Bps"
+    },
+    "overrides": []
+   },
+   "options": {}
+  },
+  {
+   "id": 15,
+   "title": "Temperatura",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 27,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max by (nombre) (node_hwmon_temp_celsius{job=\"node\",nombre=\"Nodo 1\"}) or max by (nombre) (node_thermal_zone_temp{job=\"node\",nombre=\"Nodo 1\"})",
+     "legendFormat": "Nodo 1",
+     "instant": false,
+     "range": true
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max by (nombre) (node_hwmon_temp_celsius{job=\"node\",nombre=\"nodo2\"}) or max by (nombre) (node_thermal_zone_temp{job=\"node\",nombre=\"nodo2\"})",
+     "legendFormat": "nodo2",
+     "instant": false,
+     "range": true
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "celsius"
+    },
+    "overrides": []
+   },
+   "options": {}
+  },
+  {
+   "id": 16,
+   "title": "Espacio libre por disco",
+   "type": "table",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 27,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "node_filesystem_avail_bytes{job=\"node\",nombre=\"Nodo 1\",fstype!~\"tmpfs|overlay|squashfs|ramfs|devtmpfs|fuse.*|nfs.*|cifs\"}",
+     "legendFormat": "Nodo 1",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "node_filesystem_avail_bytes{job=\"node\",nombre=\"nodo2\",fstype!~\"tmpfs|overlay|squashfs|ramfs|devtmpfs|fuse.*|nfs.*|cifs\"}",
+     "legendFormat": "nodo2",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bytes"
+    },
+    "overrides": []
+   },
+   "options": {},
+   "transformations": [
+    {
+     "id": "merge",
+     "options": {}
+    },
+    {
+     "id": "organize",
+     "options": {
+      "excludeByName": {
+       "Time": true,
+       "__name__": true,
+       "job": true,
+       "instance": true,
+       "device": true
+      },
+      "renameByName": {
+       "nombre": "Servidor",
+       "mountpoint": "Montaje",
+       "fstype": "Tipo",
+       "Value": "Libre"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "links": [
+  {
+   "title": "Inicio · Ejemplo",
+   "type": "link",
+   "icon": "dashboard",
+   "url": "/d/ejm-inicio",
+   "targetBlank": false
+  }
+ ]
+}

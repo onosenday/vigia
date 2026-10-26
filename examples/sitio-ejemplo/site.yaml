@@ -26,8 +26,8 @@ monitor:
   grafana_url: https://grafana.ejemplo.lan/
   dns: [10.99.0.2]
   imagenes:
-    grafana: grafana/grafana-oss:12.2.1
-    prometheus: prom/prometheus:v3.7.2
+    grafana: grafana/grafana-oss:13.0.2
+    prometheus: prom/prometheus:v3.15.1
 
 hosts:
   - id: router

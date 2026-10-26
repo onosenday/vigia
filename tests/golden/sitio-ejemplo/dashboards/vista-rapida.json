@@ -1,0 +1,1089 @@
+{
+ "uid": "ejm-vista-rapida",
+ "title": "Ejemplo · Vista rápida de servidores",
+ "tags": [
+  "Ejemplo"
+ ],
+ "timezone": "browser",
+ "schemaVersion": 39,
+ "version": 1,
+ "refresh": "30s",
+ "editable": false,
+ "time": {
+  "from": "now-1h",
+  "to": "now"
+ },
+ "panels": [
+  {
+   "id": 100,
+   "type": "row",
+   "title": "Nodo 1",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "id": 101,
+   "title": "CPU",
+   "type": "gauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 1,
+    "w": 3,
+    "h": 5
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "100 * (1 - avg(rate(node_cpu_seconds_total{job=\"node\",nombre=\"Nodo 1\",mode=\"idle\"}[5m])))",
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 75
+       },
+       {
+        "color": "red",
+        "value": 90
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "min": 0,
+     "max": 100,
+     "decimals": 0,
+     "noValue": "—"
+    },
+    "overrides": []
+   },
+   "options": {
+    "showThresholdMarkers": true,
+    "showThresholdLabels": false
+   }
+  },
+  {
+   "id": 102,
+   "title": "Carga (1 min)",
+   "type": "gauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 3,
+    "y": 1,
+    "w": 3,
+    "h": 5
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "100 * node_load1{job=\"node\",nombre=\"Nodo 1\"} / scalar(count(node_cpu_seconds_total{job=\"node\",nombre=\"Nodo 1\",mode=\"idle\"}))",
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 75
+       },
+       {
+        "color": "red",
+        "value": 90
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "min": 0,
+     "max": 200,
+     "decimals": 0,
+     "noValue": "—"
+    },
+    "overrides": []
+   },
+   "options": {
+    "showThresholdMarkers": true,
+    "showThresholdLabels": false
+   }
+  },
+  {
+   "id": 103,
+   "title": "RAM",
+   "type": "gauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 6,
+    "y": 1,
+    "w": 3,
+    "h": 5
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "100 * (1 - node_memory_MemAvailable_bytes{job=\"node\",nombre=\"Nodo 1\"} / node_memory_MemTotal_bytes{job=\"node\",nombre=\"Nodo 1\"})",
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 75
+       },
+       {
+        "color": "red",
+        "value": 90
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "min": 0,
+     "max": 100,
+     "decimals": 0,
+     "noValue": "—"
+    },
+    "overrides": []
+   },
+   "options": {
+    "showThresholdMarkers": true,
+    "showThresholdLabels": false
+   }
+  },
+  {
+   "id": 104,
+   "title": "Swap",
+   "type": "gauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 9,
+    "y": 1,
+    "w": 3,
+    "h": 5
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "100 * (1 - node_memory_SwapFree_bytes{job=\"node\",nombre=\"Nodo 1\"} / node_memory_SwapTotal_bytes{job=\"node\",nombre=\"Nodo 1\"})",
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 75
+       },
+       {
+        "color": "red",
+        "value": 90
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "min": 0,
+     "max": 100,
+     "decimals": 0,
+     "noValue": "—"
+    },
+    "overrides": []
+   },
+   "options": {
+    "showThresholdMarkers": true,
+    "showThresholdLabels": false
+   }
+  },
+  {
+   "id": 105,
+   "title": "Disco sistema (/)",
+   "type": "gauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 1,
+    "w": 3,
+    "h": 5
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "100 * (1 - node_filesystem_avail_bytes{job=\"node\",nombre=\"Nodo 1\",fstype!~\"tmpfs|overlay|squashfs|ramfs|devtmpfs|fuse.*|nfs.*|cifs\",mountpoint=\"/\"} / node_filesystem_size_bytes{job=\"node\",nombre=\"Nodo 1\",fstype!~\"tmpfs|overlay|squashfs|ramfs|devtmpfs|fuse.*|nfs.*|cifs\",mountpoint=\"/\"})",
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 75
+       },
+       {
+        "color": "red",
+        "value": 90
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "min": 0,
+     "max": 100,
+     "decimals": 0,
+     "noValue": "—"
+    },
+    "overrides": []
+   },
+   "options": {
+    "showThresholdMarkers": true,
+    "showThresholdLabels": false
+   }
+  },
+  {
+   "id": 106,
+   "title": "Disco de datos",
+   "type": "gauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 15,
+    "y": 1,
+    "w": 3,
+    "h": 5
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max(100 * (1 - node_filesystem_avail_bytes{job=\"node\",nombre=\"Nodo 1\",fstype!~\"tmpfs|overlay|squashfs|ramfs|devtmpfs|fuse.*|nfs.*|cifs\",mountpoint!~\"/|/boot.*\"} / node_filesystem_size_bytes{job=\"node\",nombre=\"Nodo 1\",fstype!~\"tmpfs|overlay|squashfs|ramfs|devtmpfs|fuse.*|nfs.*|cifs\",mountpoint!~\"/|/boot.*\"}))",
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 75
+       },
+       {
+        "color": "red",
+        "value": 90
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "min": 0,
+     "max": 100,
+     "decimals": 0,
+     "noValue": "—"
+    },
+    "overrides": []
+   },
+   "options": {
+    "showThresholdMarkers": true,
+    "showThresholdLabels": false
+   }
+  },
+  {
+   "id": 107,
+   "title": "Temperatura",
+   "type": "gauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 18,
+    "y": 1,
+    "w": 3,
+    "h": 5
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max(node_hwmon_temp_celsius{job=\"node\",nombre=\"Nodo 1\"}) or max(node_thermal_zone_temp{job=\"node\",nombre=\"Nodo 1\"})",
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "celsius",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 65
+       },
+       {
+        "color": "red",
+        "value": 80
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "min": 20,
+     "max": 100,
+     "decimals": 0,
+     "noValue": "—"
+    },
+    "overrides": []
+   },
+   "options": {
+    "showThresholdMarkers": true,
+    "showThresholdLabels": false
+   }
+  },
+  {
+   "id": 108,
+   "title": "",
+   "type": "stat",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 21,
+    "y": 1,
+    "w": 3,
+    "h": 5
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "count(node_cpu_seconds_total{job=\"node\",nombre=\"Nodo 1\",mode=\"idle\"})",
+     "legendFormat": "núcleos",
+     "instant": true,
+     "range": false
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "node_memory_MemTotal_bytes{job=\"node\",nombre=\"Nodo 1\"}",
+     "legendFormat": "RAM",
+     "instant": true,
+     "range": false
+    },
+    {
+     "refId": "C",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "time() - node_boot_time_seconds{job=\"node\",nombre=\"Nodo 1\"}",
+     "legendFormat": "encendido",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {},
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byFrameRefID",
+       "options": "B"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "bytes"
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byFrameRefID",
+       "options": "C"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "s"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "textMode": "value_and_name",
+    "colorMode": "none",
+    "orientation": "horizontal"
+   }
+  },
+  {
+   "id": 111,
+   "type": "row",
+   "title": "nodo2",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 6,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "id": 112,
+   "title": "CPU",
+   "type": "gauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 7,
+    "w": 3,
+    "h": 5
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "100 * (1 - avg(rate(node_cpu_seconds_total{job=\"node\",nombre=\"nodo2\",mode=\"idle\"}[5m])))",
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 75
+       },
+       {
+        "color": "red",
+        "value": 90
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "min": 0,
+     "max": 100,
+     "decimals": 0,
+     "noValue": "—"
+    },
+    "overrides": []
+   },
+   "options": {
+    "showThresholdMarkers": true,
+    "showThresholdLabels": false
+   }
+  },
+  {
+   "id": 113,
+   "title": "Carga (1 min)",
+   "type": "gauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 3,
+    "y": 7,
+    "w": 3,
+    "h": 5
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "100 * node_load1{job=\"node\",nombre=\"nodo2\"} / scalar(count(node_cpu_seconds_total{job=\"node\",nombre=\"nodo2\",mode=\"idle\"}))",
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 75
+       },
+       {
+        "color": "red",
+        "value": 90
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "min": 0,
+     "max": 200,
+     "decimals": 0,
+     "noValue": "—"
+    },
+    "overrides": []
+   },
+   "options": {
+    "showThresholdMarkers": true,
+    "showThresholdLabels": false
+   }
+  },
+  {
+   "id": 114,
+   "title": "RAM",
+   "type": "gauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 6,
+    "y": 7,
+    "w": 3,
+    "h": 5
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "100 * (1 - node_memory_MemAvailable_bytes{job=\"node\",nombre=\"nodo2\"} / node_memory_MemTotal_bytes{job=\"node\",nombre=\"nodo2\"})",
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 75
+       },
+       {
+        "color": "red",
+        "value": 90
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "min": 0,
+     "max": 100,
+     "decimals": 0,
+     "noValue": "—"
+    },
+    "overrides": []
+   },
+   "options": {
+    "showThresholdMarkers": true,
+    "showThresholdLabels": false
+   }
+  },
+  {
+   "id": 115,
+   "title": "Swap",
+   "type": "gauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 9,
+    "y": 7,
+    "w": 3,
+    "h": 5
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "100 * (1 - node_memory_SwapFree_bytes{job=\"node\",nombre=\"nodo2\"} / node_memory_SwapTotal_bytes{job=\"node\",nombre=\"nodo2\"})",
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 75
+       },
+       {
+        "color": "red",
+        "value": 90
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "min": 0,
+     "max": 100,
+     "decimals": 0,
+     "noValue": "—"
+    },
+    "overrides": []
+   },
+   "options": {
+    "showThresholdMarkers": true,
+    "showThresholdLabels": false
+   }
+  },
+  {
+   "id": 116,
+   "title": "Disco sistema (/)",
+   "type": "gauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 7,
+    "w": 3,
+    "h": 5
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "100 * (1 - node_filesystem_avail_bytes{job=\"node\",nombre=\"nodo2\",fstype!~\"tmpfs|overlay|squashfs|ramfs|devtmpfs|fuse.*|nfs.*|cifs\",mountpoint=\"/\"} / node_filesystem_size_bytes{job=\"node\",nombre=\"nodo2\",fstype!~\"tmpfs|overlay|squashfs|ramfs|devtmpfs|fuse.*|nfs.*|cifs\",mountpoint=\"/\"})",
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 75
+       },
+       {
+        "color": "red",
+        "value": 90
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "min": 0,
+     "max": 100,
+     "decimals": 0,
+     "noValue": "—"
+    },
+    "overrides": []
+   },
+   "options": {
+    "showThresholdMarkers": true,
+    "showThresholdLabels": false
+   }
+  },
+  {
+   "id": 117,
+   "title": "Disco de datos",
+   "type": "gauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 15,
+    "y": 7,
+    "w": 3,
+    "h": 5
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max(100 * (1 - node_filesystem_avail_bytes{job=\"node\",nombre=\"nodo2\",fstype!~\"tmpfs|overlay|squashfs|ramfs|devtmpfs|fuse.*|nfs.*|cifs\",mountpoint!~\"/|/boot.*\"} / node_filesystem_size_bytes{job=\"node\",nombre=\"nodo2\",fstype!~\"tmpfs|overlay|squashfs|ramfs|devtmpfs|fuse.*|nfs.*|cifs\",mountpoint!~\"/|/boot.*\"}))",
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 75
+       },
+       {
+        "color": "red",
+        "value": 90
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "min": 0,
+     "max": 100,
+     "decimals": 0,
+     "noValue": "—"
+    },
+    "overrides": []
+   },
+   "options": {
+    "showThresholdMarkers": true,
+    "showThresholdLabels": false
+   }
+  },
+  {
+   "id": 118,
+   "title": "Temperatura",
+   "type": "gauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 18,
+    "y": 7,
+    "w": 3,
+    "h": 5
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max(node_hwmon_temp_celsius{job=\"node\",nombre=\"nodo2\"}) or max(node_thermal_zone_temp{job=\"node\",nombre=\"nodo2\"})",
+     "legendFormat": "",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "celsius",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 65
+       },
+       {
+        "color": "red",
+        "value": 80
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "min": 20,
+     "max": 100,
+     "decimals": 0,
+     "noValue": "—"
+    },
+    "overrides": []
+   },
+   "options": {
+    "showThresholdMarkers": true,
+    "showThresholdLabels": false
+   }
+  },
+  {
+   "id": 119,
+   "title": "",
+   "type": "stat",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 21,
+    "y": 7,
+    "w": 3,
+    "h": 5
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "count(node_cpu_seconds_total{job=\"node\",nombre=\"nodo2\",mode=\"idle\"})",
+     "legendFormat": "núcleos",
+     "instant": true,
+     "range": false
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "node_memory_MemTotal_bytes{job=\"node\",nombre=\"nodo2\"}",
+     "legendFormat": "RAM",
+     "instant": true,
+     "range": false
+    },
+    {
+     "refId": "C",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "time() - node_boot_time_seconds{job=\"node\",nombre=\"nodo2\"}",
+     "legendFormat": "encendido",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {},
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byFrameRefID",
+       "options": "B"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "bytes"
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byFrameRefID",
+       "options": "C"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "s"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "textMode": "value_and_name",
+    "colorMode": "none",
+    "orientation": "horizontal"
+   }
+  }
+ ],
+ "links": [
+  {
+   "title": "Inicio · Ejemplo",
+   "type": "link",
+   "icon": "dashboard",
+   "url": "/d/ejm-inicio",
+   "targetBlank": false
+  }
+ ]
+}

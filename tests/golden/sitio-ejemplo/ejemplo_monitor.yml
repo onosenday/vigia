@@ -2,7 +2,7 @@
 # No editar: cambia site.yaml y ejecuta `vigia build`.
 services:
   grafana:
-    image: "grafana/grafana-oss:12.2.1"
+    image: "grafana/grafana-oss:13.0.2"
     container_name: "ejm-grafana"
     restart: unless-stopped
     environment:
@@ -23,7 +23,7 @@ services:
       - ./branding/favicon.png:/usr/share/grafana/public/img/apple-touch-icon.png:ro
 
   prometheus:
-    image: "prom/prometheus:v3.7.2"
+    image: "prom/prometheus:v3.15.1"
     container_name: "ejm-prometheus"
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
