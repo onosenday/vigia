@@ -48,3 +48,17 @@ def test_no_secrets_or_other_site_literals() -> None:
     for var in ("SNMP_NAS_AUTH", "SNMP_NAS_PRIV", "SNMP_COMUNIDAD", "PIHOLE_PASSWORDS"):
         rest = text.replace(f"{var}=${{{var}}}", "").replace(f"${{{var}}}", "")
         assert var not in rest
+
+
+def test_modulo_snmp_de_impresoras_valido() -> None:
+    import yaml
+
+    gen = _generated()
+    mods = yaml.safe_load(gen["snmp/vigia-modulos.yml"])["modules"]
+    err = mods["vigia_impresora"]["metrics"][0]
+    assert (
+        err["type"] == "Bits"
+        and err["enum_values"][1] == "noPaper"
+        and err["enum_values"][13] == "inputTrayEmpty"
+    )
+    assert b"--config.file=/etc/snmp_exporter/auths/vigia-modulos.yml" in gen["ejemplo_monitor.yml"]

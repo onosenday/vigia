@@ -170,32 +170,7 @@ def snmp(s: Site, m: Brand) -> dict[str, Any] | None:
         ]
         panels += section
         y += 9
-    printers = _snmp_items(s, DeviceType.impresora)
-    if printers:
-        pj = 'job="snmp",tipo="impresora"'
-        panels += [
-            row(30, "Impresoras", y),
-            panel(
-                31,
-                "Consumibles",
-                "bargauge",
-                f"100 * prtMarkerSuppliesLevel{{{pj}}} / prtMarkerSuppliesMaxCapacity{{{pj}}} >= 0",
-                0,
-                y + 1,
-                24,
-                8,
-                legend="{{prtMarkerSuppliesDescription}} ({{nombre}})",
-                unit="percent",
-                instant=True,
-                thresholds=[
-                    {"color": "red", "value": None},
-                    {"color": "orange", "value": 10},
-                    {"color": "green", "value": 25},
-                ],
-                options={**HZ, "min": 0, "max": 100},
-            ),
-        ]
-        y += 9
+    # Las impresoras tienen panel propio (dashboards/printers.py).
     ups = _snmp_items(s, DeviceType.sai)
     if ups:
         uj = 'job="snmp",tipo="sai"'

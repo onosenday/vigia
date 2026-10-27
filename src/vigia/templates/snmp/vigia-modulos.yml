@@ -1,0 +1,31 @@
+# Módulos SNMP propios de vigia para snmp_exporter (se suman a su snmp.yml por defecto).
+# vigia_impresora: hrPrinterDetectedErrorState (HOST-RESOURCES-MIB, RFC 2790/3805) como BITS, una serie por
+# error; el módulo hrDevice estándar lo da como texto hexadecimal y no sirve para alertas.
+modules:
+  vigia_impresora:
+    walk:
+      - 1.3.6.1.2.1.25.3.5.1.2
+    metrics:
+      - name: vigia_impresora_error
+        oid: 1.3.6.1.2.1.25.3.5.1.2
+        type: Bits
+        help: Errores detectados por la impresora (hrPrinterDetectedErrorState), uno por serie
+        indexes:
+          - labelname: hrDeviceIndex
+            type: gauge
+        enum_values:
+          0: lowPaper
+          1: noPaper
+          2: lowToner
+          3: noToner
+          4: doorOpen
+          5: jammed
+          6: offline
+          7: serviceRequested
+          8: inputTrayMissing
+          9: outputTrayMissing
+          10: markerSupplyMissing
+          11: outputNearFull
+          12: outputFull
+          13: inputTrayEmpty
+          14: overduePreventMaint

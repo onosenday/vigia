@@ -12,5 +12,6 @@
   labels:
     nombre: Impresora planta 1
     tipo: impresora
-    __param_module: printer_mib
+    __param_module: printer_mib,hrDevice,vigia_impresora
     __param_auth: lectura
+    alerta: 'no'

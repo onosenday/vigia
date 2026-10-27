@@ -81,12 +81,15 @@ def targets(s: Site) -> dict[str, Any]:
             if not h.snmp:
                 continue
             module = h.snmp.modulo or h.profile.snmp_module or "if_mib"
-            snmp_labels = {
-                "nombre": h.display_name,
-                "tipo": h.tipo.value,
-                "__param_module": module,
-                "__param_auth": h.snmp.auth,
-            }
+            snmp_labels = _no_alert(
+                {
+                    "nombre": h.display_name,
+                    "tipo": h.tipo.value,
+                    "__param_module": module,
+                    "__param_auth": h.snmp.auth,
+                },
+                h.id not in s.quiet_hosts(),
+            )
             groups.append({"targets": [h.ip], "labels": snmp_labels})
         out["snmp.yml"] = groups
     if s.modulos.blackbox:
@@ -232,6 +235,10 @@ def build_site(s: Site, site_root: Path) -> dict[str, str | bytes]:
 
     if s.modulos.snmp.activo:
         out["snmp/auths.yml"] = _snmp_auths(s)
+        if s.printers_snmp:
+            out["snmp/vigia-modulos.yml"] = (
+                files("vigia").joinpath("templates", "snmp", "vigia-modulos.yml").read_bytes()
+            )
 
     if s.modulos.netinv.activo:
         out.update(_bundled_image("netinv", "netinv"))
@@ -245,6 +252,7 @@ def build_site(s: Site, site_root: Path) -> dict[str, str | bytes]:
         node=mon,
         pihole=_pihole_params(s),
         snmp_vars=_snmp_vars(s),
+        snmp_modules=bool(s.printers_snmp),
         smtp_env=smtp_env(s),
         alert_vars=s.alertas.provisioning_vars if s.alertas.activo else [],
         header=_header(s, f"Stack {s.monitor.proyecto} (host {mon.id})"),

@@ -1,0 +1,289 @@
+{
+ "uid": "ejm-impresoras",
+ "title": "Ejemplo · Impresoras",
+ "tags": [
+  "Ejemplo"
+ ],
+ "timezone": "browser",
+ "schemaVersion": 39,
+ "version": 1,
+ "refresh": "1m",
+ "editable": false,
+ "time": {
+  "from": "now-7d",
+  "to": "now"
+ },
+ "panels": [
+  {
+   "id": 1,
+   "type": "row",
+   "title": "Impresoras",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "id": 2,
+   "title": "Estado",
+   "type": "table",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 1,
+    "w": 12,
+    "h": 6
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max by (nombre, hrPrinterStatus) (hrPrinterStatus{job=\"snmp\",tipo=\"impresora\"} == 1)",
+     "legendFormat": "{{nombre}}",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max by (nombre) (prtMarkerLifeCount{job=\"snmp\",tipo=\"impresora\"})",
+     "legendFormat": "{{nombre}}",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "refId": "C",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max by (nombre) (increase(prtMarkerLifeCount{job=\"snmp\",tipo=\"impresora\"}[24h]))",
+     "legendFormat": "{{nombre}}",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {},
+    "overrides": []
+   },
+   "options": {
+    "showHeader": true,
+    "cellHeight": "sm",
+    "footer": {
+     "show": false
+    }
+   },
+   "transformations": [
+    {
+     "id": "merge",
+     "options": {}
+    },
+    {
+     "id": "organize",
+     "options": {
+      "excludeByName": {
+       "Time": true
+      },
+      "renameByName": {
+       "nombre": "Impresora",
+       "Value #A": "Estado",
+       "Value #B": "Páginas",
+       "Value #C": "Últimas 24 h"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "title": "Errores activos",
+   "type": "table",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 1,
+    "w": 12,
+    "h": 6
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max by (nombre, vigia_impresora_error) (vigia_impresora_error{job=\"snmp\",tipo=\"impresora\"} == 1)",
+     "legendFormat": "{{nombre}}",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "noValue": "Sin errores"
+    },
+    "overrides": []
+   },
+   "options": {
+    "showHeader": true,
+    "cellHeight": "sm",
+    "footer": {
+     "show": false
+    }
+   },
+   "transformations": [
+    {
+     "id": "merge",
+     "options": {}
+    },
+    {
+     "id": "organize",
+     "options": {
+      "excludeByName": {
+       "Time": true
+      },
+      "renameByName": {
+       "nombre": "Impresora",
+       "Value": "Activo",
+       "vigia_impresora_error": "Error"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "title": "Consumibles",
+   "type": "bargauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 7,
+    "w": 24,
+    "h": 9
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "100 * prtMarkerSuppliesLevel{job=\"snmp\",tipo=\"impresora\"} / (prtMarkerSuppliesMaxCapacity{job=\"snmp\",tipo=\"impresora\"} > 0) >= 0",
+     "legendFormat": "{{nombre}} · {{prtMarkerSuppliesDescription}}",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "red",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 15
+       },
+       {
+        "color": "green",
+        "value": 30
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "orientation": "horizontal",
+    "displayMode": "gradient",
+    "min": 0,
+    "max": 100
+   },
+   "transformations": [
+    {
+     "id": "renameByRegex",
+     "options": {
+      "regex": "^([^;]*);.*$",
+      "renamePattern": "$1"
+     }
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "title": "Páginas por hora",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 16,
+    "w": 24,
+    "h": 7
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "sum by (nombre) (increase(prtMarkerLifeCount{job=\"snmp\",tipo=\"impresora\"}[1h]))",
+     "legendFormat": "{{nombre}}",
+     "instant": false,
+     "range": true
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "options": {}
+  }
+ ],
+ "links": [
+  {
+   "title": "Inicio · Ejemplo",
+   "type": "link",
+   "icon": "dashboard",
+   "url": "/d/ejm-inicio",
+   "targetBlank": false
+  }
+ ]
+}

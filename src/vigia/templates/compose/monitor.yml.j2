@@ -113,6 +113,9 @@ services:
     command:
       - '--config.file=/etc/snmp_exporter/snmp.yml'
       - '--config.file=/etc/snmp_exporter/auths/auths.yml'
+{% if snmp_modules %}
+      - '--config.file=/etc/snmp_exporter/auths/vigia-modulos.yml'
+{% endif %}
       - '--config.expand-environment-variables'
       - {{ "--web.listen-address=:" ~ s.modulos.snmp.puerto }}
     environment:

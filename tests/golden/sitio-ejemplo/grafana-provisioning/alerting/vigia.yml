@@ -110,6 +110,74 @@ groups:
     labels:
       vigia: si
     isPaused: false
+  - uid: vigia-consumible
+    title: Consumible de impresora bajo
+    condition: B
+    data:
+    - refId: A
+      relativeTimeRange:
+        from: 600
+        to: 0
+      datasourceUid: prometheus
+      model:
+        refId: A
+        expr: min by (nombre, prtMarkerSuppliesDescription) (100 * prtMarkerSuppliesLevel{job="snmp", tipo="impresora", prtMarkerSuppliesType!~"waste.*"}
+          / (prtMarkerSuppliesMaxCapacity{job="snmp", tipo="impresora"} > 0) >= 0)
+        instant: true
+        range: false
+    - refId: B
+      datasourceUid: __expr__
+      model:
+        refId: B
+        type: threshold
+        expression: A
+        conditions:
+        - evaluator:
+            type: lt
+            params:
+            - 15
+    noDataState: OK
+    execErrState: Error
+    for: 30m
+    annotations:
+      summary: '{{ index .Labels "nombre" }}: {{ reReplaceAll ";.*" "" (index .Labels "prtMarkerSuppliesDescription") }}{{
+        with .Values.A }} al {{ humanize .Value }} %{{ end }}'
+    labels:
+      vigia: si
+    isPaused: false
+  - uid: vigia-impresora-error
+    title: Error de impresora
+    condition: B
+    data:
+    - refId: A
+      relativeTimeRange:
+        from: 600
+        to: 0
+      datasourceUid: prometheus
+      model:
+        refId: A
+        expr: max by (nombre, vigia_impresora_error) (vigia_impresora_error{job="snmp", tipo="impresora", vigia_impresora_error=~"noPaper|noToner|doorOpen|jammed|offline|serviceRequested|inputTrayMissing|outputTrayMissing|markerSupplyMissing|outputFull|overduePreventMaint"})
+        instant: true
+        range: false
+    - refId: B
+      datasourceUid: __expr__
+      model:
+        refId: B
+        type: threshold
+        expression: A
+        conditions:
+        - evaluator:
+            type: gt
+            params:
+            - 0
+    noDataState: OK
+    execErrState: Error
+    for: 10m
+    annotations:
+      summary: '{{ index .Labels "nombre" }}: {{ index .Labels "vigia_impresora_error" }}'
+    labels:
+      vigia: si
+    isPaused: false
   - uid: vigia-exporter
     title: Exporter sin respuesta
     condition: B
@@ -121,7 +189,7 @@ groups:
       datasourceUid: prometheus
       model:
         refId: A
-        expr: max by (job, nombre, instance) (1 - up{job!~"web|servicio|ping|dns"})
+        expr: max by (job, nombre, instance) (1 - up{job!~"web|servicio|ping|dns", alerta!="no"})
         instant: true
         range: false
     - refId: B

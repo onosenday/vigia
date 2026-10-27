@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
-from vigia.dashboards import devices, extra
+from vigia.dashboards import devices, extra, printers
 from vigia.dashboards.base import (
     DS,
     PCT,
@@ -949,6 +949,7 @@ def dashboards_for(s: Site, site_root: Path) -> dict[str, str]:
         "pihole.json": pihole(s, m),
         "dispositivos.json": devices.devices(s, m) if s.modulos.netinv.activo else None,
         "equipos-snmp.json": extra.snmp(s, m),
+        "impresoras.json": printers.printers(s, m),
         "windows.json": extra.windows(s, m),
         "node-exporter-full.json": node_exporter_full(s, m),
     }

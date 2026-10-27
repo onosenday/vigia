@@ -121,11 +121,13 @@ def rules(s: Site) -> list[dict[str, Any]]:
                 "{{ with .Values.A }} ({{ humanize .Value }} %){{ end }}",
             )
         )
+    if s.printers_snmp:
+        out += printer_rules(s)
     out.append(
         _rule(
             "vigia-exporter",
             "Exporter sin respuesta",
-            f'max by (job, nombre, instance) (1 - up{{job!~"{"|".join(PROBE_JOBS)}"}})',
+            f'max by (job, nombre, instance) (1 - up{{job!~"{"|".join(PROBE_JOBS)}", alerta!="no"}})',
             "gt",
             0,
             u.exporter_caido,
@@ -134,6 +136,58 @@ def rules(s: Site) -> list[dict[str, Any]]:
         )
     )
     return out
+
+
+PRINTER_ERRORS = (
+    "noPaper",
+    "noToner",
+    "doorOpen",
+    "jammed",
+    "offline",
+    "serviceRequested",
+    "inputTrayMissing",
+    "outputTrayMissing",
+    "markerSupplyMissing",
+    "outputFull",
+    "overduePreventMaint",
+)
+"""Errores de hrPrinterDetectedErrorState que avisan. Los «bajo» de papel y tóner los cubre la regla de
+consumibles; `inputTrayEmpty` tampoco avisa: es normal tener una bandeja sin usar."""
+
+
+def printer_rules(s: Site) -> list[dict[str, Any]]:
+    pj = 'job="snmp", tipo="impresora"'
+    supplies = (
+        f"min by (nombre, prtMarkerSuppliesDescription) (100 * prtMarkerSuppliesLevel{{{pj}, "
+        f'prtMarkerSuppliesType!~"waste.*"}} / (prtMarkerSuppliesMaxCapacity{{{pj}}} > 0) >= 0)'
+    )
+    errors = (
+        f"max by (nombre, vigia_impresora_error) (vigia_impresora_error{{{pj}, "
+        f'vigia_impresora_error=~"{"|".join(PRINTER_ERRORS)}"}})'
+    )
+    return [
+        _rule(
+            "vigia-consumible",
+            "Consumible de impresora bajo",
+            supplies,
+            "lt",
+            s.alertas.umbrales.consumible_pct,
+            "30m",
+            # la descripción acaba en «;SN…» (número de serie del cartucho): fuera del aviso
+            '{{ index .Labels "nombre" }}: '
+            '{{ reReplaceAll ";.*" "" (index .Labels "prtMarkerSuppliesDescription") }}'
+            "{{ with .Values.A }} al {{ humanize .Value }} %{{ end }}",
+        ),
+        _rule(
+            "vigia-impresora-error",
+            "Error de impresora",
+            errors,
+            "gt",
+            0,
+            "10m",
+            '{{ index .Labels "nombre" }}: {{ index .Labels "vigia_impresora_error" }}',
+        ),
+    ]
 
 
 def _templates(s: Site) -> str:

@@ -185,7 +185,9 @@ PROFILES: dict[DeviceType, Profile] = {
     DeviceType.router: Profile(metrics="ninguna", ping_group="red"),
     DeviceType.switch: Profile(metrics="snmp", snmp_module="if_mib", ping_group="red"),
     DeviceType.ap: Profile(metrics="ninguna", ping_group="red"),
-    DeviceType.impresora: Profile(metrics="snmp", snmp_module="printer_mib", ping_group="perifericos"),
+    DeviceType.impresora: Profile(
+        metrics="snmp", snmp_module="printer_mib,hrDevice,vigia_impresora", ping_group="perifericos"
+    ),
     DeviceType.sai: Profile(metrics="snmp", snmp_module="ups_mib", ping_group="perifericos"),
     DeviceType.otro: Profile(metrics="ninguna", ping_group="otros"),
 }
@@ -329,6 +331,10 @@ class Host(Base):
     @property
     def profile(self) -> Profile:
         return PROFILES[self.tipo]
+
+    @property
+    def is_printer_snmp(self) -> bool:
+        return self.tipo is DeviceType.impresora and self.snmp is not None
 
     @property
     def ping_group(self) -> str:
@@ -533,6 +539,8 @@ class Thresholds(Base):
     certificado_dias: int = Field(default=15, ge=1, le=90)
     disco_pct: int = Field(default=90, ge=50, le=99)
     disco_durante: Duration = "15m"
+    consumible_pct: int = Field(default=15, ge=1, le=90)
+    """Consumible de impresora (tóner, tinta, tambor…) por debajo de este % → aviso."""
 
 
 class Alerts(Base):
@@ -692,6 +700,14 @@ class Site(Base):
     @property
     def piholes(self) -> list[Host]:
         return [h for h in self.hosts if h.pihole]
+
+    @property
+    def printers_snmp(self) -> list[Host]:
+        return [h for h in self.hosts if h.is_printer_snmp and self.modulos.snmp.activo]
+
+    def quiet_hosts(self) -> set[str]:
+        """Hosts con algún ping `alerta: false` (se apagan o duermen): tampoco avisan si su exporter calla."""
+        return {p.host for p in self.ping if p.host and not p.alerta}
 
     def resolved_pings(self) -> list[tuple[str, str, str]]:
         """(ip, nombre, grupo) de cada objetivo de ping, en el orden de `ping` (zip con él es válido)."""

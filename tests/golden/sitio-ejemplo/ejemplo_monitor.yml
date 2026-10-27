@@ -119,6 +119,7 @@ services:
     command:
       - '--config.file=/etc/snmp_exporter/snmp.yml'
       - '--config.file=/etc/snmp_exporter/auths/auths.yml'
+      - '--config.file=/etc/snmp_exporter/auths/vigia-modulos.yml'
       - '--config.expand-environment-variables'
       - "--web.listen-address=:9116"
     environment:
