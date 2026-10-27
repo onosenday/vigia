@@ -50,6 +50,8 @@ Si se cambió el propio paquete vigia en local: `uv sync --reinstall-package vig
   windows, router, switch, ap, impresora, sai, otro). El orden de `hosts:` es el orden en los paneles.
   - Linux/OMV/Proxmox: `node_exporter: {puerto: 9100}` (`gestion: externo` si ya está instalado).
   - Windows: `windows_exporter: {puerto: 9182, gestion: externo}` (se instala aparte, MSI oficial).
+  - Impresoras con `snmp`: panel «Impresoras» y alertas de consumibles y errores (módulos printer_mib,
+    hrDevice y vigia_impresora). Si se duermen, `alerta: false` en su ping.
   - NAS, switches, impresoras, SAI: `snmp: {auth: <nombre>}` y la autenticación en `modulos.snmp.auths`
     (v3 authPriv por defecto; v2c solo si el equipo no admite v3).
   - Con Docker: `cadvisor: {puerto: …}`; si no es el host del monitor, `ssh:` y `deploy:` para sus agentes.

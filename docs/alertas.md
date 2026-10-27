@@ -13,7 +13,8 @@ alertas:
     clave: ALERTAS_SMTP_CLAVE          # contraseña de aplicación, no la de la cuenta
     remitente: ALERTAS_SMTP_REMITENTE
     destinatarios: ALERTAS_CORREO_DESTINO   # varias, separadas por ;
-  umbrales: {caido: 5m, exporter_caido: 5m, certificado_dias: 15, disco_pct: 90, disco_durante: 15m}
+  umbrales: {caido: 5m, exporter_caido: 5m, certificado_dias: 15, disco_pct: 90, disco_durante: 15m,
+             consumible_pct: 15}
   repetir: 12h
 ```
 
@@ -30,10 +31,12 @@ id. No es secreto (sin el token no sirve de nada); usa un **grupo** para que no 
 | Certificado a punto de caducar | webs por nombre | quedan menos de `certificado_dias` |
 | Disco casi lleno | node_exporter y windows_exporter | por encima de `disco_pct` durante `disco_durante` |
 | Exporter sin respuesta | cualquier `up` que no sea una sonda | `up = 0` durante `exporter_caido` |
+| Consumible de impresora bajo | tóner, tinta, tambor… de las impresoras con `snmp` (no los depósitos de residuos) | por debajo de `consumible_pct` durante 30 min |
+| Error de impresora | sin papel o tóner, puerta abierta, atasco, desconectada, servicio, bandeja o consumible ausente, salida llena, mantenimiento vencido | activo durante 10 min |
 
 Los avisos se agrupan por `nombre`: si un servidor se cae, la sonda y su exporter llegan en el mismo mensaje.
-Lo que se apaga a propósito se marca con `alerta: false` en su entrada de `ping`, `servicios` o
-`web.objetivos`: sigue en los paneles, pero no avisa. Solo se alerta de la infraestructura de `site.yaml`;
+Lo que se apaga (o se duerme, como muchas impresoras) se marca con `alerta: false` en su entrada de `ping`, `servicios` o
+`web.objetivos`: sigue en los paneles, pero no avisa (en un ping, tampoco avisa si su exporter calla). Solo se alerta de la infraestructura de `site.yaml`;
 los dispositivos que descubre netinv (móviles, televisores) nunca generan avisos.
 
 ## Telegram
