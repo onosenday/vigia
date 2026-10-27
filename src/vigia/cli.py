@@ -253,6 +253,52 @@ def grafana_brand(
         raise typer.Exit(1) from None
 
 
+@app.command()
+def descubrir(
+    site: SiteOpt = Path("site.yaml"),
+    fuente: Annotated[
+        str, typer.Option("--fuente", help="auto (netinv si está activo), netinv o local")
+    ] = "auto",
+    salida: Annotated[Path, typer.Option("--salida", help="propuesta (fuera de git)")] = Path(
+        "propuesta.yaml"
+    ),
+    yes: Annotated[bool, typer.Option("--yes", help="lanza el descubrimiento")] = False,
+) -> None:
+    """Propone hosts para site.yaml a partir de lo que hay en la red (solo con autorización)."""
+    from vigia.discover import discover, is_ignored, plan, render  # noqa: PLC0415
+
+    s = _load(site)
+    if fuente not in ("auto", "netinv", "local"):
+        typer.echo("error: --fuente es auto, netinv o local", err=True)
+        raise typer.Exit(2)
+    if s.modulos.netinv.autorizacion is None:
+        typer.echo(
+            "ABORTADO: descubrir exige modulos.netinv.autorizacion (responsable, fecha y referencia) "
+            "en site.yaml",
+            err=True,
+        )
+        raise typer.Exit(1)
+    out = salida if salida.is_absolute() else site.parent / salida
+    if is_ignored(str(out.resolve()), str(out.resolve().parent)) is False:
+        typer.echo(
+            f"ABORTADO: {out} no está en .gitignore (la propuesta lleva nombres vistos en la red)", err=True
+        )
+        raise typer.Exit(1)
+    if not yes:
+        typer.echo(plan(s, fuente))
+        return
+    try:
+        r = discover(s, fuente)
+    except (OSError, ValueError) as e:
+        typer.echo(f"error: {e}", err=True)
+        raise typer.Exit(1) from None
+    out.write_text(render(s, r), encoding="utf-8")
+    typer.echo(
+        f"{len(r.proposals)} equipos propuestos, {r.clients} clientes sin proponer, {r.known} ya en el sitio "
+        f"(fuente: {r.source}) → {out}"
+    )
+
+
 @app.command("new-site")
 def new_site(
     dest: Annotated[Path, typer.Argument(help="carpeta del repo del sitio (se crea si no existe)")],

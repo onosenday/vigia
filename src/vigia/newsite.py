@@ -20,6 +20,7 @@ GITIGNORE = """# vigia: generado, entorno y copias locales
 .venv/
 build/
 baseline/
+propuesta.yaml
 __pycache__/
 .env
 .env.*

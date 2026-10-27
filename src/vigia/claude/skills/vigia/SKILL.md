@@ -56,6 +56,11 @@ Si se cambió el propio paquete vigia en local: `uv sync --reinstall-package vig
   - Para vigilarlo por ping: añadirlo a `ping:` (`- host: <id>`).
 - **Servicio por IP:puerto**: `servicios:` con `url`, `nombre`, `host` (agrupa en paneles).
 - **Web por nombre** (tras proxy inverso): `web.objetivos`; con CA interna, `web.ca: assets/ca.crt`.
+- **Equipos que aún no están en el sitio**: `uv run vigia descubrir` (explica qué hará) y con `--yes` lo
+  lanza. Exige `modulos.netinv.autorizacion` y que `propuesta.yaml` esté en `.gitignore`. Lee netinv si está
+  activo (si no, barre la subred desde este equipo) y sondea por TCP puertos de infraestructura. Propone solo
+  infraestructura, con ids genéricos (`nas-1`); los nombres vistos van en comentarios. Revisar el tipo y copiar
+  a `site.yaml` lo que proceda; nunca se pega sin mirar.
 - **Algo que se apaga a propósito**: `alerta: false` en su entrada de `ping`, `servicios` o `web.objetivos`
   (sigue en los paneles, no avisa).
 - **Alertas**: bloque `alertas` (Telegram y correo; solo nombres de variables, también las direcciones de

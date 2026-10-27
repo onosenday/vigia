@@ -21,7 +21,8 @@ uv run vigia deploy monitor --yes  # despliega (copia previa en el host)
 uv run vigia rollback monitor --yes
 ```
 
-Otros comandos: `diff` (contra una carpeta), `bridges` (redes Docker de los hosts), `grafana-brand`
+Otros comandos: `diff` (contra una carpeta), `bridges` (redes Docker de los hosts), `descubrir` (propuesta
+de hosts a partir de la red, con autorización), `grafana-brand`
 (nombre de la organización de Grafana), `skill` (instala o actualiza la skill de Claude Code en el sitio).
 
 ## Qué sabe vigilar
