@@ -417,6 +417,113 @@ class Web(Base):
     alerta: bool = True
 
 
+# --- objetivos externos (fuera de la red del sitio) ----------------------------------------------
+
+SENSITIVE_PORTS: dict[int, str] = {
+    21: "FTP",
+    22: "SSH",
+    23: "Telnet",
+    135: "RPC de Windows",
+    139: "NetBIOS",
+    445: "SMB",
+    1433: "SQL Server",
+    1521: "Oracle",
+    2375: "Docker",
+    2376: "Docker (TLS)",
+    3306: "MySQL/MariaDB",
+    3389: "RDP",
+    5432: "PostgreSQL",
+    5900: "VNC",
+    5985: "WinRM",
+    5986: "WinRM (TLS)",
+    6379: "Redis",
+    9200: "Elasticsearch",
+    11211: "Memcached",
+    27017: "MongoDB",
+}
+"""Puertos de administración y bases de datos: un sondeo externo solo con `puertos_sensibles: true`."""
+_CGNAT = ipaddress.ip_network("100.64.0.0/10")
+MAX_EXTERNALS = 50
+
+
+def _public_host(v: str) -> str:
+    """IP pública o nombre DNS. Nunca IPs privadas, loopback, link-local (metadatos), CGNAT ni reservadas."""
+    try:
+        ip = ipaddress.ip_address(v)
+    except ValueError:
+        ip = None
+    if ip is not None:
+        if not ip.is_global or ip in _CGNAT:
+            raise ValueError(f"{v}: no es una IP pública (privada, loopback, link-local, CGNAT o reservada)")
+        return str(ip)
+    if v == "localhost" or v.endswith((".local", ".lan", ".internal", ".home.arpa", ".localhost")):
+        raise ValueError(f"{v}: es un nombre interno; los equipos de la red van en `ping`/`servicios`")
+    if not re.fullmatch(FQDN_RE, v):
+        raise ValueError(f"se espera una IP pública o un nombre DNS: {v!r}")
+    return v
+
+
+PublicHost = Annotated[str, AfterValidator(_public_host)]
+
+
+def _seconds(d: str) -> float:
+    m = re.fullmatch(r"([0-9]+)(ms|s|m|h|d|w|y)", d)
+    assert m, d
+    mult = {"ms": 0.001, "s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800, "y": 31536000}
+    return int(m.group(1)) * mult[m.group(2)]
+
+
+class External(Base):
+    """Equipo o web fuera de la red del sitio, sondeado solo desde el monitor y hacia fuera."""
+
+    nombre: Text
+    url: URL | None = None
+    """Web: código HTTP, latencia y, en https, validez y caducidad del certificado (verificación estricta)."""
+    host: PublicHost | None = None
+    """Equipo: ping y, si se indican, conexión TCP a `puertos` (sin enviar datos)."""
+    puertos: list[Port] = []
+    puertos_sensibles: bool = False
+    """Permite sondear puertos de administración o de bases de datos (SSH, RDP, MySQL…) desde fuera."""
+    alerta: bool = True
+
+    @model_validator(mode="after")
+    def _check(self) -> External:
+        if (self.url is None) == (self.host is None):
+            raise ValueError(f"externo {self.nombre}: indica `url` o `host` (uno de los dos)")
+        if self.url is not None:
+            if self.puertos:
+                raise ValueError(f"externo {self.nombre}: `puertos` va con `host`, no con `url`")
+            _public_host(urlsplit(self.url).hostname or "")
+        sensitive = sorted(p for p in self.puertos if p in SENSITIVE_PORTS)
+        if sensitive and not self.puertos_sensibles:
+            names = ", ".join(f"{p} ({SENSITIVE_PORTS[p]})" for p in sensitive)
+            raise ValueError(
+                f"externo {self.nombre}: {names} son de administración o bases de datos; si de verdad hay "
+                "que comprobarlos desde fuera, `puertos_sensibles: true` "
+                "(mejor que no estén abiertos a internet)"
+            )
+        if len(set(self.puertos)) != len(self.puertos):
+            raise ValueError(f"externo {self.nombre}: puertos repetidos")
+        return self
+
+
+class Externals(Base):
+    intervalo: Duration = "60s"
+    """Cada cuánto se sondean (mínimo 60 s: son equipos ajenos a la red)."""
+    objetivos: list[External] = []
+
+    @model_validator(mode="after")
+    def _check(self) -> Externals:
+        if _seconds(self.intervalo) < 60:
+            raise ValueError("externos.intervalo: mínimo 60s")
+        if len(self.objetivos) > MAX_EXTERNALS:
+            raise ValueError(f"externos: como mucho {MAX_EXTERNALS} objetivos")
+        names = [o.nombre for o in self.objetivos]
+        if len(set(names)) != len(names):
+            raise ValueError("externos: nombres repetidos")
+        return self
+
+
 class WebConfig(Base):
     ca: SitePath | None = None
     """CA interna (en assets/) para validar los certificados y medir su caducidad."""
@@ -697,6 +804,8 @@ class Site(Base):
     dns: Dns | None = None
     modulos: Modules = Modules()
     alertas: Alerts = Alerts()
+    externos: Externals = Externals()
+    """Equipos y webs fuera de la red del sitio (internet): solo sondas salientes desde el monitor."""
     bridges: list[Bridge] = []
     """Redes Docker por host (salida de `vigia bridges`), para nombrar las interfaces br-<id>."""
 
@@ -762,6 +871,9 @@ class Site(Base):
         p = self.monitor.puertos
         if p.grafana == 3000 or p.prometheus == 9090:
             out.append("monitor.puertos: Grafana/Prometheus en su puerto por defecto")
+        for o in self.externos.objetivos:
+            if o.url and o.url.startswith("http://"):
+                out.append(f"externo {o.nombre}: http sin TLS; si la web tiene https, mejor esa URL")
         if self.modulos.netinv.activo and self.modulos.netinv.nmap:
             out.append("netinv con nmap: escaneo activo de puertos; confirma que la autorización lo cubre")
         if (
@@ -813,6 +925,18 @@ class Site(Base):
                     f"servicio {s.nombre}: {h.id} hiberna sus discos; confirma que responde 200 "
                     "y marca `espera_200: true` (un 403/404 escribe en sus logs y los despierta)"
                 )
+
+        for o in self.externos.objetivos:
+            target = o.host or urlsplit(o.url or "").hostname or ""
+            if target == self.red.dominio or target.endswith("." + self.red.dominio):
+                errors.append(
+                    f"externo {o.nombre}: {target} es del dominio del sitio; va en `web` o `servicios`"
+                )
+            try:
+                if self.red.network_of(target):
+                    errors.append(f"externo {o.nombre}: {target} está en una subred del sitio")
+            except ValueError:
+                pass  # nombre DNS
 
         if self.dns:
             for ip in self.dns.servidores:

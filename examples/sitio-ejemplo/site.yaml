@@ -111,6 +111,13 @@ modulos:
       - {nombre: nas, usuario: SNMP_NAS_USUARIO, clave_auth: SNMP_NAS_AUTH, clave_priv: SNMP_NAS_PRIV}
       - {nombre: lectura, version: v2c, comunidad: SNMP_COMUNIDAD}
 
+# Fuera de la red del sitio: solo sondas salientes desde el monitor.
+externos:
+  objetivos:
+    - {nombre: Web corporativa, url: "https://www.example.org/"}
+    - {nombre: Servidor externo, host: servidor.example.net, puertos: [443]}
+    - {nombre: SSH del servidor externo, host: ssh.example.net, puertos: [22], puertos_sensibles: true, alerta: false}
+
 alertas:
   activo: true
   telegram: {token: ALERTAS_TELEGRAM_TOKEN, chat_id: "-1000000000001"}

@@ -1,0 +1,36 @@
+# Objetivos de Prometheus — generado por vigia 0.2.1 para «Oficina de ejemplo».
+# No editar: cambia site.yaml y ejecuta `vigia build`.
+- targets:
+  - https://www.example.org/
+  labels:
+    nombre: Web corporativa
+    tipo: web
+    __param_module: https_externo
+- targets:
+  - servidor.example.net
+  labels:
+    nombre: Servidor externo
+    tipo: ping
+    __param_module: icmp
+- targets:
+  - servidor.example.net:443
+  labels:
+    nombre: Servidor externo
+    tipo: tcp
+    puerto: '443'
+    __param_module: tcp_externo
+- targets:
+  - ssh.example.net
+  labels:
+    nombre: SSH del servidor externo
+    tipo: ping
+    __param_module: icmp
+    alerta: 'no'
+- targets:
+  - ssh.example.net:22
+  labels:
+    nombre: SSH del servidor externo
+    tipo: tcp
+    puerto: '22'
+    __param_module: tcp_externo
+    alerta: 'no'

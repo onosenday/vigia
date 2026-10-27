@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from vigia.dashboards.base import Panel, panel, row
+from vigia.dashboards.base import Panel, merged_table, panel, row
 
 if TYPE_CHECKING:
     from vigia.dashboards import Brand
@@ -18,29 +18,11 @@ PJ = 'job="snmp",tipo="impresora"'
 NO_SERIAL = [{"id": "renameByRegex", "options": {"regex": "^([^;]*);.*$", "renamePattern": "$1"}}]
 
 
-def _table(pid: int, title: str, exprs: list[tuple[str, str]], x: int, y: int, w: int, h: int) -> Panel:
-    """Tabla instantánea con una consulta por columna, unidas por `nombre`."""
-    p = panel(pid, title, "table", exprs[0][0], x, y, w, h, instant=True)
-    p["targets"] = [{**p["targets"][0], "refId": chr(65 + i), "expr": e} for i, (e, _) in enumerate(exprs)]
-    rename = {f"Value #{chr(65 + i)}": col for i, (_, col) in enumerate(exprs)}
-    if len(exprs) == 1:
-        rename = {"Value": exprs[0][1]}
-    p["transformations"] = [
-        {"id": "merge", "options": {}},
-        {
-            "id": "organize",
-            "options": {"excludeByName": {"Time": True}, "renameByName": {"nombre": "Impresora", **rename}},
-        },
-    ]
-    p["options"] = {"showHeader": True, "cellHeight": "sm", "footer": {"show": False}}
-    return p
-
-
 def printers(s: Site, m: Brand) -> dict[str, Any] | None:
     if not s.printers_snmp:
         return None
     pct = s.alertas.umbrales.consumible_pct
-    status = _table(
+    status = merged_table(
         2,
         "Estado",
         [
@@ -52,8 +34,9 @@ def printers(s: Site, m: Brand) -> dict[str, Any] | None:
         1,
         12,
         6,
+        key="Impresora",
     )
-    errors = _table(
+    errors = merged_table(
         3,
         "Errores activos",
         [(f"max by (nombre, vigia_impresora_error) (vigia_impresora_error{{{PJ}}} == 1)", "Activo")],
@@ -61,6 +44,7 @@ def printers(s: Site, m: Brand) -> dict[str, Any] | None:
         1,
         12,
         6,
+        key="Impresora",
     )
     errors["transformations"][1]["options"]["renameByName"]["vigia_impresora_error"] = "Error"
     errors["fieldConfig"]["defaults"]["noValue"] = "Sin errores"

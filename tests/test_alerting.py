@@ -46,6 +46,7 @@ def test_reglas_del_ejemplo(example_data: dict[str, Any]) -> None:
 
 def test_sin_web_ni_nodos_no_hay_reglas_de_certificado_ni_disco(example_data: dict[str, Any]) -> None:
     example_data["web"] = {}
+    example_data.pop("externos", None)
     for h in example_data["hosts"]:
         h.pop("node_exporter", None)
         h.pop("windows_exporter", None)

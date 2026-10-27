@@ -27,7 +27,7 @@ yaml.SafeDumper.add_representer(
     EnvRef, lambda d, v: d.represent_scalar("tag:yaml.org,2002:str", str(v), style='"')
 )
 
-PROBE_JOBS = ("web", "servicio", "ping", "dns")
+PROBE_JOBS = ("web", "servicio", "ping", "dns", "externo")
 DATASOURCE_UID = "prometheus"
 FS_EXCLUDED = "tmpfs|ramfs|overlay|squashfs|nsfs|devtmpfs|fuse.+"
 
@@ -67,7 +67,7 @@ def _rule(uid: str, title: str, expr: str, op: str, value: float, for_: str, sum
 def rules(s: Site) -> list[dict[str, Any]]:
     u = s.alertas.umbrales
     out = []
-    if s.modulos.blackbox and (s.ping or s.servicios or s.web.objetivos or s.dns):
+    if s.modulos.blackbox and (s.ping or s.servicios or s.web.objetivos or s.dns or s.externos.objetivos):
         jobs = "|".join(PROBE_JOBS)
         out.append(
             _rule(
@@ -81,13 +81,13 @@ def rules(s: Site) -> list[dict[str, Any]]:
                 '{{ index .Labels "instance" }})',
             )
         )
-    if s.modulos.blackbox and s.web.objetivos:
+    if s.modulos.blackbox and (s.web.objetivos or any(o.url for o in s.externos.objetivos)):
         out.append(
             _rule(
                 "vigia-certificado",
                 "Certificado a punto de caducar",
-                'min by (nombre, instance) ((probe_ssl_earliest_cert_expiry{job="web", alerta!="no"} '
-                "- time()) / 86400)",
+                "min by (nombre, instance) ("
+                '(probe_ssl_earliest_cert_expiry{job=~"web|externo", alerta!="no"} - time()) / 86400)',
                 "lt",
                 u.certificado_dias,
                 "1h",

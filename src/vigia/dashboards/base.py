@@ -73,6 +73,26 @@ def panel(
     return p
 
 
+def merged_table(
+    pid: int, title: str, exprs: list[tuple[str, str]], x: int, y: int, w: int, h: int, key: str = "Nombre"
+) -> Panel:
+    """Tabla instantánea con una consulta por columna, unidas por `nombre`."""
+    p = panel(pid, title, "table", exprs[0][0], x, y, w, h, instant=True)
+    p["targets"] = [{**p["targets"][0], "refId": chr(65 + i), "expr": e} for i, (e, _) in enumerate(exprs)]
+    rename = {f"Value #{chr(65 + i)}": col for i, (_, col) in enumerate(exprs)}
+    if len(exprs) == 1:
+        rename = {"Value": exprs[0][1]}
+    p["transformations"] = [
+        {"id": "merge", "options": {}},
+        {
+            "id": "organize",
+            "options": {"excludeByName": {"Time": True}, "renameByName": {"nombre": key, **rename}},
+        },
+    ]
+    p["options"] = {"showHeader": True, "cellHeight": "sm", "footer": {"show": False}}
+    return p
+
+
 def row(pid: int, title: str, y: int) -> Panel:
     return {
         "id": pid,

@@ -107,12 +107,38 @@ def targets(s: Site) -> dict[str, Any]:
                     labels["__param_module"] = mod
                 groups.append({"targets": [srv.url], "labels": labels})
             out["servicios.yml"] = groups
+        if s.externos.objetivos:
+            out["externos.yml"] = externals_targets(s)
         if s.web.objetivos:
             out["web.yml"] = [
                 {"targets": [w.url], "labels": _no_alert({"nombre": w.nombre}, w.alerta)}
                 for w in s.web.objetivos
             ]
     return out
+
+
+def externals_targets(s: Site) -> list[dict[str, Any]]:
+    """Un grupo por sonda: web (http/https), ping y cada puerto TCP de los objetivos externos."""
+    groups: list[dict[str, Any]] = []
+    for o in s.externos.objetivos:
+        base = {"nombre": o.nombre}
+        if o.url:
+            mod = "https_externo" if o.url.startswith("https://") else "http_externo"
+            labels = {**base, "tipo": "web", "__param_module": mod}
+            groups.append({"targets": [o.url], "labels": _no_alert(labels, o.alerta)})
+            continue
+        assert o.host
+        groups.append(
+            {
+                "targets": [o.host],
+                "labels": _no_alert({**base, "tipo": "ping", "__param_module": "icmp"}, o.alerta),
+            }
+        )
+        for p in o.puertos:
+            labels = {**base, "tipo": "tcp", "puerto": str(p), "__param_module": "tcp_externo"}
+            target = f"[{o.host}]:{p}" if ":" in o.host else f"{o.host}:{p}"
+            groups.append({"targets": [target], "labels": _no_alert(labels, o.alerta)})
+    return groups
 
 
 def _no_alert(labels: dict[str, str], alert: bool) -> dict[str, str]:

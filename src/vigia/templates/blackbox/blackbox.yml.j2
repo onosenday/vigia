@@ -37,6 +37,38 @@ modules:
     timeout: 5s
     icmp:
       preferred_ip_protocol: ip4
+{% if s.externos.objetivos %}
+  # Objetivos externos (internet): solo GET sin credenciales, TLS verificado de forma estricta.
+  https_externo:
+    prober: http
+    timeout: 10s
+    http:
+      method: GET
+      fail_if_not_ssl: true
+      follow_redirects: true
+      preferred_ip_protocol: ip4
+      ip_protocol_fallback: true
+      headers:
+        User-Agent: vigia
+  http_externo:
+    prober: http
+    timeout: 10s
+    http:
+      method: GET
+      valid_status_codes: [200, 301, 302, 303, 307, 308]
+      follow_redirects: false
+      preferred_ip_protocol: ip4
+      ip_protocol_fallback: true
+      headers:
+        User-Agent: vigia
+  # Solo se abre y se cierra la conexión: no se envía nada.
+  tcp_externo:
+    prober: tcp
+    timeout: 5s
+    tcp:
+      preferred_ip_protocol: ip4
+      ip_protocol_fallback: true
+{% endif %}
 {% if s.dns %}
   # El DNS local resuelve los nombres internos.
   dns_interno:

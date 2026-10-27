@@ -31,6 +31,9 @@ Cada equipo declara su `tipo` y vigia elige cómo medirlo: node_exporter (Linux,
 windows_exporter (Windows), SNMP v3 (Synology, QNAP, switches, impresoras, SAI) o solo ping/HTTP (router, AP).
 Los paneles se generan según lo que exista en el sitio.
 
+Impresoras por SNMP (consumibles, páginas, errores), varias subredes por sitio y equipos o webs en internet
+solo con sondas salientes ([docs/externos.md](docs/externos.md)).
+
 Alertas con la marca del sitio por Telegram y correo (caído, certificado, disco, exporter): ver
 [docs/alertas.md](docs/alertas.md).
 

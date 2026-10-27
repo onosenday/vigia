@@ -18,7 +18,7 @@ groups:
       datasourceUid: prometheus
       model:
         refId: A
-        expr: max by (job, nombre, instance) (1 - probe_success{job=~"web|servicio|ping|dns", alerta!="no"})
+        expr: max by (job, nombre, instance) (1 - probe_success{job=~"web|servicio|ping|dns|externo", alerta!="no"})
         instant: true
         range: false
     - refId: B
@@ -51,7 +51,7 @@ groups:
       datasourceUid: prometheus
       model:
         refId: A
-        expr: min by (nombre, instance) ((probe_ssl_earliest_cert_expiry{job="web", alerta!="no"} - time()) / 86400)
+        expr: min by (nombre, instance) ((probe_ssl_earliest_cert_expiry{job=~"web|externo", alerta!="no"} - time()) / 86400)
         instant: true
         range: false
     - refId: B
@@ -189,7 +189,7 @@ groups:
       datasourceUid: prometheus
       model:
         refId: A
-        expr: max by (job, nombre, instance) (1 - up{job!~"web|servicio|ping|dns", alerta!="no"})
+        expr: max by (job, nombre, instance) (1 - up{job!~"web|servicio|ping|dns|externo", alerta!="no"})
         instant: true
         range: false
     - refId: B

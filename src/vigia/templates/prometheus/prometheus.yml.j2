@@ -131,6 +131,27 @@ scrape_configs:
 {% set anchor.defined = true %}
 {% endif %}
 {% endfor %}
+{% if s.externos.objetivos %}
+
+  # Objetivos externos (internet): sondas salientes desde el monitor, nada instalado en el destino
+  - job_name: externo
+    scrape_interval: {{ s.externos.intervalo }}
+    metrics_path: /probe
+    file_sd_configs:
+      - files: [/etc/prometheus/targets/externos.yml]
+{% if anchor.defined %}
+    relabel_configs: *probe
+{% else %}
+    relabel_configs: &probe
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115
+{% set anchor.defined = true %}
+{% endif %}
+{% endif %}
 {% if s.dns %}
 
   # DNS: cada servidor resuelve el nombre de control a la IP esperada

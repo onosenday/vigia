@@ -59,6 +59,9 @@ Si se cambió el propio paquete vigia en local: `uv sync --reinstall-package vig
 - **Otra subred alcanzable desde el monitor** (VLAN, ruta, VPN): `red.subredes_extra: [{red: <cidr>, nombre: …}]`.
   Sus equipos se declaran como los demás; `descubrir` las barre todas (o una con `--subred`). netinv solo
   recorre la principal (ARP y mDNS no cruzan routers).
+- **Equipo o web en internet** (fuera de la red del sitio): `externos.objetivos` con `url` o `host` (+ `puertos`).
+  Solo sondas salientes; destinos públicos; puertos de administración o BBDD solo con `puertos_sensibles: true`.
+  Guía y reglas de seguridad en `docs/externos.md` del paquete.
 - **Servicio por IP:puerto**: `servicios:` con `url`, `nombre`, `host` (agrupa en paneles).
 - **Web por nombre** (tras proxy inverso): `web.objetivos`; con CA interna, `web.ca: assets/ca.crt`.
 - **Equipos que aún no están en el sitio**: `uv run vigia descubrir` (explica qué hará) y con `--yes` lo
