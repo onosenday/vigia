@@ -20,3 +20,7 @@ htmlcov/
 dist/
 build/
 *.egg-info/
+
+# beads: seguimiento local, fuera del repo público
+.beads/
+AGENTS.md
