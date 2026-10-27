@@ -16,6 +16,8 @@ from typing import Annotated, Literal
 from urllib.parse import urlsplit
 
 import yaml
+from packaging.specifiers import InvalidSpecifier, SpecifierSet
+from packaging.version import Version
 from pydantic import (
     AfterValidator,
     BaseModel,
@@ -25,6 +27,8 @@ from pydantic import (
     field_validator,
     model_validator,
 )
+
+from vigia import __version__
 
 # --- tipos básicos -----------------------------------------------------------------------------------
 
@@ -642,7 +646,7 @@ class Bridge(Base):
 
 class Site(Base):
     vigia: Annotated[str, StringConstraints(pattern=r"^[0-9<>=!~,. ]+$")]
-    """Rango de versiones de vigia con el que se probó el sitio."""
+    """Rango de versiones de vigia con el que se probó el sitio; con otra versión, el sitio no carga."""
     sitio: SiteInfo
     branding: Branding
     red: Network
@@ -658,6 +662,20 @@ class Site(Base):
     alertas: Alerts = Alerts()
     bridges: list[Bridge] = []
     """Redes Docker por host (salida de `vigia bridges`), para nombrar las interfaces br-<id>."""
+
+    @field_validator("vigia")
+    @classmethod
+    def _check_version(cls, v: str) -> str:
+        try:
+            spec = SpecifierSet(v)
+        except InvalidSpecifier:
+            raise ValueError(f"rango de versiones no válido: {v!r} (p. ej. '>=0.2,<0.3')") from None
+        if not spec.contains(Version(__version__), prereleases=True):
+            raise ValueError(
+                f"este sitio pide vigia {v} y está instalada la {__version__}: actualiza el sitio "
+                "(pruébalo y sube el rango) o instala una versión compatible"
+            )
+        return v
 
     # -- consultas ------------------------------------------------------------------------------------
 

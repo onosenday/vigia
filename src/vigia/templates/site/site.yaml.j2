@@ -1,6 +1,6 @@
 # Sitio «{{ nombre | raw }}» para vigia. Fuente de verdad de la monitorización de esta red:
 # editar aquí, `uv run vigia validate` y `uv run vigia deploy <unidad>` (ver CLAUDE.md).
-vigia: ">=0.2,<0.3"
+vigia: {{ vigia_rango }}
 
 sitio:
   id: {{ id }}

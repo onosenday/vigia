@@ -83,3 +83,23 @@ def test_dangerous_text(example_data: dict[str, Any], text: str) -> None:
 def test_warnings(example_data: dict[str, Any]) -> None:
     warnings = _validate(example_data).warnings()
     assert any("v2c" in a for a in warnings)
+
+
+@pytest.mark.parametrize("rango", [">=0.1,<0.2", ">=9.0", "==0.0.1"])
+def test_version_fuera_de_rango_no_carga(example_data: dict[str, Any], rango: str) -> None:
+    example_data["vigia"] = rango
+    with pytest.raises(ValidationError, match="está instalada"):
+        Site.model_validate(example_data)
+
+
+def test_rango_no_valido(example_data: dict[str, Any]) -> None:
+    example_data["vigia"] = ">=0.2,,<<0.3"
+    with pytest.raises(ValidationError, match="no válido"):
+        Site.model_validate(example_data)
+
+
+def test_rango_de_la_serie() -> None:
+    from vigia.newsite import version_range
+
+    assert version_range("0.2.0") == ">=0.2,<0.3"
+    assert version_range("1.10.3") == ">=1.10,<1.11"

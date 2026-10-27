@@ -11,6 +11,7 @@ from typing import Annotated
 import jinja2
 from pydantic import AfterValidator, BaseModel, ConfigDict, StringConstraints
 
+from vigia import __version__
 from vigia.model import FQDN_RE, IP, DeviceType, Id, Text, UserName, load_site
 from vigia.render import jinja_env
 
@@ -81,7 +82,7 @@ def _pyproject(p: NewSite) -> str:
     if p.vigia_path:
         source = f'vigia = {{ path = "{p.vigia_path}" }}'
     else:
-        source = 'vigia = { git = "https://github.com/onosenday/vigia.git", tag = "v0.2.0" }'
+        source = f'vigia = {{ git = "https://github.com/onosenday/vigia.git", tag = "v{__version__}" }}'
     return f"""[project]
 name = "monitor-{p.id}"
 version = "0"
@@ -97,6 +98,12 @@ package = false
 """
 
 
+def version_range(version: str = __version__) -> str:
+    """Rango de la serie actual (0.2.x → `>=0.2,<0.3`): las de una misma serie no rompen el site.yaml."""
+    major, minor = (int(x) for x in version.split(".")[:2])
+    return f">={major}.{minor},<{major}.{minor + 1}"
+
+
 def create(p: NewSite, root: Path) -> Created:
     """Crea el esqueleto en `root` (que no debe tener ya un site.yaml) y comprueba que el sitio es válido."""
     if (root / "site.yaml").exists():
@@ -104,6 +111,7 @@ def create(p: NewSite, root: Path) -> Created:
     root.mkdir(parents=True, exist_ok=True)
     ctx = p.model_dump()
     ctx["monitor_tipo"] = p.monitor_tipo.value
+    ctx["vigia_rango"] = version_range()
     site_yaml = jinja_env().get_template("site/site.yaml.j2").render(**ctx)
     # CLAUDE.md es texto (no YAML): los valores ya están validados y acotados por los tipos
     md_env = jinja2.Environment(  # noqa: S701 - markdown, no HTML
