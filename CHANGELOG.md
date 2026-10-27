@@ -1,5 +1,10 @@
 # Cambios
 
+## 0.2.1 (2026-10-27)
+
+- El `site.yaml` no carga si la versión instalada de vigia no está en su rango `vigia:`.
+- `new-site` genera el rango de la serie instalada y el tag del `pyproject.toml` a partir de la versión.
+
 ## 0.2.0 (2026-10-27)
 
 - **Alertas** de Grafana con la marca del sitio, por Telegram y correo: caído, certificado a punto de caducar,
