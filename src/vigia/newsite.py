@@ -81,7 +81,7 @@ def _pyproject(p: NewSite) -> str:
     if p.vigia_path:
         source = f'vigia = {{ path = "{p.vigia_path}" }}'
     else:
-        source = 'vigia = { git = "https://github.com/onosenday/vigia.git", tag = "v0.1.0" }'
+        source = 'vigia = { git = "https://github.com/onosenday/vigia.git", tag = "v0.2.0" }'
     return f"""[project]
 name = "monitor-{p.id}"
 version = "0"

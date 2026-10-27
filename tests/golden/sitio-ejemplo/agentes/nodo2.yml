@@ -1,4 +1,4 @@
-# Agentes del host nodo2 — generado por vigia 0.1.0 para «Oficina de ejemplo».
+# Agentes del host nodo2 — generado por vigia 0.2.0 para «Oficina de ejemplo».
 # No editar: cambia site.yaml y ejecuta `vigia build`.
 services:
   # Métricas del host (CPU, RAM, discos, red, temperatura) en :9100

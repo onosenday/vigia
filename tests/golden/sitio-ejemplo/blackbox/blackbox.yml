@@ -1,4 +1,4 @@
-# blackbox_exporter — generado por vigia 0.1.0 para «Oficina de ejemplo».
+# blackbox_exporter — generado por vigia 0.2.0 para «Oficina de ejemplo».
 # No editar: cambia site.yaml y ejecuta `vigia build`.
 modules:
   # Webs por nombre tras el proxy inverso: valida el certificado con la CA interna (para medir su caducidad).
