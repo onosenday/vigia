@@ -320,8 +320,9 @@ def home(s: Site, m: Brand) -> dict[str, Any]:
     """Portada con la marca del sitio: logo, nombre, lo que falla y enlaces a los paneles."""
     b = s.branding
     logo = "![logo](public/img/grafana_icon.svg)\n\n" if (b.grafana and b.logo) else ""
+    nets = ", ".join(f"`{c}`" for c, _ in s.red.networks)
     text = (
-        f"{logo}# {b.nombre}\n\n**{s.sitio.nombre}** · red `{s.red.subred}` · dominio `{s.red.dominio}`\n\n"
+        f"{logo}# {b.nombre}\n\n**{s.sitio.nombre}** · red {nets} · dominio `{s.red.dominio}`\n\n"
         f"Paneles en la carpeta **{b.carpeta}**."
     )
     header = panel(1, "", "text", "", 0, 0, 8, 7, legend="", options={"mode": "markdown", "content": text})

@@ -263,6 +263,7 @@ def descubrir(
         "propuesta.yaml"
     ),
     yes: Annotated[bool, typer.Option("--yes", help="lanza el descubrimiento")] = False,
+    subred: Annotated[str | None, typer.Option("--subred", help="solo esta subred del sitio")] = None,
 ) -> None:
     """Propone hosts para site.yaml a partir de lo que hay en la red (solo con autorización)."""
     from vigia.discover import discover, is_ignored, plan, render  # noqa: PLC0415
@@ -285,10 +286,14 @@ def descubrir(
         )
         raise typer.Exit(1)
     if not yes:
-        typer.echo(plan(s, fuente))
+        try:
+            typer.echo(plan(s, fuente, subred))
+        except ValueError as e:
+            typer.echo(f"error: {e}", err=True)
+            raise typer.Exit(1) from None
         return
     try:
-        r = discover(s, fuente)
+        r = discover(s, fuente, subnet=subred)
     except (OSError, ValueError) as e:
         typer.echo(f"error: {e}", err=True)
         raise typer.Exit(1) from None

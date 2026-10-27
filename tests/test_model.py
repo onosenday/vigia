@@ -31,7 +31,7 @@ def test_unknown_field(example_data: dict[str, Any]) -> None:
 
 def test_ip_outside_subnet(example_data: dict[str, Any]) -> None:
     example_data["hosts"][1]["ip"] = "192.0.2.10"
-    _assert_invalid(example_data, "fuera de la subred")
+    _assert_invalid(example_data, "fuera de las subredes")
 
 
 def test_duplicate_ids(example_data: dict[str, Any]) -> None:
@@ -103,3 +103,16 @@ def test_rango_de_la_serie() -> None:
 
     assert version_range("0.2.0") == ">=0.2,<0.3"
     assert version_range("1.10.3") == ">=1.10,<1.11"
+
+
+def test_subredes_extra(example_data: dict[str, Any]) -> None:
+    example_data["red"]["subredes_extra"] = [{"red": "10.98.0.0/24", "nombre": "Planta 2"}]
+    example_data["hosts"].append({"id": "nodo-p2", "tipo": "linux", "ip": "10.98.0.5"})
+    s = Site.model_validate(example_data)
+    assert s.red.network_of("10.98.0.5") == "10.98.0.0/24"
+    assert [c for c, _ in s.red.networks] == ["10.99.0.0/24", "10.98.0.0/24"]
+
+
+def test_subredes_solapadas(example_data: dict[str, Any]) -> None:
+    example_data["red"]["subredes_extra"] = [{"red": "10.99.0.128/25", "nombre": "Solapada"}]
+    _assert_invalid(example_data, "solapadas")

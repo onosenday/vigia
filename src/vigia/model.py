@@ -636,9 +636,38 @@ class Monitor(Base):
         return self.imagenes.get(name, DEFAULT_IMAGES[name])
 
 
+Cidr = Annotated[str, AfterValidator(lambda v: str(ipaddress.ip_network(v)))]
+
+
+class ExtraSubnet(Base):
+    red: Cidr
+    nombre: Text
+
+
 class Network(Base):
-    subred: Annotated[str, AfterValidator(lambda v: str(ipaddress.ip_network(v)))]
+    subred: Cidr
+    """Subred principal: la del host del monitor (netinv la recorre por ARP y mDNS)."""
+    subredes_extra: list[ExtraSubnet] = []
+    """Otras subredes alcanzables desde el monitor (rutas, VLAN, VPN): sus equipos se vigilan igual."""
     dominio: Annotated[str, StringConstraints(pattern=r"^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9-]+)*$")]
+
+    @property
+    def networks(self) -> list[tuple[str, str]]:
+        """(cidr, nombre) de todas las subredes, la principal primero."""
+        return [(self.subred, "principal"), *((e.red, e.nombre) for e in self.subredes_extra)]
+
+    def network_of(self, ip: str) -> str | None:
+        a = ipaddress.ip_address(ip)
+        return next((c for c, _ in self.networks if a in ipaddress.ip_network(c)), None)
+
+    @model_validator(mode="after")
+    def _check_subnets(self) -> Network:
+        nets = [ipaddress.ip_network(c) for c, _ in self.networks]
+        for i, a in enumerate(nets):
+            for b in nets[i + 1 :]:
+                if a.overlaps(b):
+                    raise ValueError(f"subredes solapadas: {a} y {b}")
+        return self
 
 
 class SiteInfo(Base):
@@ -748,8 +777,6 @@ class Site(Base):
     @model_validator(mode="after")
     def _cross_validate(self) -> Site:
         errors: list[str] = []
-        net = ipaddress.ip_network(self.red.subred)
-
         ids = [h.id for h in self.hosts] + [v.id for v in self.vips]
         duplicates = {i for i in ids if ids.count(i) > 1}
         if duplicates:
@@ -758,8 +785,9 @@ class Site(Base):
 
         ips = [ip for h in self.hosts for ip in h.ips] + [v.ip for v in self.vips]
         for ip in ips:
-            if ipaddress.ip_address(ip) not in net:
-                errors.append(f"IP {ip} fuera de la subred {net}")
+            if self.red.network_of(ip) is None:
+                subnets = ", ".join(c for c, _ in self.red.networks)
+                errors.append(f"IP {ip} fuera de las subredes del sitio ({subnets})")
         dup_ips = {i for i in ips if ips.count(i) > 1}
         if dup_ips:
             errors.append(f"IPs repetidas: {sorted(dup_ips)}")

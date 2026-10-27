@@ -195,3 +195,22 @@ def test_sin_respuesta_conserva_puertos_de_netinv(monkeypatch: pytest.MonkeyPatc
     c = classify(d)
     assert c is not None
     assert c[0] is DeviceType.impresora
+
+
+def test_descubrir_barre_todas_las_subredes_o_una(example_data: dict[str, Any]) -> None:
+    example_data["red"]["subredes_extra"] = [{"red": "10.98.0.0/24", "nombre": "Planta 2"}]
+    example_data["modulos"]["netinv"]["activo"] = False
+    s = _netinv_site(example_data)
+    swept: list[str] = []
+
+    def scan(subnet: str, _t: float) -> list[Seen]:
+        swept.append(subnet)
+        return [Seen(subnet.replace("0/24", "77"))]
+
+    r = discover(s, "local", scan=scan, prober=lambda d, _t: None)
+    assert swept == ["10.99.0.0/24", "10.98.0.0/24"] and r.clients == 2
+    swept.clear()
+    discover(s, "local", scan=scan, prober=lambda d, _t: None, subnet="10.98.0.0/24")
+    assert swept == ["10.98.0.0/24"]
+    with pytest.raises(ValueError, match="no es una subred"):
+        discover(s, "local", scan=scan, prober=lambda d, _t: None, subnet="172.16.0.0/24")

@@ -56,6 +56,9 @@ Si se cambió el propio paquete vigia en local: `uv sync --reinstall-package vig
     (v3 authPriv por defecto; v2c solo si el equipo no admite v3).
   - Con Docker: `cadvisor: {puerto: …}`; si no es el host del monitor, `ssh:` y `deploy:` para sus agentes.
   - Para vigilarlo por ping: añadirlo a `ping:` (`- host: <id>`).
+- **Otra subred alcanzable desde el monitor** (VLAN, ruta, VPN): `red.subredes_extra: [{red: <cidr>, nombre: …}]`.
+  Sus equipos se declaran como los demás; `descubrir` las barre todas (o una con `--subred`). netinv solo
+  recorre la principal (ARP y mDNS no cruzan routers).
 - **Servicio por IP:puerto**: `servicios:` con `url`, `nombre`, `host` (agrupa en paneles).
 - **Web por nombre** (tras proxy inverso): `web.objetivos`; con CA interna, `web.ca: assets/ca.crt`.
 - **Equipos que aún no están en el sitio**: `uv run vigia descubrir` (explica qué hará) y con `--yes` lo

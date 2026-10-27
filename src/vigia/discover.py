@@ -223,8 +223,9 @@ def discover(
     fetch: Callable[[str], list[Seen]] = from_netinv,
     scan: Callable[[str, float], list[Seen]] = sweep,
     prober: Callable[[list[Seen], float], None] = probe,
+    subnet: str | None = None,
 ) -> Result:
-    """`source`: netinv, local o auto (netinv si el sitio lo tiene activo)."""
+    """`source`: netinv, local o auto (netinv si el sitio lo tiene activo). `subnet`: solo esa del sitio."""
     n = s.modulos.netinv
     if source == "auto":
         source = "netinv" if n.activo else "local"
@@ -233,9 +234,9 @@ def discover(
             raise ValueError("el sitio no tiene netinv activo: usa --fuente local")
         devices = fetch(f"http://{s.monitor_host.ip}:{n.puerto}/devices.json")
     else:
-        devices = scan(s.red.subred, timeout)
-    net = ipaddress.ip_network(s.red.subred)
-    devices = [d for d in devices if ipaddress.ip_address(d.ip) in net]
+        devices = [d for c in subnets_to_scan(s, subnet) for d in scan(c, timeout)]
+    wanted = set(subnets_to_scan(s, subnet))
+    devices = [d for d in devices if s.red.network_of(d.ip) in wanted]
     known = site_ips(s)
     new = [d for d in devices if d.ip not in known]
     prober(new, timeout)
@@ -301,14 +302,25 @@ def render(s: Site, r: Result) -> str:
     return "\n".join(lines) + "\n"
 
 
-def plan(s: Site, source: str) -> str:
+def subnets_to_scan(s: Site, subnet: str | None) -> list[str]:
+    nets = [c for c, _ in s.red.networks]
+    if subnet is None:
+        return nets
+    norm = str(ipaddress.ip_network(subnet))
+    if norm not in nets:
+        raise ValueError(f"{subnet} no es una subred del sitio ({', '.join(nets)})")
+    return [norm]
+
+
+def plan(s: Site, source: str, subnet: str | None = None) -> str:
     """Qué haría `descubrir` (sin --yes)."""
     n = s.modulos.netinv
     src = ("netinv" if n.activo else "local") if source == "auto" else source
     first = (
         f"leer los equipos de netinv (http://{s.monitor_host.ip}:{n.puerto}/devices.json)"
         if src == "netinv"
-        else f"barrer {s.red.subred} desde este equipo (ping y TCP a {', '.join(map(str, SWEEP_PORTS))})"
+        else f"barrer {', '.join(subnets_to_scan(s, subnet))} desde este equipo "
+        f"(ping y TCP a {', '.join(map(str, SWEEP_PORTS))})"
     )
     return (
         f"vigia descubrir en «{s.sitio.nombre}»:\n"
