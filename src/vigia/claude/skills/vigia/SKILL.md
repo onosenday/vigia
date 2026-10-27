@@ -56,6 +56,11 @@ Si se cambió el propio paquete vigia en local: `uv sync --reinstall-package vig
   - Para vigilarlo por ping: añadirlo a `ping:` (`- host: <id>`).
 - **Servicio por IP:puerto**: `servicios:` con `url`, `nombre`, `host` (agrupa en paneles).
 - **Web por nombre** (tras proxy inverso): `web.objetivos`; con CA interna, `web.ca: assets/ca.crt`.
+- **Algo que se apaga a propósito**: `alerta: false` en su entrada de `ping`, `servicios` o `web.objetivos`
+  (sigue en los paneles, no avisa).
+- **Alertas**: bloque `alertas` (Telegram y correo; solo nombres de variables, también las direcciones de
+  correo). Guía en `docs/alertas.md` del paquete. En OMV, las variables nuevas las añade el usuario al
+  *Environment* del stack en la UI antes del deploy. Probar con *Contact points ▸ vigia ▸ Test*.
 - **Redes Docker nuevas** en un host: `uv run vigia bridges` (relee y reescribe `bridges.yaml`).
 
 ## Lo aprendido sobre las plataformas

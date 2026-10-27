@@ -32,6 +32,12 @@ ENV_EXAMPLE = """# Secretos del sitio (copiar a .env, no versionado).
 GRAFANA_TOKEN=
 # Contraseña de sudo de cada host que la necesite (se referencia en site.yaml: ssh.sudo_secreto):
 # MONITOR_SUDO=
+# Alertas (site.yaml: alertas). Bot de Telegram solo para este sitio y contraseña de aplicación del SMTP:
+# ALERTAS_TELEGRAM_TOKEN=
+# ALERTAS_SMTP_USUARIO=
+# ALERTAS_SMTP_CLAVE=
+# ALERTAS_SMTP_REMITENTE=
+# ALERTAS_CORREO_DESTINO=
 """
 
 

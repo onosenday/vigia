@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import json
 import subprocess
 import tarfile
 from collections.abc import Mapping
@@ -30,6 +31,11 @@ SECRETS = {
     "SNMP_NAS_AUTH": "auth-sintetica",
     "SNMP_NAS_PRIV": "priv-sintetica",
     "SNMP_COMUNIDAD": "comunidad-sintetica",
+    "ALERTAS_TELEGRAM_TOKEN": "123456:token-sintetico",
+    "ALERTAS_SMTP_USUARIO": "alertas@ejemplo.lan",
+    "ALERTAS_SMTP_CLAVE": "smtp-sintetica-789",
+    "ALERTAS_SMTP_REMITENTE": "alertas@ejemplo.lan",
+    "ALERTAS_CORREO_DESTINO": "sistemas@ejemplo.lan",
 }
 
 
@@ -89,6 +95,7 @@ def test_env_remoto_solo_con_las_variables_necesarias(example_data: dict[str, An
         assert f is not None
         contenido = f.read().decode()
     assert "PIHOLE_PASSWORDS=pihole-sintetico-456" in contenido
+    assert "ALERTAS_SMTP_CLAVE=smtp-sintetica-789" in contenido
     assert "NODO2_SUDO" not in contenido
 
 
@@ -157,3 +164,46 @@ def test_bridges(example_data: dict[str, Any]) -> None:
         {"host": "nodo1", "id": "fedcba987654", "nombre": "web_default"},
         {"host": "nodo2", "id": "fedcba987654", "nombre": "web_default"},
     ]
+
+
+def _omv_monitor(example_data: dict[str, Any]) -> Any:
+    example_data["monitor"]["deploy"] = {
+        "adaptador": "omv",
+        "stack": "ejemplo_monitor",
+        "uuid": "00000000-0000-4000-8000-000000000001",
+        "dir": "/opt/vigia/ejemplo",
+    }
+    s, built = _built(example_data)
+    return units(s, built)["monitor"]
+
+
+def test_omv_comprueba_el_env_del_stack_antes_de_tocar_nada(example_data: dict[str, Any]) -> None:
+    script = deploy_script(_omv_monitor(example_data), "/tmp/vigia.x")
+    subprocess.run(["bash", "-n"], input=script.encode(), check=True)
+    assert script.index("ABORTADO: el Environment") < script.index("vigia-backups")
+    assert "ALERTAS_TELEGRAM_TOKEN" in script
+    assert not any(v in script for v in SECRETS.values() if len(v) >= 4)
+
+
+@pytest.mark.parametrize(("env", "ok"), [("PIHOLE_PASSWORDS=x\n", False), (None, True)])
+def test_comprobacion_env_omv(
+    example_data: dict[str, Any], tmp_path: Path, env: str | None, ok: bool
+) -> None:
+    u = _omv_monitor(example_data)
+    if env is None:
+        env = "".join(f"{n}=valor\n" for n in u.secrets)
+    rpc = tmp_path / "omv-rpc"
+    rpc.write_text(f"#!/bin/sh\ncat <<'J'\n{json.dumps({'env': env})}\nJ\n", encoding="utf-8")
+    rpc.chmod(0o755)
+    from vigia.deploy import _env_check_script  # noqa: PLC0415
+
+    r = subprocess.run(
+        ["bash", "-c", _env_check_script(u)],
+        capture_output=True,
+        text=True,
+        env={"PATH": f"{tmp_path}:/usr/bin:/bin"},
+        check=False,
+    )
+    assert (r.returncode == 0) is ok, r.stderr
+    if not ok:
+        assert "ALERTAS_SMTP_CLAVE" in r.stderr

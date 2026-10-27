@@ -30,6 +30,9 @@ Cada equipo declara su `tipo` y vigia elige cómo medirlo: node_exporter (Linux,
 windows_exporter (Windows), SNMP v3 (Synology, QNAP, switches, impresoras, SAI) o solo ping/HTTP (router, AP).
 Los paneles se generan según lo que exista en el sitio.
 
+Alertas con la marca del sitio por Telegram y correo (caído, certificado, disco, exporter): ver
+[docs/alertas.md](docs/alertas.md).
+
 ## Seguridad
 
 - `site.yaml` se valida en estricto (pydantic, `extra="forbid"`); textos, ids, rutas y URLs acotados.

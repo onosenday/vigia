@@ -77,7 +77,7 @@ ping:
   - host: nodo1
   - host: nodo2
   - host: nas1
-  - host: impresora1
+  - {host: impresora1, alerta: false}     # se apaga por la noche: sin avisos
 
 servicios:
   - {url: "http://10.99.0.11:8000", nombre: Panel nodo2, host: nodo2}
@@ -110,6 +110,17 @@ modulos:
     auths:
       - {nombre: nas, usuario: SNMP_NAS_USUARIO, clave_auth: SNMP_NAS_AUTH, clave_priv: SNMP_NAS_PRIV}
       - {nombre: lectura, version: v2c, comunidad: SNMP_COMUNIDAD}
+
+alertas:
+  activo: true
+  telegram: {token: ALERTAS_TELEGRAM_TOKEN, chat_id: "-1000000000001"}
+  correo:
+    smtp: smtp.ejemplo.lan:587
+    usuario: ALERTAS_SMTP_USUARIO
+    clave: ALERTAS_SMTP_CLAVE
+    remitente: ALERTAS_SMTP_REMITENTE
+    destinatarios: ALERTAS_CORREO_DESTINO
+  umbrales: {caido: 5m, certificado_dias: 15, disco_pct: 90}
 
 bridges:
   - {host: nodo1, id: 0123456789ab, nombre: ejemplo_default}

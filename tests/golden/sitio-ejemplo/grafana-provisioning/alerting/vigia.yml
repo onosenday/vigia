@@ -1,0 +1,188 @@
+# Alertas de Grafana — generado por vigia 0.1.0 para «Oficina de ejemplo».
+# No editar: cambia site.yaml y ejecuta `vigia build`.
+apiVersion: 1
+groups:
+- orgId: 1
+  name: vigia
+  folder: Infraestructura Ejemplo
+  interval: 1m
+  rules:
+  - uid: vigia-caido
+    title: Caído
+    condition: B
+    data:
+    - refId: A
+      relativeTimeRange:
+        from: 600
+        to: 0
+      datasourceUid: prometheus
+      model:
+        refId: A
+        expr: max by (job, nombre, instance) (1 - probe_success{job=~"web|servicio|ping|dns", alerta!="no"})
+        instant: true
+        range: false
+    - refId: B
+      datasourceUid: __expr__
+      model:
+        refId: B
+        type: threshold
+        expression: A
+        conditions:
+        - evaluator:
+            type: gt
+            params:
+            - 0
+    noDataState: OK
+    execErrState: Error
+    for: 5m
+    annotations:
+      summary: '{{ index .Labels "nombre" }} no responde ({{ index .Labels "job" }}: {{ index .Labels "instance" }})'
+    labels:
+      vigia: si
+    isPaused: false
+  - uid: vigia-certificado
+    title: Certificado a punto de caducar
+    condition: B
+    data:
+    - refId: A
+      relativeTimeRange:
+        from: 600
+        to: 0
+      datasourceUid: prometheus
+      model:
+        refId: A
+        expr: min by (nombre, instance) ((probe_ssl_earliest_cert_expiry{job="web", alerta!="no"} - time()) / 86400)
+        instant: true
+        range: false
+    - refId: B
+      datasourceUid: __expr__
+      model:
+        refId: B
+        type: threshold
+        expression: A
+        conditions:
+        - evaluator:
+            type: lt
+            params:
+            - 15
+    noDataState: OK
+    execErrState: Error
+    for: 1h
+    annotations:
+      summary: '{{ index .Labels "nombre" }}: el certificado caduca pronto{{ with .Values.A }} (en {{ humanize .Value }} días){{
+        end }}'
+    labels:
+      vigia: si
+    isPaused: false
+  - uid: vigia-disco
+    title: Disco casi lleno
+    condition: B
+    data:
+    - refId: A
+      relativeTimeRange:
+        from: 600
+        to: 0
+      datasourceUid: prometheus
+      model:
+        refId: A
+        expr: max by (nombre, mountpoint) (100 * (1 - node_filesystem_avail_bytes{fstype!~"tmpfs|ramfs|overlay|squashfs|nsfs|devtmpfs|fuse.+"}
+          / node_filesystem_size_bytes{fstype!~"tmpfs|ramfs|overlay|squashfs|nsfs|devtmpfs|fuse.+"})) or max by (nombre, volume)
+          (100 * (1 - windows_logical_disk_free_bytes{volume=~"[A-Z]:"} / windows_logical_disk_size_bytes{volume=~"[A-Z]:"}))
+        instant: true
+        range: false
+    - refId: B
+      datasourceUid: __expr__
+      model:
+        refId: B
+        type: threshold
+        expression: A
+        conditions:
+        - evaluator:
+            type: gt
+            params:
+            - 90
+    noDataState: OK
+    execErrState: Error
+    for: 15m
+    annotations:
+      summary: '{{ index .Labels "nombre" }}: {{ index .Labels "mountpoint" }}{{ index .Labels "volume" }} casi lleno{{ with
+        .Values.A }} ({{ humanize .Value }} %){{ end }}'
+    labels:
+      vigia: si
+    isPaused: false
+  - uid: vigia-exporter
+    title: Exporter sin respuesta
+    condition: B
+    data:
+    - refId: A
+      relativeTimeRange:
+        from: 600
+        to: 0
+      datasourceUid: prometheus
+      model:
+        refId: A
+        expr: max by (job, nombre, instance) (1 - up{job!~"web|servicio|ping|dns"})
+        instant: true
+        range: false
+    - refId: B
+      datasourceUid: __expr__
+      model:
+        refId: B
+        type: threshold
+        expression: A
+        conditions:
+        - evaluator:
+            type: gt
+            params:
+            - 0
+    noDataState: OK
+    execErrState: Error
+    for: 5m
+    annotations:
+      summary: Prometheus no puede leer {{ index .Labels "job" }} de {{ index .Labels "nombre" }} ({{ index .Labels "instance"
+        }})
+    labels:
+      vigia: si
+    isPaused: false
+templates:
+- orgId: 1
+  name: vigia
+  template: '{{ define "vigia.titulo" }}[Ejemplo] {{ if eq .Status "firing" }}Problema{{ else }}Resuelto{{ end }}{{ with .CommonLabels.nombre
+    }}: {{ . }}{{ end }}{{ end }}
+
+    {{ define "vigia.mensaje" }}{{ range .Alerts.Firing }}🔴 {{ .Labels.alertname }}: {{ .Annotations.summary }}
+
+    {{ end }}{{ range .Alerts.Resolved }}✅ {{ .Labels.alertname }}: {{ .Annotations.summary }}
+
+    {{ end }}{{ end }}
+
+    '
+contactPoints:
+- orgId: 1
+  name: vigia
+  receivers:
+  - uid: vigia-telegram
+    type: telegram
+    settings:
+      bottoken: "$ALERTAS_TELEGRAM_TOKEN"
+      chatid: '-1000000000001'
+      message: '{{ template "vigia.titulo" . }}
+
+        {{ template "vigia.mensaje" . }}'
+    disableResolveMessage: false
+  - uid: vigia-correo
+    type: email
+    settings:
+      addresses: "$ALERTAS_CORREO_DESTINO"
+      singleEmail: true
+      subject: '{{ template "vigia.titulo" . }}'
+      message: '{{ template "vigia.mensaje" . }}'
+    disableResolveMessage: false
+policies:
+- orgId: 1
+  receiver: vigia
+  group_by:
+  - nombre
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 12h

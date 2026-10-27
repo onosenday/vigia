@@ -365,6 +365,8 @@ class Ping(Base):
     ip: IP | None = None
     nombre: Text | None = None
     grupo: Id | None = None
+    alerta: bool = True
+    """`false` para equipos que se apagan a propósito: se vigilan en los paneles, pero no avisan."""
 
     @model_validator(mode="after")
     def _check_target(self) -> Ping:
@@ -387,6 +389,7 @@ class Service(Base):
     """Sonda de blackbox si no es la normal (`http_any`)."""
     espera_200: bool = False
     """Confirmado que responde 200: obligatorio en hosts cuyos discos hibernan."""
+    alerta: bool = True
 
     @model_validator(mode="after")
     def _check_module(self) -> Service:
@@ -401,6 +404,7 @@ class Service(Base):
 class Web(Base):
     url: URL
     nombre: Text
+    alerta: bool = True
 
 
 class WebConfig(Base):
@@ -497,6 +501,75 @@ class Modules(Base):
     snmp: SnmpModule = SnmpModule()
 
 
+# --- alertas ---------------------------------------------------------------------------------------
+
+
+class Telegram(Base):
+    token: EnvVarName
+    """Variable con el token del bot (de BotFather): un bot solo para las alertas del sitio."""
+    chat_id: Annotated[str, StringConstraints(pattern=r"^-?[0-9]{1,20}$")]
+    """Id numérico del chat, literal: Grafana re-tipa los `$VAR` y un número no le vale como chat id. No es
+    secreto (sin el token no sirve); mejor un grupo que el chat de una persona."""
+
+
+class Mail(Base):
+    smtp: HostPort
+    """Servidor SMTP con puerto (smtp.gmail.com:587)."""
+    usuario: EnvVarName
+    clave: EnvVarName
+    remitente: EnvVarName
+    destinatarios: EnvVarName
+    """Direcciones separadas por `;`. Son datos personales: van en el fichero de entorno, no en site.yaml."""
+
+
+class Thresholds(Base):
+    caido: Duration = "5m"
+    """Tiempo sin responder (ping, servicio, web, DNS) antes de avisar."""
+    exporter_caido: Duration = "5m"
+    certificado_dias: int = Field(default=15, ge=1, le=90)
+    disco_pct: int = Field(default=90, ge=50, le=99)
+    disco_durante: Duration = "15m"
+
+
+class Alerts(Base):
+    """Alertas de Grafana con la marca del sitio. Solo infraestructura: nunca dispositivos de netinv."""
+
+    activo: bool = False
+    telegram: Telegram | None = None
+    correo: Mail | None = None
+    umbrales: Thresholds = Thresholds()
+    repetir: Duration = "12h"
+    """Cada cuánto se repite el aviso de algo que sigue fallando."""
+
+    @model_validator(mode="after")
+    def _check_channel(self) -> Alerts:
+        if self.activo and not (self.telegram or self.correo):
+            raise ValueError("alertas activas sin canal: configura `telegram` o `correo`")
+        return self
+
+    @property
+    def env_vars(self) -> list[str]:
+        """Variables que necesita Grafana (secretos y datos personales), en orden estable."""
+        out: list[str] = []
+        if self.telegram:
+            out.append(self.telegram.token)
+        if self.correo:
+            c = self.correo
+            out += [c.usuario, c.clave, c.remitente, c.destinatarios]
+        return list(dict.fromkeys(out))
+
+    @property
+    def provisioning_vars(self) -> list[str]:
+        """Las que Grafana interpola (`$VAR`) en el fichero de alertas; el SMTP va por GF_SMTP_*."""
+        out = [self.telegram.token] if self.telegram else []
+        return out + ([self.correo.destinatarios] if self.correo else [])
+
+    @property
+    def secret_vars(self) -> list[str]:
+        out = [self.telegram.token] if self.telegram else []
+        return out + ([self.correo.clave] if self.correo else [])
+
+
 # --- monitor y sitio --------------------------------------------------------------------------------
 
 DEFAULT_IMAGES: dict[str, str] = {
@@ -582,6 +655,7 @@ class Site(Base):
     web: WebConfig = WebConfig()
     dns: Dns | None = None
     modulos: Modules = Modules()
+    alertas: Alerts = Alerts()
     bridges: list[Bridge] = []
     """Redes Docker por host (salida de `vigia bridges`), para nombrar las interfaces br-<id>."""
 
@@ -602,7 +676,7 @@ class Site(Base):
         return [h for h in self.hosts if h.pihole]
 
     def resolved_pings(self) -> list[tuple[str, str, str]]:
-        """(ip, nombre, grupo) de cada objetivo de ping, en orden."""
+        """(ip, nombre, grupo) de cada objetivo de ping, en el orden de `ping` (zip con él es válido)."""
         vips = {v.id: v for v in self.vips}
         out = []
         for p in self.ping:

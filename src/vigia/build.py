@@ -11,6 +11,7 @@ from typing import Any
 from urllib.parse import urlsplit
 
 from vigia import __version__
+from vigia.alerting import alerting, smtp_env
 from vigia.model import Host, Site
 from vigia.render import Raw, dump_yaml, render_template
 
@@ -91,21 +92,29 @@ def targets(s: Site) -> dict[str, Any]:
     if s.modulos.blackbox:
         if s.ping:
             out["hosts.yml"] = [
-                {"targets": [ip], "labels": {"nombre": name, "grupo": group}}
-                for ip, name, group in s.resolved_pings()
+                {"targets": [ip], "labels": _no_alert({"nombre": name, "grupo": group}, p.alerta)}
+                for p, (ip, name, group) in zip(s.ping, s.resolved_pings(), strict=True)
             ]
         if s.servicios:
             groups = []
             for srv in s.servicios:
-                labels: dict[str, str] = {"nombre": srv.nombre, "host": srv.host}
+                labels: dict[str, str] = _no_alert({"nombre": srv.nombre, "host": srv.host}, srv.alerta)
                 mod = _service_module(s, srv)
                 if mod:
                     labels["__param_module"] = mod
                 groups.append({"targets": [srv.url], "labels": labels})
             out["servicios.yml"] = groups
         if s.web.objetivos:
-            out["web.yml"] = [{"targets": [w.url], "labels": {"nombre": w.nombre}} for w in s.web.objetivos]
+            out["web.yml"] = [
+                {"targets": [w.url], "labels": _no_alert({"nombre": w.nombre}, w.alerta)}
+                for w in s.web.objetivos
+            ]
     return out
+
+
+def _no_alert(labels: dict[str, str], alert: bool) -> dict[str, str]:
+    """Etiqueta `alerta: "no"` en lo que se apaga a propósito (las reglas la excluyen)."""
+    return labels if alert else {**labels, "alerta": "no"}
 
 
 def _probes(s: Site) -> list[tuple[str, str, str, str]]:
@@ -214,6 +223,8 @@ def build_site(s: Site, site_root: Path) -> dict[str, str | bytes]:
         "grafana/datasources.yml.j2", s=s
     )
     out["grafana-provisioning/dashboards/vigia.yml"] = render_template("grafana/dashboards.yml.j2", s=s)
+    if s.alertas.activo:
+        out["grafana-provisioning/alerting/vigia.yml"] = alerting(s, _header(s, "Alertas de Grafana"))
     if s.branding.grafana and s.branding.logo:
         out["branding/logo.svg"] = (site_root / s.branding.logo).read_bytes()
     if s.branding.grafana and s.branding.favicon:
@@ -234,6 +245,8 @@ def build_site(s: Site, site_root: Path) -> dict[str, str | bytes]:
         node=mon,
         pihole=_pihole_params(s),
         snmp_vars=_snmp_vars(s),
+        smtp_env=smtp_env(s),
+        alert_vars=s.alertas.provisioning_vars if s.alertas.activo else [],
         header=_header(s, f"Stack {s.monitor.proyecto} (host {mon.id})"),
     )
 

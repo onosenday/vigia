@@ -80,6 +80,8 @@ def units(s: Site, build: Mapping[str, bytes]) -> dict[str, Unit]:
         secrets = [v for v in [s.modulos.pihole_exporter.secreto] if v]
         for a in s.modulos.snmp.auths:
             secrets += [v for v in (a.usuario, a.clave_auth, a.clave_priv, a.comunidad) if v]
+        if s.alertas.activo:
+            secrets += s.alertas.env_vars
         out["monitor"] = Unit(
             "monitor",
             mon,
@@ -142,6 +144,7 @@ def secret_names(s: Site) -> set[str]:
     out = {v for v in [s.modulos.pihole_exporter.secreto] if v}
     for a in s.modulos.snmp.auths:
         out |= {v for v in (a.usuario, a.clave_auth, a.clave_priv, a.comunidad) if v}
+    out |= set(s.alertas.secret_vars)
     for h in s.hosts:
         if h.ssh:
             out |= set(h.ssh.sudo_secreto) | ({h.ssh.secreto} if h.ssh.secreto else set())
@@ -251,6 +254,27 @@ print('setFile OK')
 PY"""
 
 
+_ENVCHECK = """python3 - "$@" <<'PY'
+import json, re, subprocess, sys
+uuid, names = sys.argv[1], sys.argv[2:]
+cur = json.loads(subprocess.run(['omv-rpc', '-u', 'admin', 'Compose', 'getFile', json.dumps({'uuid': uuid})],
+                                check=True, capture_output=True, text=True).stdout)
+faltan = [n for n in names if not re.search('^' + n + '=.', cur.get('env') or '', re.M)]
+if faltan:
+    sys.exit('ABORTADO: el Environment del stack en OMV no tiene: ' + ' '.join(faltan)
+             + ' (añádelas en la UI de OMV antes de desplegar)')
+PY"""
+
+
+def _env_check_script(u: Unit) -> str:
+    """OMV: el env del stack lo mantiene el usuario en la UI. Sin las variables que usa el compose, Grafana no
+    provisiona sus alertas y se para: se comprueba antes de tocar nada (solo nombres, nunca valores)."""
+    if not (isinstance(u.deploy, DeployOMV) and u.secrets):
+        return ""
+    names = " ".join(q(n) for n in u.secrets)
+    return f"set -- {q(u.deploy.uuid)} {names}\n{_ENVCHECK}"
+
+
 def _up_script(u: Unit, up: str) -> str:
     dep = u.deploy
     if isinstance(dep, DeployOMV):
@@ -296,6 +320,7 @@ def deploy_script(u: Unit, up: str) -> str:
     parts = [
         "set -euo pipefail",
         f"trap 'rm -rf {q(up)}' EXIT",  # la subida (con el fichero de entorno) no queda en /tmp ni si falla
+        _env_check_script(u),
         _backup_script(u),
         _sync_script(u, up),
         _up_script(u, up),

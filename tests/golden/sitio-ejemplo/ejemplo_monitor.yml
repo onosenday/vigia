@@ -10,6 +10,15 @@ services:
       - "GF_INSTANCE_NAME=ejemplo"
       - "GF_USERS_DEFAULT_THEME=dark"
       - "GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/var/lib/grafana-dashboards/inicio.json"
+      # Alertas: Grafana lee estas variables al provisionar contact points (valores en el env del stack).
+      - "GF_SMTP_ENABLED=true"
+      - "GF_SMTP_HOST=smtp.ejemplo.lan:587"
+      - "GF_SMTP_USER=${ALERTAS_SMTP_USUARIO}"
+      - "GF_SMTP_PASSWORD=${ALERTAS_SMTP_CLAVE}"
+      - "GF_SMTP_FROM_ADDRESS=${ALERTAS_SMTP_REMITENTE}"
+      - "GF_SMTP_FROM_NAME=Alertas Ejemplo"
+      - "ALERTAS_TELEGRAM_TOKEN=${ALERTAS_TELEGRAM_TOKEN}"
+      - "ALERTAS_CORREO_DESTINO=${ALERTAS_CORREO_DESTINO}"
     ports:
       - "3300:3000"
     volumes:

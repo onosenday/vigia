@@ -17,6 +17,15 @@ services:
       - {{ "GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/var/lib/grafana-dashboards/inicio.json" }}
 {% endif %}
 {% endif %}
+{% if alert_vars %}
+      # Alertas: Grafana lee estas variables al provisionar contact points (valores en el env del stack).
+{% for v in smtp_env %}
+      - {{ v }}
+{% endfor %}
+{% for v in alert_vars %}
+      - {{ v ~ "=${" ~ v ~ "}" }}
+{% endfor %}
+{% endif %}
     ports:
       - {{ s.monitor.puertos.grafana ~ ":3000" }}
     volumes:
