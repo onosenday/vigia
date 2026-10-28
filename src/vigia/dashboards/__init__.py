@@ -948,6 +948,7 @@ def dashboards_for(s: Site, site_root: Path) -> dict[str, str]:
         "contenedores.json": containers(s, m),
         "pihole.json": pihole(s, m),
         "dispositivos.json": devices.devices(s, m) if s.modulos.netinv.activo else None,
+        "actividad.json": devices.activity(s, m) if s.modulos.netinv.activo else None,
         "equipos-snmp.json": extra.snmp(s, m),
         "impresoras.json": printers.printers(s, m),
         "externos.json": externals.externals(s, m),

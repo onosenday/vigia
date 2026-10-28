@@ -29,7 +29,9 @@ def test_branding_everywhere(example_data: dict[str, Any]) -> None:
 
 def test_dashboards_by_capability(example_data: dict[str, Any]) -> None:
     gen = _gen(example_data)
-    assert {"equipos-snmp.json", "windows.json", "dispositivos.json", "inicio.json"} <= set(gen)
+    assert {"equipos-snmp.json", "windows.json", "dispositivos.json", "actividad.json", "inicio.json"} <= set(
+        gen
+    )
 
 
 def test_minimal_site_probes_only(example_data: dict[str, Any]) -> None:
