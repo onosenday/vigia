@@ -2,6 +2,8 @@
 
 ## Sin publicar
 
+- **Tareas programadas** (`tareas`, `node_exporter.textfile`): alertas de tarea retrasada, con error y sin datos,
+  y panel «Tareas», con el colector textfile de node_exporter ([docs/tareas.md](docs/tareas.md)).
 - **Bot de consultas por Telegram** (`modulos.bot`): `/estado`, `/alertas`, `/host`, `/dispositivo`,
   `/info`, `/lista` y `/ayuda` en el chat de las alertas; solo lectura, solo ese chat, sin puertos
   publicados ([docs/bot.md](docs/bot.md)).

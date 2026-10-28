@@ -33,6 +33,7 @@ id. No es secreto (sin el token no sirve de nada); usa un **grupo** para que no 
 | Exporter sin respuesta | cualquier `up` que no sea una sonda | `up = 0` durante `exporter_caido` |
 | Consumible de impresora bajo | tóner, tinta, tambor… de las impresoras con `snmp` (no los depósitos de residuos) | por debajo de `consumible_pct` durante 30 min |
 | Error de impresora | sin papel o tóner, puerta abierta, atasco, desconectada, servicio, bandeja o consumible ausente, salida llena, mantenimiento vencido | activo durante 10 min |
+| Tarea sin éxito reciente · con error · sin datos | `tareas` ([tareas.md](tareas.md)) | más de `max_horas` sin éxito, última ejecución con error, o nunca ha escrito su métrica |
 
 Los avisos se agrupan por `nombre`: si un servidor se cae, la sonda y su exporter llegan en el mismo mensaje.
 Lo que se apaga (o se duerme, como muchas impresoras) se marca con `alerta: false` en su entrada de `ping`, `servicios` o

@@ -34,6 +34,8 @@ Los paneles se generan según lo que exista en el sitio.
 Impresoras por SNMP (consumibles, páginas, errores), varias subredes por sitio y equipos o webs en internet
 solo con sondas salientes ([docs/externos.md](docs/externos.md)).
 
+Tareas programadas (copias de seguridad…) por el textfile de node_exporter: [docs/tareas.md](docs/tareas.md).
+
 Alertas con la marca del sitio por Telegram y correo (caído, certificado, disco, exporter): ver
 [docs/alertas.md](docs/alertas.md).
 
