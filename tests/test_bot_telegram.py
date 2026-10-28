@@ -45,10 +45,17 @@ def test_enviar() -> None:
     assert body["chat_id"] == CHAT and body["parse_mode"] == "HTML" and body["text"] == "<b>hola</b>"
 
 
-def test_registrar_comandos() -> None:
+def test_registrar_comandos_solo_en_el_chat() -> None:
     g = Grabadora({"ok": True, "result": True})
-    Telegram("123:abc", g).registrar_comandos([("estado", "resumen")])
-    assert g.llamadas[0][1] == {"commands": [{"command": "estado", "description": "resumen"}]}
+    Telegram("123:abc", g).registrar_comandos(CHAT, [("estado", "resumen")])
+    (url1, body1, _), (url2, body2, _) = g.llamadas
+    # sin lista global (privados y otros chats no ven sugerencias) y la lista solo en el chat de alertas
+    assert url1.endswith("/deleteMyCommands") and body1 == {"scope": {"type": "default"}}
+    assert url2.endswith("/setMyCommands")
+    assert body2 == {
+        "commands": [{"command": "estado", "description": "resumen"}],
+        "scope": {"type": "chat", "chat_id": CHAT},
+    }
 
 
 def test_repr_sin_token() -> None:

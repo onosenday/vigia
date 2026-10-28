@@ -25,3 +25,6 @@ build/
 .beads/
 AGENTS.md
 CLAUDE.md
+
+# editores
+*.swp

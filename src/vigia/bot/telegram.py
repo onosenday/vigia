@@ -53,8 +53,16 @@ class Telegram:
             },
         )
 
-    def registrar_comandos(self, comandos: Iterable[tuple[str, str]]) -> None:
-        self._llamar("setMyCommands", {"commands": [{"command": c, "description": d} for c, d in comandos]})
+    def registrar_comandos(self, chat_id: int, comandos: Iterable[tuple[str, str]]) -> None:
+        """Sugerencias de `/` solo en el chat atendido: se borra la lista global (privados y otros chats)."""
+        self._llamar("deleteMyCommands", {"scope": {"type": "default"}})
+        self._llamar(
+            "setMyCommands",
+            {
+                "commands": [{"command": c, "description": d} for c, d in comandos],
+                "scope": {"type": "chat", "chat_id": chat_id},
+            },
+        )
 
 
 def clasificar(update: dict[str, Any], chat_id: int, desde: float) -> tuple[str, str]:

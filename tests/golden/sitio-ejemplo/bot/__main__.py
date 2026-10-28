@@ -148,7 +148,7 @@ def main() -> None:
     salud = Salud()
     servir_salud(salud, cfg.puerto)
     try:
-        tg.registrar_comandos((c, d) for c, _, d in AYUDA)
+        tg.registrar_comandos(cfg.chat_id, [(c, d) for c, _, d in AYUDA])
     except FuenteError as e:
         log("setMyCommands:", e)
     log("bot en marcha:", cfg.sitio, "·", len(cfg.hosts), "hosts")
