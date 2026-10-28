@@ -59,15 +59,15 @@ Solo si hay `tareas`. Una regla por tipo; la condición por tarea se une con `or
 | `vigia-tarea-sin-datos` | Tarea sin datos | `absent(vigia_tarea_ultimo_exito_timestamp_seconds{nombre="H", tarea="T"})` | `> 0` | 1h |
 
 - Resúmenes: «`<nombre>`: la tarea `<tarea>` no termina bien desde hace más de N h», «… acabó con error»,
-  «… no ha escrito nunca su métrica (¿script instalado? ¿textfile activo?)».
-- `vigia-tarea-retrasada` muestra las horas de retraso con `humanize`.
+  «… no tiene ninguna ejecución correcta registrada (¿script instalado? ¿textfile activo?)».
+- `vigia-tarea-retrasada` muestra las horas de retraso con `printf "%.1f"` (`humanize` pondría prefijos SI: «83.33m»).
 - Si el exporter del host cae, ya avisa «Exporter sin respuesta»; `absent` también saltaría tras 1 h, lo
   que es aceptable (no se duplica antes de esa hora).
 
 ## Panel «Tareas» (`tareas.json`)
 
 Dashboard propio, solo si hay `tareas`. Una tabla compacta, una fila por tarea declarada, ordenada por host
-y tarea (seguir el orden de `hosts:` exigiría una consulta por tarea y columna):
+(Grafana solo admite una columna en `sortBy`) (seguir el orden de `hosts:` exigiría una consulta por tarea y columna):
 
 | Host | Tarea | Último éxito (h) | Margen (h) | Resultado |
 
