@@ -2331,18 +2331,18 @@ git commit -m "docs: bot de consultas por Telegram (vigia-c3b)"
 
 ---
 
-### Task 12: Puesta en marcha en el sitio de casa (myNet) — **con OK del usuario en cada paso**
+### Task 12: Puesta en marcha en un sitio — **con OK del usuario en cada paso**
 
-Fuera del repo de vigia; nada de esto lo ejecuta el agente sin un OK explícito (rule `operaciones.md`).
+Fuera del repo de vigia; nada de esto lo ejecuta el agente sin un OK explícito.
 
-- [ ] **Step 1 (usuario):** en Grafana (`:3300` de sol4), cuenta de servicio Viewer y token; añadir
-  `BOT_GRAFANA_TOKEN` al fichero de entorno de myNet **y** al *Environment* del stack `grafana_prometheus`
-  en la UI de OMV. Comprobar en @BotFather que *Group Privacy* está activado y *Allow Groups* desactivado.
-- [ ] **Step 2:** en `myNet/monitor/site.yaml`, `modulos.bot: {activo: true, grafana_token:
-  BOT_GRAFANA_TOKEN}`; en `monitor/`, `uv sync --reinstall-package vigia` y `uv run vigia validate`.
+- [ ] **Step 1 (usuario):** en el Grafana del sitio, cuenta de servicio Viewer y token; añadir
+  `BOT_GRAFANA_TOKEN` al fichero de entorno del sitio **y**, si el monitor va en OMV, al *Environment* de su
+  stack. Comprobar en @BotFather que *Group Privacy* está activado y *Allow Groups* desactivado.
+- [ ] **Step 2:** en el `site.yaml` del sitio, `modulos.bot: {activo: true, grafana_token:
+  BOT_GRAFANA_TOKEN}`; en su carpeta, `uv sync --reinstall-package vigia` y `uv run vigia validate`.
 - [ ] **Step 3:** `uv run vigia deploy monitor` (diff) → presentar el diff → con OK, `--yes`
   (copia previa en `/root/vigia-backups/`; rollback: `uv run vigia rollback monitor --yes`).
 - [ ] **Step 4:** verificación: `docker logs` del contenedor `bot` («bot en marcha»), target `bot` *up* en
   Prometheus, cada comando en el grupo y un mensaje privado al bot sin respuesta.
-- [ ] **Step 5:** `CLAUDE.md` de myNet (línea en «Capa core… Monitorización») y commit en myNet.
+- [ ] **Step 5:** documentación del sitio y commit en su repo.
 ```

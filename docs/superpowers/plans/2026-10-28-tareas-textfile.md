@@ -821,7 +821,7 @@ git commit -m "docs(tareas): tareas programadas por textfile (vigia-86m)"
 ### Task 9: Verificación final
 
 - [ ] `uv run pytest -q`, `uv run ruff check .`, `uv run ruff format --check src tests`, `uv run mypy src`: todo limpio.
-- [ ] En myNet: `cd ~/minube/red_de_casa/myNet/monitor && uv sync -q --reinstall-package vigia && uv run vigia validate`:
-  el sitio de casa sigue válido y sin tareas (nada cambia en lo generado: `uv run vigia deploy monitor` muestra diff vacío).
+- [ ] En un sitio real sin tareas: `uv sync -q --reinstall-package vigia && uv run vigia validate` en su carpeta:
+  sigue válido y nada cambia en lo generado (`uv run vigia deploy monitor` muestra diff vacío).
 - [ ] `bd close vigia-86m` con un resumen.
 ````

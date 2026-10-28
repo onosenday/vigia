@@ -204,7 +204,7 @@ class Colors(Base):
 
 class Branding(Base):
     nombre: Text
-    """Nombre corto del sitio en asuntos de alertas, portada e informes (Casa, Oficina…)."""
+    """Nombre corto del sitio en asuntos de alertas, portada e informes (Oficina, Sede…)."""
     prefijo_titulo: OptionalText = ""
     """Se antepone al título de cada panel ("Oficina · ")."""
     carpeta: Text

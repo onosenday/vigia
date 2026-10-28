@@ -95,5 +95,5 @@ Dashboard propio, solo si hay `tareas`. Una tabla compacta, una fila por tarea d
 ## Fuera de alcance
 
 - Instalar un binario auxiliar (`vigia-tarea`) en los hosts: solo el ejemplo en la documentación.
-- Pasar el node_exporter de pimonitor a vigia (myNet-5ar).
+- Pasar a vigia un node_exporter externo instalado por paquete (decisión de cada sitio).
 - Comando del bot para tareas.

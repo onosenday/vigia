@@ -40,10 +40,22 @@ def test_deterministic() -> None:
     assert _generated() == _generated()
 
 
+LITERALES = Path(__file__).parents[1] / ".literales-prohibidos"
+"""Fichero local (fuera de git) con una expresión regular de nombres de los sitios reales que no deben
+aparecer en lo generado; también por la variable VIGIA_LITERALES_PROHIBIDOS."""
+
+
+def _prohibidos() -> str:
+    extra = os.environ.get("VIGIA_LITERALES_PROHIBIDOS", "")
+    if not extra and LITERALES.exists():
+        extra = LITERALES.read_text(encoding="utf-8").strip()
+    return r"192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\." + (f"|{extra}" if extra else "")
+
+
 def test_no_secrets_or_other_site_literals() -> None:
     # configuración generada (no el código de las imágenes, que lee sus variables por nombre)
     text = b"\n".join(v for k, v in _generated().items() if k.endswith((".yml", ".yaml", ".json"))).decode()
-    assert not re.search(r"192\.168\.|cuco|sol[0-9]|pimonitor|myNet", text)
+    assert not re.search(_prohibidos(), text)
     # las credenciales solo aparecen como referencia ${VAR}
     for var in ("SNMP_NAS_AUTH", "SNMP_NAS_PRIV", "SNMP_COMUNIDAD", "PIHOLE_PASSWORDS"):
         rest = text.replace(f"{var}=${{{var}}}", "").replace(f"${{{var}}}", "")
