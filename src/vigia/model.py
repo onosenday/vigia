@@ -232,6 +232,12 @@ class Exporter(Base):
     """`vigia` lo despliega; `externo` ya está instalado por otro medio y solo se consulta."""
 
 
+class NodeExporter(Exporter):
+    textfile: bool = False
+    """Lee los `.prom` de la carpeta de tareas (vigia.tareas.TEXTFILE_DIR). En `gestion: externo`, el
+    administrador ya ha añadido `--collector.textfile.directory` a ese exporter."""
+
+
 class Snmp(Base):
     auth: Id = "por-defecto"
     """Nombre de la autenticación en `snmp.auths` del sitio."""
@@ -313,7 +319,7 @@ class Host(Base):
     """Grupo en el panel de ping; por defecto, el del perfil del tipo."""
     ssh_puerto: Port = 22
     ssh: SshAccess | None = None
-    node_exporter: Exporter | None = None
+    node_exporter: NodeExporter | None = None
     windows_exporter: Exporter | None = None
     cadvisor: Exporter | None = None
     snmp: Snmp | None = None
@@ -824,6 +830,15 @@ class Bridge(Base):
     nombre: Annotated[str, StringConstraints(pattern=r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$")]
 
 
+class Tarea(Base):
+    """Tarea programada que deja su estado en el textfile de node_exporter de su host."""
+
+    nombre: Id
+    host: Id
+    max_horas: int = Field(ge=1, le=744)
+    """Horas máximas sin una ejecución correcta antes de avisar."""
+
+
 class Site(Base):
     vigia: Annotated[str, StringConstraints(pattern=r"^[0-9<>=!~,. ]+$")]
     """Rango de versiones de vigia con el que se probó el sitio; con otra versión, el sitio no carga."""
@@ -843,6 +858,8 @@ class Site(Base):
     externos: Externals = Externals()
     """Equipos y webs fuera de la red del sitio (internet): solo sondas salientes desde el monitor."""
     bridges: list[Bridge] = []
+    tareas: list[Tarea] = []
+    """Tareas programadas (copias…) vigiladas por el textfile de node_exporter ([docs/tareas.md])."""
     """Redes Docker por host (salida de `vigia bridges`), para nombrar las interfaces br-<id>."""
 
     @field_validator("vigia")
@@ -1024,6 +1041,16 @@ class Site(Base):
         for b in self.bridges:
             if b.host not in hosts_by_id:
                 errors.append(f"bridges: host desconocido {b.host!r}")
+
+        nombres = [t.nombre for t in self.tareas]
+        if len(nombres) != len(set(nombres)):
+            errors.append(f"tareas repetidas: {sorted({n for n in nombres if nombres.count(n) > 1})}")
+        for t in self.tareas:
+            th = hosts_by_id.get(t.host)
+            if th is None:
+                errors.append(f"tarea {t.nombre}: host desconocido {t.host!r}")
+            elif not (th.node_exporter and th.node_exporter.textfile):
+                errors.append(f"tarea {t.nombre}: {t.host} no tiene node_exporter con `textfile: true`")
 
         if errors:
             raise ValueError("; ".join(errors))

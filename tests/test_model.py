@@ -170,3 +170,42 @@ def test_bot_zona_que_es_una_carpeta(example_data: dict[str, Any]) -> None:
 def test_bot_zona_utc(example_data: dict[str, Any]) -> None:
     example_data["modulos"]["bot"] = {"activo": True, "grafana_token": "BOT_GRAFANA_TOKEN", "zona": "UTC"}
     assert _validate(example_data).modulos.bot.zona == "UTC"
+
+
+def _con_tareas(d: dict[str, Any]) -> dict[str, Any]:
+    d["hosts"][2]["node_exporter"]["textfile"] = True  # nodo2
+    d["tareas"] = [{"nombre": "copias-bd", "host": "nodo2", "max_horas": 26}]
+    return d
+
+
+def test_tareas_validas(example_data: dict[str, Any]) -> None:
+    s = _validate(_con_tareas(example_data))
+    assert s.tareas[0].max_horas == 26
+    assert s.get_host("nodo2").node_exporter.textfile  # type: ignore[union-attr]
+
+
+def test_textfile_solo_en_node_exporter(example_data: dict[str, Any]) -> None:
+    example_data["hosts"][4]["windows_exporter"]["textfile"] = True  # puesto1
+    _assert_invalid(example_data, "Extra inputs are not permitted")
+
+
+def test_tarea_host_desconocido(example_data: dict[str, Any]) -> None:
+    _con_tareas(example_data)["tareas"][0]["host"] = "nodo9"
+    _assert_invalid(example_data, "tarea copias-bd: host desconocido")
+
+
+def test_tarea_host_sin_textfile(example_data: dict[str, Any]) -> None:
+    _con_tareas(example_data)["tareas"][0]["host"] = "nodo1"
+    _assert_invalid(example_data, "tarea copias-bd: nodo1 no tiene node_exporter con `textfile: true`")
+
+
+def test_tareas_repetidas(example_data: dict[str, Any]) -> None:
+    d = _con_tareas(example_data)
+    d["tareas"].append(dict(d["tareas"][0]))
+    _assert_invalid(d, "tareas repetidas")
+
+
+@pytest.mark.parametrize("horas", [0, 745])
+def test_tarea_max_horas_fuera_de_rango(example_data: dict[str, Any], horas: int) -> None:
+    _con_tareas(example_data)["tareas"][0]["max_horas"] = horas
+    _assert_invalid(example_data, "max_horas")
