@@ -5,6 +5,7 @@ Los errores nunca llevan la URL ni la excepción original: la URL de Telegram co
 
 from __future__ import annotations
 
+import http.client
 import json
 import re
 import urllib.error
@@ -21,6 +22,16 @@ ALERTAS_API = "/api/alertmanager/grafana/api/v2/alerts?active=true&silenced=fals
 
 class FuenteError(Exception):
     """Una fuente no respondió o respondió algo inesperado. El texto es solo el tipo de fallo."""
+
+
+class _SinRedireccion(urllib.request.HTTPRedirectHandler):
+    """No sigue redirecciones: el token de Grafana no debe viajar a otro host."""
+
+    def redirect_request(self, *args: Any, **kwargs: Any) -> None:
+        return None
+
+
+_OPENER = urllib.request.build_opener(_SinRedireccion)
 
 
 class Http(Protocol):
@@ -40,11 +51,11 @@ def http_json(
         h["Content-Type"] = "application/json"
     req = urllib.request.Request(url, data=data, headers=h, method="POST" if data is not None else "GET")  # noqa: S310 - URLs fijas de config.json
     try:
-        with urllib.request.urlopen(req, timeout=timeout) as r:  # noqa: S310 - URLs fijas de config.json
+        with _OPENER.open(req, timeout=timeout) as r:  # noqa: S310 - URLs fijas de config.json
             return json.loads(r.read(MAX_RESPUESTA))
     except urllib.error.HTTPError as e:
         raise FuenteError(f"HTTP {e.code}") from None
-    except (OSError, ValueError) as e:
+    except (OSError, ValueError, http.client.HTTPException) as e:
         raise FuenteError(type(e).__name__) from None
 
 
@@ -97,6 +108,8 @@ class Grafana:
             if not isinstance(a, dict):
                 continue
             lab, ann = a.get("labels") or {}, a.get("annotations") or {}
+            if not isinstance(lab, dict) or not isinstance(ann, dict):
+                continue
             out.append(
                 Alerta(
                     str(lab.get("alertname", "")),
