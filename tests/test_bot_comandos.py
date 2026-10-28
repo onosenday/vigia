@@ -6,7 +6,7 @@ from vigia.alerting import FS_EXCLUDED
 from vigia.bot import consultas as q
 from vigia.bot.comandos import parsear, responder
 
-from .bot_fakes import Serie, contexto
+from .bot_fakes import AHORA, Serie, contexto, ts
 
 N1, N2, NAS = {"nombre": "Nodo 1"}, {"nombre": "Nodo 2"}, {"nombre": "NAS"}
 
@@ -114,3 +114,56 @@ def test_host_con_prometheus_caido() -> None:
 def test_alertas_con_fecha_ilegible() -> None:
     raras = [{"labels": {"alertname": "Caído", "nombre": "Nodo 2"}, "startsAt": "basura", "annotations": {}}]
     assert responder("/alertas", contexto(alertas=raras)) == "❌ Caído · Nodo 2 · desde ?"
+
+
+IMPRESORA = {
+    "mac": "aa:bb:cc:00:00:40", "ip": "10.99.0.40", "nombre": "Impresora", "mostrar": "Impresora",
+    "tipo": "impresora", "ubicacion": "Despacho", "fabricante": "Ejemplo SA", "modelo": "", "encendido": "●",
+}
+TELE = {
+    "mac": "aa:bb:cc:00:00:50", "ip": "10.99.0.50", "nombre": "", "mostrar": "tele-salon ¿?", "tipo": "",
+    "ubicacion": "", "fabricante": "Ejemplo TV", "modelo": "", "encendido": "○",
+}
+DISP: dict[str, Serie] = {
+    q.DISP_INFO: [(IMPRESORA, 1), (TELE, 1)],
+    q.DISP_ULTIMA: [
+        ({"mac": "aa:bb:cc:00:00:40"}, AHORA - 180),
+        ({"mac": "aa:bb:cc:00:00:50"}, ts(2026, 10, 27, 23, 10)),
+    ],
+    q.DISP_PRIMERA: [({"mac": "aa:bb:cc:00:00:40"}, ts(2026, 10, 20, 9, 0))],
+}
+
+
+def test_dispositivo() -> None:
+    c = contexto(DISP)
+    assert responder("/dispositivo impresora", c) == "🟢 Impresora · 10.99.0.40 · visto hace 3 min"
+    assert responder("/dispositivo 10.99.0.50", c) == "⚪ tele-salon ¿? · 10.99.0.50 · última vez ayer 23:10"
+    assert responder("/dispositivo tostadora", c) == "No conozco tostadora. Prueba /lista"
+    assert responder("/dispositivo", c) == "Uso: /dispositivo &lt;nombre, IP o MAC&gt;"
+
+
+def test_info() -> None:
+    assert responder("/info AA-BB-CC-00-00-40", contexto(DISP)) == (
+        "🟢 <b>Impresora</b>\n"
+        "Tipo: impresora\n"
+        "Ubicación: Despacho\n"
+        "Fabricante: Ejemplo SA\n"
+        "IP: 10.99.0.40\n"
+        "MAC: aa:bb:cc:00:00:40\n"
+        "Primera vez: 20-10 09:00\n"
+        "Última vez: 14:25"
+    )
+
+
+def test_lista() -> None:
+    c = contexto(DISP)
+    assert responder("/lista", c) == "<b>Encendidos: 1</b>\nimpresora (1): Impresora"
+    assert responder("/lista Impresora", c) == "<b>Encendidos: 1</b>\nimpresora (1): Impresora"
+    assert responder("/lista tv", c) == "Nada encendido de tipo tv"
+
+
+def test_dispositivos_sin_netinv_o_sin_prometheus() -> None:
+    sin = "Este sitio no tiene netinv: no hay inventario de dispositivos."
+    assert responder("/lista", contexto(DISP, netinv=False)) == sin
+    assert responder("/info impresora", contexto(DISP, netinv=False)) == sin
+    assert responder("/dispositivo impresora", contexto(prom_caido=True)) == "⚠ Prometheus no responde"

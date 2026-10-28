@@ -6,7 +6,7 @@ import time
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 
-from .buscar import buscar
+from .buscar import buscar, normalizar
 from .config import Config, HostCfg
 from .consultas import (
     CARGA,
@@ -16,12 +16,15 @@ from .consultas import (
     DISCOS,
     GRAFANA_CAIDO,
     PING,
+    PROM_CAIDO,
     RAM,
     SERVIDORES,
     TEMP,
     UPTIME,
     WIN_DISCOS,
     Avisos,
+    Dispositivo,
+    dispositivos,
     estado_host,
     por,
     serie,
@@ -32,6 +35,8 @@ from .fuentes import FuenteError, Grafana, Prometheus
 MAX_ARG = 64
 MAX_OPCIONES = 8
 MAX_ALERTAS_ESTADO = 5
+SIN_NETINV = "Este sitio no tiene netinv: no hay inventario de dispositivos."
+SIN_TIPO = "sin clasificar"
 
 AYUDA: tuple[tuple[str, str, str], ...] = (
     ("estado", "", "servidores y alertas de un vistazo"),
@@ -178,10 +183,86 @@ def _ficha_host(ctx: Contexto, h: HostCfg) -> str:
     return recortar(lineas + av.lineas)
 
 
+def _un_dispositivo(ctx: Contexto, arg: str, uso: str) -> Dispositivo | str:
+    """El dispositivo que busca `arg` o el texto de respuesta si no hay uno solo."""
+    if not ctx.cfg.netinv:
+        return SIN_NETINV
+    if not arg:
+        return esc(uso)
+    try:
+        ds = dispositivos(ctx.prom)
+    except FuenteError:
+        return PROM_CAIDO
+    r = buscar(arg, ds, lambda d: (d.nombre, d.ip, d.mac))
+    if not r:
+        return f"No conozco {esc(arg)}. Prueba /lista"
+    if len(r) > 1:
+        return _varios([d.nombre for d in r])
+    return r[0]
+
+
+def dispositivo(ctx: Contexto, arg: str) -> str:
+    d = _un_dispositivo(ctx, arg, "Uso: /dispositivo <nombre, IP o MAC>")
+    if isinstance(d, str):
+        return d
+    now = ctx.ahora()
+    if d.encendido:
+        return f"🟢 {esc(d.nombre)} · {esc(d.ip)} · visto hace {duracion(now - d.ultima)}"
+    cuando = hora(d.ultima, now, ctx.cfg.zona) if d.ultima else "desconocida"
+    return f"⚪ {esc(d.nombre)} · {esc(d.ip)} · última vez {cuando}"
+
+
+def info(ctx: Contexto, arg: str) -> str:
+    d = _un_dispositivo(ctx, arg, "Uso: /info <nombre, IP o MAC>")
+    if isinstance(d, str):
+        return d
+    now, z = ctx.ahora(), ctx.cfg.zona
+    lineas = [f"{'🟢' if d.encendido else '⚪'} <b>{esc(d.nombre)}</b>"]
+    campos = (
+        ("Tipo", d.tipo),
+        ("Ubicación", d.ubicacion),
+        ("Fabricante", d.fabricante),
+        ("Modelo", d.modelo),
+        ("IP", d.ip),
+        ("MAC", d.mac),
+    )
+    lineas += [f"{k}: {esc(v)}" for k, v in campos if v]
+    if d.primera:
+        lineas.append(f"Primera vez: {hora(d.primera, now, z)}")
+    if d.ultima:
+        lineas.append(f"Última vez: {hora(d.ultima, now, z)}")
+    return recortar(lineas)
+
+
+def lista(ctx: Contexto, arg: str) -> str:
+    if not ctx.cfg.netinv:
+        return SIN_NETINV
+    try:
+        ds = dispositivos(ctx.prom)
+    except FuenteError:
+        return PROM_CAIDO
+    enc = [d for d in ds if d.encendido]
+    if arg:
+        enc = [d for d in enc if normalizar(d.tipo or SIN_TIPO) == normalizar(arg)]
+    if not enc:
+        return "Nada encendido" + (f" de tipo {esc(arg)}" if arg else "")
+    grupos: dict[str, list[str]] = {}
+    for d in sorted(enc, key=lambda d: normalizar(d.nombre)):
+        grupos.setdefault(d.tipo or SIN_TIPO, []).append(d.nombre)
+    lineas = [f"<b>Encendidos: {len(enc)}</b>"]
+    lineas += [
+        f"{esc(t)} ({len(ns)}): " + ", ".join(esc(n) for n in ns) for t, ns in sorted(grupos.items())
+    ]
+    return recortar(lineas)
+
+
 COMANDOS: dict[str, Comando] = {
     "estado": estado,
     "alertas": alertas,
     "host": host,
+    "dispositivo": dispositivo,
+    "info": info,
+    "lista": lista,
     "ayuda": ayuda,
     "start": ayuda,
 }
