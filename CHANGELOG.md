@@ -1,5 +1,11 @@
 # Cambios
 
+## Sin publicar
+
+- **Bot de consultas por Telegram** (`modulos.bot`): `/estado`, `/alertas`, `/host`, `/dispositivo`,
+  `/info`, `/lista` y `/ayuda` en el chat de las alertas; solo lectura, solo ese chat, sin puertos
+  publicados ([docs/bot.md](docs/bot.md)).
+
 ## 0.3.1 (2026-10-28)
 
 - **Skill `vigia-actualizar`**: comprueba en seco el riesgo de subir a otra versión (lo desplegado, novedades,

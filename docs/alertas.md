@@ -70,9 +70,8 @@ configurado, así que quien lo encuentre y le escriba no recibe nada.
 6. **Altas y bajas**: se añade o se echa a la persona del grupo; no hay que tocar `site.yaml`.
 
 El bot de alertas no se comparte con nadie más que a través del grupo, y el token no sale del fichero de
-entorno. Si más adelante el bot ha de **responder** a consultas, hace falta un programa que lea sus mensajes:
-que atienda solo a ids de Telegram autorizados, que solo consulte (nada que cambie sistemas) y que sea el único
-lector del bot (a partir de ahí `getUpdates` a mano deja de servir para sacar ids).
+entorno. Para que además **responda** a consultas (solo lectura, solo ese grupo), ver [bot.md](bot.md): es el único
+lector del bot, así que `getUpdates` a mano deja de servir para sacar ids.
 
 ## Correo con Gmail
 

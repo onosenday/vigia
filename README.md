@@ -37,6 +37,9 @@ solo con sondas salientes ([docs/externos.md](docs/externos.md)).
 Alertas con la marca del sitio por Telegram y correo (caído, certificado, disco, exporter): ver
 [docs/alertas.md](docs/alertas.md).
 
+El mismo bot responde a consultas en el chat de alertas (`/estado`, `/host`, `/dispositivo`…), solo
+lectura: ver [docs/bot.md](docs/bot.md).
+
 ## Seguridad
 
 - `site.yaml` se valida en estricto (pydantic, `extra="forbid"`); textos, ids, rutas y URLs acotados.
