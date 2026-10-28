@@ -52,3 +52,19 @@ def test_server_order(example_data: dict[str, Any]) -> None:
     gen = _gen(example_data)
     cpu = next(p for p in gen["servidores.json"]["panels"] if p["id"] == 2)
     assert [t["legendFormat"] for t in cpu["targets"]] == ["Nodo 1", "nodo2"]
+
+
+def test_panel_tareas(example_data: dict[str, Any]) -> None:
+    example_data["tareas"] = []
+    assert "tareas.json" not in _gen(example_data)
+    example_data["hosts"][2]["node_exporter"]["textfile"] = True
+    example_data["tareas"] = [{"nombre": "copias-bd", "host": "nodo2", "max_horas": 26}]
+    d = _gen(example_data)["tareas.json"]
+    assert d["uid"] == "ejm-tareas" and d["title"] == "Ejemplo · Tareas"
+    table = d["panels"][1]
+    assert table["type"] == "table"
+    exprs = [t["expr"] for t in table["targets"]]
+    assert len(exprs) == 3 and "absent(" in exprs[2]
+    renames = table["transformations"][1]["options"]["renameByName"]
+    assert renames["nombre"] == "Host" and renames["tarea"] == "Tarea"
+    assert table["options"]["sortBy"] == [{"displayName": "Host", "desc": False}]
