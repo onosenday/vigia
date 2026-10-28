@@ -59,11 +59,7 @@ def test_comando_desconocido_da_la_ayuda() -> None:
 
 def test_estado() -> None:
     assert responder("/estado", contexto(PROM)) == (
-        "<b>Ejemplo</b>\n"
-        "✅ Nodo 1 · CPU 12% · RAM 40% · disco 95% ⚠\n"
-        "❌ Nodo 2\n"
-        "✅ NAS\n"
-        "Sin alertas"
+        "<b>Ejemplo</b>\n✅ Nodo 1 · CPU 12% · RAM 40% · disco 95% ⚠\n❌ Nodo 2\n✅ NAS\nSin alertas"
     )
 
 
@@ -118,12 +114,26 @@ def test_alertas_con_fecha_ilegible() -> None:
 
 
 IMPRESORA = {
-    "mac": "aa:bb:cc:00:00:40", "ip": "10.99.0.40", "nombre": "Impresora", "mostrar": "Impresora",
-    "tipo": "impresora", "ubicacion": "Despacho", "fabricante": "Ejemplo SA", "modelo": "", "encendido": "●",
+    "mac": "aa:bb:cc:00:00:40",
+    "ip": "10.99.0.40",
+    "nombre": "Impresora",
+    "mostrar": "Impresora",
+    "tipo": "impresora",
+    "ubicacion": "Despacho",
+    "fabricante": "Ejemplo SA",
+    "modelo": "",
+    "encendido": "●",
 }
 TELE = {
-    "mac": "aa:bb:cc:00:00:50", "ip": "10.99.0.50", "nombre": "", "mostrar": "tele-salon ¿?", "tipo": "",
-    "ubicacion": "", "fabricante": "Ejemplo TV", "modelo": "", "encendido": "○",
+    "mac": "aa:bb:cc:00:00:50",
+    "ip": "10.99.0.50",
+    "nombre": "",
+    "mostrar": "tele-salon ¿?",
+    "tipo": "",
+    "ubicacion": "",
+    "fabricante": "Ejemplo TV",
+    "modelo": "",
+    "encendido": "○",
 }
 DISP: dict[str, Serie] = {
     q.DISP_INFO: [(IMPRESORA, 1), (TELE, 1)],

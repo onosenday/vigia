@@ -252,9 +252,7 @@ def lista(ctx: Contexto, arg: str) -> str:
     for d in sorted(enc, key=lambda d: normalizar(d.nombre)):
         grupos.setdefault(d.tipo or SIN_TIPO, []).append(d.nombre)
     lineas = [f"<b>Encendidos: {len(enc)}</b>"]
-    lineas += [
-        f"{esc(t)} ({len(ns)}): " + ", ".join(esc(n) for n in ns) for t, ns in sorted(grupos.items())
-    ]
+    lineas += [f"{esc(t)} ({len(ns)}): " + ", ".join(esc(n) for n in ns) for t, ns in sorted(grupos.items())]
     return recortar(lineas)
 
 
