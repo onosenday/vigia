@@ -43,11 +43,36 @@ los dispositivos que descubre netinv (móviles, televisores) nunca generan aviso
 
 1. En Telegram, habla con **@BotFather** → `/newbot` → nombre y usuario del bot. Un bot **solo para alertas**
    de este sitio. Guarda el token en el fichero de entorno (`ALERTAS_TELEGRAM_TOKEN`).
-2. Escríbele cualquier cosa al bot (o añádelo al grupo que recibirá los avisos).
+2. Crea el grupo que recibirá los avisos (ver abajo) y añade el bot. Para avisos solo a ti, basta con
+   escribirle algo al bot en privado.
 3. Saca el chat id tú mismo (el token va en la URL: no lo pegues en ningún sitio):
-   `curl -s https://api.telegram.org/bot<TOKEN>/getUpdates` → `message.chat.id` (en grupos, negativo).
-   Ponlo en `alertas.telegram.chat_id` de `site.yaml`, entre comillas.
+   `curl -s https://api.telegram.org/bot<TOKEN>/getUpdates` → `chat.id` del grupo (negativo; en privado,
+   positivo). Ponlo en `alertas.telegram.chat_id` de `site.yaml`, entre comillas, y redespliega.
 4. Rotación: en @BotFather, `/revoke` sobre el bot, nuevo token al fichero de entorno y redesplegar.
+
+### Grupo privado para compartir los avisos
+
+Para que lleguen a varias personas, el destino es un grupo privado, no el bot: el bot solo envía al `chat_id`
+configurado, así que quien lo encuentre y le escriba no recibe nada.
+
+1. **Crear el grupo**: *Nuevo grupo* → nombre (p. ej. «Alertas <sitio>») → añadir el bot y a las personas.
+   Un grupo nuevo es privado: sin nombre público no aparece en búsquedas.
+2. **Cerrar la entrada**: en *Editar ▸ Permisos*, quitar a los miembros «Añadir miembros». Si se invita por
+   enlace, crearlo con «Solicitar aprobación del administrador».
+3. **chat id**: el del grupo (paso 3 de arriba). Ojo: si Telegram convierte el grupo en **supergrupo** (al
+   activar el historial visible para nuevos miembros, enlaces con aprobación, más de 200 miembros…), el id
+   cambia a uno que empieza por `-100` y los avisos dejan de llegar: volver a sacar el id y redesplegar.
+4. **Cerrar el bot**: en @BotFather → `/mybots` → el bot → *Bot Settings* → *Allow Groups?* → **Turn groups
+   off**, después de añadirlo al grupo. Sigue en ese grupo, pero nadie puede meterlo en otros.
+5. **Modo privacidad** (*Group Privacy*): dejarlo **activado**, que es lo normal. En la lista de miembros el
+   bot sale como «sin acceso a los mensajes»: no lee la conversación del grupo, solo los comandos (`/…`) y
+   las menciones. Para enviar avisos no necesita más.
+6. **Altas y bajas**: se añade o se echa a la persona del grupo; no hay que tocar `site.yaml`.
+
+El bot de alertas no se comparte con nadie más que a través del grupo, y el token no sale del fichero de
+entorno. Si más adelante el bot ha de **responder** a consultas, hace falta un programa que lea sus mensajes:
+que atienda solo a ids de Telegram autorizados, que solo consulte (nada que cambie sistemas) y que sea el único
+lector del bot (a partir de ahí `getUpdates` a mano deja de servir para sacar ids).
 
 ## Correo con Gmail
 
@@ -64,5 +89,8 @@ Si una contraseña lleva `$`, escríbela como `$$` en el fichero de entorno (com
   están (solo los nombres) y aborta sin tocar nada si falta alguna: con un token vacío Grafana no provisiona
   las alertas y **se para**.
 
-Prueba: en Grafana, *Alerting ▸ Contact points ▸ vigia ▸ Test*. Los cambios en reglas o contact point se hacen
+Prueba: en Grafana, *Alerting ▸ Contact points ▸ vigia ▸ Test*. Por API (Grafana 12 o posterior):
+`POST /apis/notifications.alerting.grafana.app/v1beta1/namespaces/default/receivers/<uid>/test` con la
+integración (`uid`, `type`, `settings`, `secureFields`) y una alerta de ejemplo; el endpoint antiguo
+`/api/alertmanager/grafana/config/api/v1/receivers/test` ya no existe. Los cambios en reglas o contact point se hacen
 en `site.yaml`; en la UI aparecen como provisionados y no se pueden editar.
