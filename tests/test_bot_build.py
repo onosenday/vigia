@@ -35,6 +35,7 @@ def test_servicio_del_bot(example_data: dict[str, Any]) -> None:
     assert bot["user"] == "65534:65534" and bot["container_name"] == "ejm-bot"
     assert "TELEGRAM_TOKEN=${ALERTAS_TELEGRAM_TOKEN}" in bot["environment"]
     assert "GRAFANA_TOKEN=${BOT_GRAFANA_TOKEN}" in bot["environment"]
+    assert "TZ=Europe/Madrid" in bot["environment"]  # horas del log en la zona del bot
     assert bot["volumes"] == ["./bot:/etc/vigia-bot:ro"]
 
 

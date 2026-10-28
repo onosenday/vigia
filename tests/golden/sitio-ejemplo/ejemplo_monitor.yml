@@ -170,6 +170,7 @@ services:
     environment:
       - "TELEGRAM_TOKEN=${ALERTAS_TELEGRAM_TOKEN}"
       - "GRAFANA_TOKEN=${BOT_GRAFANA_TOKEN}"
+      - "TZ=Europe/Madrid"
     volumes:
       - ./bot:/etc/vigia-bot:ro        # carpeta, no el fichero: el despliegue la reescribe por inodo
     depends_on:
