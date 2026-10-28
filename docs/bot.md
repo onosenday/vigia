@@ -7,13 +7,14 @@ El bot de las alertas también responde a comandos en el mismo chat: solo consul
 | `/estado` | cada host (✅/❌/❔; CPU, RAM y disco si tiene node_exporter) y las alertas activas |
 | `/alertas` | alertas disparadas, desde cuándo («desde ?» si la fecha no se puede leer) |
 | `/host <nombre o IP>` | ficha de un servidor: CPU, RAM, carga, temperatura, discos, contenedores |
-| `/dispositivo <nombre, IP o MAC>` | si está conectado (netinv); si está encendido pero sin hora de última vez, responde «conectado» |
+| `/dispositivo <nombre, IP o MAC>` | si está conectado; si está encendido pero sin hora de última vez, responde «conectado» |
 | `/info <nombre, IP o MAC>` | ficha del dispositivo: tipo, ubicación, fabricante, IP, MAC, primera y última vez |
 | `/lista [tipo]` | dispositivos encendidos, por tipo |
 | `/ayuda` | los comandos |
 
 Solo atiende el chat de `alertas.telegram.chat_id`; lo que llegue de otro chat se descarta sin responder.
-Las peticiones HTTP a Prometheus, Grafana y netinv no siguen redirecciones.
+Los dispositivos salen de las métricas de netinv en Prometheus. Las peticiones HTTP (Prometheus, Grafana y
+Telegram) no siguen redirecciones: el token de Grafana no viaja a otro host.
 
 ## Activarlo
 
