@@ -1,5 +1,5 @@
 # Sitio de ejemplo (datos sintéticos): todos los módulos y tipos de equipo habituales.
-vigia: ">=0.2,<0.3"
+vigia: ">=0.3,<0.4"
 
 sitio:
   id: ejemplo

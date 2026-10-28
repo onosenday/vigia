@@ -1,5 +1,19 @@
 # Cambios
 
+## 0.3.0 (2026-10-28)
+
+- **Impresoras por SNMP**: panel propio y alertas de consumible bajo y de error (sin papel, atasco, puerta…).
+- **Objetivos externos** (`externos.objetivos`): equipos y webs fuera de la red del sitio, solo con sondas
+  salientes y validación estricta de destinos ([docs/externos.md](docs/externos.md)).
+- **Varias subredes por sitio** (`red.subredes_extra`); `descubrir` las barre todas o una con `--subred`.
+- **Actividad de dispositivos**: dashboard nuevo con cuándo ha estado activo cada dispositivo que ve netinv,
+  válido en rangos largos (cada punto marca activo si se vio en algún momento de su tramo).
+- **`descubrir`**: propone servidores Windows (WinRM, controlador de dominio), clasifica por el título y la
+  cabecera `Server` de la web cuando no se ve el fabricante, lista comentados los clientes sin proponer y los
+  hosts del sitio que no responden, y no propone las IPs del propio equipo.
+- Alertas: guía del grupo privado de Telegram para compartir los avisos y prueba por la API de Grafana 12.
+- **Rango**: los sitios pasan a `vigia: ">=0.3,<0.4"`.
+
 ## 0.2.1 (2026-10-27)
 
 - El `site.yaml` no carga si la versión instalada de vigia no está en su rango `vigia:`.

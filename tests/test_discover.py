@@ -45,9 +45,9 @@ def _sin_red(monkeypatch: pytest.MonkeyPatch) -> None:
         (Seen("x", {135, 445, 3389, 5985}), DeviceType.windows),  # WinRM
         (Seen("x", {53, 88, 135, 389, 445}), DeviceType.windows),  # controlador de dominio
         (Seen("x", {22, 389}), DeviceType.linux),  # LDAP en Linux: no es un controlador de dominio
-        (Seen("x", {80, 443}, hints="web=GWN7605 server="), DeviceType.ap),
+        (Seen("x", {80, 443}, hints="web=GWN7660 server="), DeviceType.ap),
         (Seen("x", {80}, hints="web=Web Switch server=Embedded HTTP Server"), DeviceType.switch),
-        (Seen("x", {443}, hints="web=Vigor2962 server=DWS"), DeviceType.router),
+        (Seen("x", {443}, hints="web=Vigor2865 server=DWS"), DeviceType.router),
         (Seen("x", {80}, hints="web=LaserJet MFP"), DeviceType.impresora),
     ],
 )
