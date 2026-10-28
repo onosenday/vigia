@@ -614,7 +614,7 @@ class SnmpModule(Base):
 def _zona(v: str) -> str:
     try:
         ZoneInfo(v)
-    except (ZoneInfoNotFoundError, ValueError) as e:
+    except (ZoneInfoNotFoundError, ValueError, OSError) as e:
         raise ValueError(f"zona horaria desconocida: {v!r}") from e
     return v
 

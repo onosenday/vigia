@@ -151,6 +151,12 @@ def test_bot_zona_inexistente(example_data: dict[str, Any]) -> None:
     _assert_invalid(example_data, "zona horaria desconocida")
 
 
+def test_bot_zona_que_es_una_carpeta(example_data: dict[str, Any]) -> None:
+    bot = {"activo": True, "grafana_token": "BOT_GRAFANA_TOKEN", "zona": "America"}
+    example_data["modulos"]["bot"] = bot
+    _assert_invalid(example_data, "zona horaria desconocida")
+
+
 def test_bot_zona_utc(example_data: dict[str, Any]) -> None:
     example_data["modulos"]["bot"] = {"activo": True, "grafana_token": "BOT_GRAFANA_TOKEN", "zona": "UTC"}
     assert _validate(example_data).modulos.bot.zona == "UTC"
