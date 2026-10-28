@@ -14,6 +14,7 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Annotated, Literal
 from urllib.parse import urlsplit
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import yaml
 from packaging.specifiers import InvalidSpecifier, SpecifierSet
@@ -610,7 +611,19 @@ class SnmpModule(Base):
     auths: list[SnmpAuth] = []
 
 
-Zona = Annotated[str, StringConstraints(pattern=r"^[A-Za-z]+(/[A-Za-z0-9_+-]+){0,2}$")]
+def _zona(v: str) -> str:
+    try:
+        ZoneInfo(v)
+    except (ZoneInfoNotFoundError, ValueError) as e:
+        raise ValueError(f"zona horaria desconocida: {v!r}") from e
+    return v
+
+
+Zona = Annotated[
+    str,
+    StringConstraints(pattern=r"^[A-Za-z][A-Za-z0-9_+-]*(/[A-Za-z0-9_+-]+){0,2}$"),
+    AfterValidator(_zona),
+]
 """Zona horaria IANA (Europe/Madrid, UTC)."""
 
 
