@@ -858,9 +858,9 @@ class Site(Base):
     externos: Externals = Externals()
     """Equipos y webs fuera de la red del sitio (internet): solo sondas salientes desde el monitor."""
     bridges: list[Bridge] = []
-    tareas: list[Tarea] = []
-    """Tareas programadas (copias…) vigiladas por el textfile de node_exporter ([docs/tareas.md])."""
     """Redes Docker por host (salida de `vigia bridges`), para nombrar las interfaces br-<id>."""
+    tareas: list[Tarea] = []
+    """Tareas programadas (copias…) vigiladas por el textfile de node_exporter (docs/tareas.md)."""
 
     @field_validator("vigia")
     @classmethod
