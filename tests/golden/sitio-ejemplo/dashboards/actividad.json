@@ -194,7 +194,7 @@
       "type": "prometheus",
       "uid": "prometheus"
      },
-     "expr": "max by (mostrar, zmac) (label_replace((time() - netinv_device_last_seen_seconds < bool 1800) * on (mac) group_left (mostrar) max by (mac, mostrar) (netinv_device_info), \"zmac\", \"$1\", \"mac\", \"(.*)\"))",
+     "expr": "max by (mostrar, zmac) (label_replace(max_over_time((time() - netinv_device_last_seen_seconds < bool 1800)[$__interval:5m]) * on (mac) group_left (mostrar) max by (mac, mostrar) (netinv_device_info), \"zmac\", \"$1\", \"mac\", \"(.*)\"))",
      "legendFormat": "{{mostrar}}",
      "instant": false,
      "range": true
@@ -243,7 +243,8 @@
     "legend": {
      "showLegend": false
     }
-   }
+   },
+   "interval": "900s"
   }
  ],
  "links": [

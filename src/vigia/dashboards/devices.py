@@ -310,13 +310,15 @@ def devices(s: Site, m: Brand) -> dict[str, Any]:
 def activity_timeline(pid: int, y: int, h: int, interval: int) -> Panel:
     """Activo/inactivo de cada dispositivo en el tiempo (todos los que ve netinv, servidores o no).
 
-    Activo = visto (arp-scan o consulta a Pi-hole) en los dos últimos ciclos de netinv. Se ordena por nombre:
-    Prometheus devuelve las series ordenadas por sus etiquetas, y `mostrar` va antes que `zmac` (desempate).
+    Activo = visto (arp-scan o consulta a Pi-hole) en los dos últimos ciclos de netinv en algún momento del
+    tramo que cubre cada punto: así un rango largo (30 días, un año) no pierde una actividad corta. El tramo
+    mínimo es un ciclo de netinv (no hay más resolución). Se ordena por nombre: Prometheus devuelve las series
+    ordenadas por sus etiquetas, y `mostrar` va antes que `zmac` (desempate).
     """
-    seen = f"(time() - netinv_device_last_seen_seconds < bool {2 * interval})"
+    seen = f"max_over_time((time() - netinv_device_last_seen_seconds < bool {2 * interval})[$__interval:5m])"
     named = f"{seen} * on (mac) group_left (mostrar) max by (mac, mostrar) (netinv_device_info)"
     expr = f'max by (mostrar, zmac) (label_replace({named}, "zmac", "$1", "mac", "(.*)"))'
-    return panel(
+    p = panel(
         pid,
         "Activo / inactivo",
         "state-timeline",
@@ -343,6 +345,8 @@ def activity_timeline(pid: int, y: int, h: int, interval: int) -> Panel:
             "legend": {"showLegend": False},
         },
     )
+    p["interval"] = f"{interval}s"
+    return p
 
 
 def activity(s: Site, m: Brand) -> dict[str, Any]:
