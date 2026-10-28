@@ -189,6 +189,11 @@ def test_textfile_solo_en_node_exporter(example_data: dict[str, Any]) -> None:
     _assert_invalid(example_data, "Extra inputs are not permitted")
 
 
+def test_textfile_no_vale_en_cadvisor(example_data: dict[str, Any]) -> None:
+    example_data["hosts"][1]["cadvisor"]["textfile"] = True  # nodo1
+    _assert_invalid(example_data, "Extra inputs are not permitted")
+
+
 def test_tarea_host_desconocido(example_data: dict[str, Any]) -> None:
     _con_tareas(example_data)["tareas"][0]["host"] = "nodo9"
     _assert_invalid(example_data, "tarea copias-bd: host desconocido")

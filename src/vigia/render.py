@@ -14,6 +14,8 @@ from typing import Any
 import jinja2
 import yaml
 
+from vigia.tareas import TEXTFILE_DIR
+
 
 class Raw(str):
     """Fragmento generado por vigia (no por el sitio) que se inserta sin entrecomillar."""
@@ -45,6 +47,7 @@ def jinja_env() -> jinja2.Environment:
         lstrip_blocks=True,
         autoescape=False,  # noqa: S701 - no es HTML: el escape es `to_scalar` (finalize), aplicado a todo
     )
+    env.globals["TEXTFILE_DIR"] = TEXTFILE_DIR
     env.filters["raw"] = lambda v: Raw(v)
     return env
 

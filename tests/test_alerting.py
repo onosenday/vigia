@@ -156,6 +156,20 @@ def test_reglas_de_tareas(example_data: dict[str, Any]) -> None:
     assert "absent(" in rules["vigia-tarea-sin-datos"]["data"][0]["model"]["expr"]
 
 
+def test_reglas_de_tareas_en_dos_hosts(example_data: dict[str, Any]) -> None:
+    d = _con_tareas(example_data)
+    d["hosts"][1]["node_exporter"]["textfile"] = True
+    d["tareas"].append({"nombre": "informe", "host": "nodo1", "max_horas": 30})
+    rules = _rules(_build(d))
+    for uid in ("vigia-tarea-retrasada", "vigia-tarea-error", "vigia-tarea-sin-datos"):
+        expr = rules[uid]["data"][0]["model"]["expr"]
+        assert 'nombre="nodo2", tarea="copias-bd"' in expr
+        assert 'nombre="Nodo 1", tarea="informe"' in expr
+        assert expr.count(" or ") == 1
+    summary = rules["vigia-tarea-retrasada"]["annotations"]["summary"]
+    assert 'printf "%.1f" .Value' in summary and "humanize" not in summary
+
+
 def test_sin_tareas_no_hay_reglas_de_tareas(example_data: dict[str, Any]) -> None:
     example_data["tareas"] = []
     assert not any(uid.startswith("vigia-tarea") for uid in _rules(_build(example_data)))

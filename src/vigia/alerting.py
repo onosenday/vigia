@@ -204,7 +204,7 @@ def task_rules(s: Site) -> list[dict[str, Any]]:
             0,
             "5m",
             tarea + " no termina bien desde hace demasiado"
-            "{{ with .Values.A }} ({{ humanize .Value }} h de más){{ end }}",
+            '{{ with .Values.A }} ({{ printf "%.1f" .Value }} h de más){{ end }}',
         ),
         _rule(
             "vigia-tarea-error",
@@ -222,7 +222,7 @@ def task_rules(s: Site) -> list[dict[str, Any]]:
             "gt",
             0,
             "1h",
-            tarea + " no ha escrito nunca su métrica (¿script instalado? ¿textfile activo?)",
+            tarea + " no tiene ninguna ejecución correcta registrada (¿script instalado? ¿textfile activo?)",
         ),
     ]
 

@@ -210,7 +210,7 @@ groups:
     for: 5m
     annotations:
       summary: '{{ index .Labels "nombre" }}: la tarea {{ index .Labels "tarea" }} no termina bien desde hace demasiado{{
-        with .Values.A }} ({{ humanize .Value }} h de más){{ end }}'
+        with .Values.A }} ({{ printf "%.1f" .Value }} h de más){{ end }}'
     labels:
       vigia: si
     isPaused: false
@@ -278,8 +278,8 @@ groups:
     execErrState: Error
     for: 1h
     annotations:
-      summary: '{{ index .Labels "nombre" }}: la tarea {{ index .Labels "tarea" }} no ha escrito nunca su métrica (¿script
-        instalado? ¿textfile activo?)'
+      summary: '{{ index .Labels "nombre" }}: la tarea {{ index .Labels "tarea" }} no tiene ninguna ejecución correcta registrada
+        (¿script instalado? ¿textfile activo?)'
     labels:
       vigia: si
     isPaused: false

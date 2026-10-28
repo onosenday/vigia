@@ -333,9 +333,9 @@ def _textfile_script(u: Unit) -> str:
         return ""
     d = q(TEXTFILE_DIR)
     return (
-        f"install -d -m 755 {d} 2>/dev/null || "
+        f"[ -d {d} ] || {{ mkdir -p {d} && chmod 755 {d}; }} 2>/dev/null || "
         f'echo "aviso: no se pudo crear {TEXTFILE_DIR}; '
-        f'créala como root (install -d -m 755 {TEXTFILE_DIR})" >&2'
+        f'créala como root (mkdir -p {TEXTFILE_DIR})" >&2'
     )
 
 

@@ -17,7 +17,7 @@
 {% endif %}
       - '--collector.filesystem.mount-points-exclude=^/(dev|proc|run|sys|var/lib/docker/.+|srv/.+/docker/.+)($$|/)'
 {% if h.node_exporter.textfile %}
-      - '--collector.textfile.directory=/host/var/lib/vigia/textfile'
+      - {{ ("'--collector.textfile.directory=/host" ~ TEXTFILE_DIR ~ "'") | raw }}
 {% endif %}
     network_mode: host
     pid: host

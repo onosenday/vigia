@@ -229,7 +229,16 @@ def test_carpeta_textfile_solo_si_hace_falta(example_data: dict[str, Any]) -> No
     example_data["hosts"][2]["node_exporter"]["textfile"] = True
     s, built = _built(example_data)
     script = deploy_script(units(s, built)["agentes:nodo2"], "/tmp/vigia.x")
-    assert "install -d -m 755 /var/lib/vigia/textfile" in script
-    assert script.index("install -d") < script.index("up -d")
+    assert "mkdir -p /var/lib/vigia/textfile && chmod 755 /var/lib/vigia/textfile" in script
+    assert script.index("mkdir -p") < script.index("up -d")
     assert "/var/lib/vigia/textfile" not in deploy_script(units(s, built)["monitor"], "/tmp/vigia.x")
+    subprocess.run(["bash", "-n"], input=script.encode(), check=True)
+
+
+def test_carpeta_textfile_en_la_unidad_monitor(example_data: dict[str, Any]) -> None:
+    example_data["hosts"][1]["node_exporter"]["textfile"] = True  # nodo1 = monitor
+    s, built = _built(example_data)
+    script = deploy_script(units(s, built)["monitor"], "/tmp/vigia.x")
+    assert "mkdir -p /var/lib/vigia/textfile" in script
+    assert script.index("mkdir -p /var/lib/vigia/textfile") < script.index("up -d")
     subprocess.run(["bash", "-n"], input=script.encode(), check=True)
