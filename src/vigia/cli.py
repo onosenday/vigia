@@ -354,7 +354,8 @@ def new_site(
 
 @app.command()
 def skill(dest: Annotated[Path, typer.Argument(help="repo del sitio")] = Path(".")) -> None:
-    """Instala o actualiza la skill de vigia para Claude Code en `.claude/skills/vigia/` del sitio."""
+    """Instala o actualiza las skills de vigia para Claude Code en `.claude/skills/` del sitio."""
     from vigia.newsite import install_skill  # noqa: PLC0415
 
-    typer.echo(f"skill actualizada: {install_skill(dest)}")
+    for f in install_skill(dest):
+        typer.echo(f"skill actualizada: {f}")

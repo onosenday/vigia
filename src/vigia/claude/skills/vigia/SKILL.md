@@ -96,6 +96,8 @@ Si se cambió el propio paquete vigia en local: `uv sync --reinstall-package vig
   min (ventana de lookback); para saber qué se sondea de verdad, `/api/v1/targets`.
 - **Versiones**: `monitor.imagenes` con etiqueta fija. Subir una versión es un cambio más (diff, OK,
   verificación del branding).
+- **Subir de versión de vigia**: antes de cambiar el tag, skill `vigia-actualizar` (comprobación en seco del
+  riesgo: desplegado, novedades, validación y diferencias de lo generado).
 
 ## Diagnóstico rápido
 

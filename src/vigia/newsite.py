@@ -71,11 +71,20 @@ def skill_text() -> str:
     return files("vigia").joinpath("claude", "skills", "vigia", "SKILL.md").read_text(encoding="utf-8")
 
 
-def install_skill(root: Path) -> Path:
-    dest = root / SKILL_REL
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_text(skill_text(), encoding="utf-8")
-    return dest
+def install_skill(root: Path) -> list[Path]:
+    """Instala (o actualiza) en `.claude/skills/` del sitio todas las skills del paquete, con sus ficheros."""
+    written = []
+    for skill in files("vigia").joinpath("claude", "skills").iterdir():
+        if not skill.is_dir():
+            continue
+        for f in skill.iterdir():
+            if not f.is_file() or f.name.endswith((".pyc", ".pyo")):
+                continue
+            dest = root / ".claude" / "skills" / skill.name / f.name
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_bytes(f.read_bytes())
+            written.append(dest)
+    return sorted(written)
 
 
 def _pyproject(p: NewSite) -> str:

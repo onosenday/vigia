@@ -1,5 +1,10 @@
 # Cambios
 
+## 0.3.1 (sin publicar)
+
+- **Skill `vigia-actualizar`**: comprueba en seco el riesgo de subir a otra versión (lo desplegado, novedades,
+  validación y diferencias de lo generado por riesgo). `vigia skill` instala todas las skills del paquete.
+
 ## 0.3.0 (2026-10-28)
 
 - **Impresoras por SNMP**: panel propio y alertas de consumible bajo y de error (sin papel, atasco, puerta…).

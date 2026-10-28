@@ -50,7 +50,9 @@ Alertas con la marca del sitio por Telegram y correo (caído, certificado, disco
 El paquete incluye una skill para Claude Code (`src/vigia/claude/skills/vigia/SKILL.md`): flujo de cambios con
 diff y OK, reglas y lo aprendido de cada plataforma. `vigia new-site` la instala en el repo del sitio
 (`.claude/skills/vigia/SKILL.md`) junto con un `CLAUDE.md` con las reglas del sitio, y `vigia skill` la actualiza
-cuando cambia la versión de vigia.
+cuando cambia la versión de vigia. La skill `vigia-actualizar` comprueba en seco si es seguro subir a otra
+versión: compara con lo desplegado, lee las novedades, valida y genera el sitio con la versión nueva y clasifica
+las diferencias por riesgo (`uv run python .claude/skills/vigia-actualizar/comprobar.py --a v0.4.0`).
 
 ## Licencia
 
