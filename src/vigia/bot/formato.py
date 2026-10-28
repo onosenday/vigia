@@ -15,19 +15,36 @@ def esc(v: object) -> str:
     return html.escape(str(v), quote=False)
 
 
-def recortar(lineas: list[str], maximo: int = MAX_LINEAS) -> str:
-    """Como mucho `maximo` líneas (la última dice cuántas faltan) y MAX_CARACTERES caracteres.
+def _cortar_linea(linea: str) -> str:
+    """Corta una línea suelta en MAX_CARACTERES sin dejar una entidad ni una etiqueta a medias."""
+    t = linea[: MAX_CARACTERES - 2]
+    corte = max(t.rfind(", "), t.rfind(" "))
+    if corte > 0:
+        t = t[:corte].rstrip(",")
+    for abre, cierra in (("&", ";"), ("<", ">")):
+        if t.rfind(abre) > t.rfind(cierra):
+            t = t[: t.rfind(abre)]
+    return t + " …"
 
-    El corte por caracteres se hace en un salto de línea o en «, » para no partir una entidad ni una etiqueta.
+
+def recortar(lineas: list[str], maximo: int = MAX_LINEAS) -> str:
+    """Como mucho `maximo` líneas y MAX_CARACTERES caracteres; la última línea dice cuántas faltan.
+
+    Si pasa de MAX_CARACTERES quita líneas enteras del final. Solo si una línea no cabe por sí sola la corta
+    (en «, » o espacio, sin partir una entidad ni una etiqueta) para no mandar HTML inválido a Telegram.
     """
-    if len(lineas) > maximo:
-        lineas = [*lineas[: maximo - 1], f"… y {len(lineas) - maximo + 1} más"]
-    texto = "\n".join(lineas)
+    total = len(lineas)
+    if total > maximo:
+        lineas = lineas[: maximo - 1]
+    resto = [f"… y {total - len(lineas)} más"] if len(lineas) < total else []
+    texto = "\n".join([*lineas, *resto])
     if len(texto) <= MAX_CARACTERES:
         return texto
-    limite = MAX_CARACTERES - 2
-    corte = max(texto.rfind("\n", 0, limite), texto.rfind(", ", 0, limite))
-    return texto[: corte if corte > 0 else limite] + " …"
+    for k in range(len(lineas) - 1, 0, -1):
+        texto = "\n".join([*lineas[:k], f"… y {total - k} más"])
+        if len(texto) <= MAX_CARACTERES:
+            return texto
+    return _cortar_linea(lineas[0])
 
 
 def duracion(segundos: float) -> str:

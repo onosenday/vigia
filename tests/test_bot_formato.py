@@ -51,3 +51,28 @@ def test_hora() -> None:
 def test_pct() -> None:
     assert pct(12.4) == "12%"
     assert pct(None) == "—"
+
+
+def test_recortar_no_parte_entidades() -> None:
+    linea = "a" * (MAX_CARACTERES - 4) + "&amp;" + "b" * 50
+    t = recortar([linea])
+    assert len(t) <= MAX_CARACTERES
+    assert t.endswith(" …")
+    assert "&" not in t
+
+
+def test_recortar_no_deja_etiquetas_abiertas() -> None:
+    linea = "a" * (MAX_CARACTERES - 4) + "<b>x</b>" + "b" * 50
+    t = recortar([linea])
+    assert len(t) <= MAX_CARACTERES
+    assert "<" not in t
+
+
+def test_recortar_multilinea_quita_lineas_enteras() -> None:
+    lineas = ["x" * 99 for _ in range(60)]
+    t = recortar(lineas, maximo=100)
+    assert len(t) <= MAX_CARACTERES
+    partes = t.splitlines()
+    assert partes[-1].startswith("… y ") and partes[-1].endswith(" más")
+    assert all(p == "x" * 99 for p in partes[:-1])
+    assert int(partes[-1].split()[2]) == 60 - len(partes) + 1

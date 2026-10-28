@@ -11,7 +11,7 @@ _MAC = re.compile(r"^([0-9a-f]{2}[:-]){5}[0-9a-f]{2}$")
 
 def normalizar(texto: str) -> str:
     t = unicodedata.normalize("NFKD", texto)
-    return "".join(c for c in t if not unicodedata.combining(c)).lower().strip()
+    return "".join(c for c in t if not unicodedata.combining(c)).casefold().strip()
 
 
 def _clave(texto: str) -> str:
