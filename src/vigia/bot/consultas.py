@@ -28,9 +28,12 @@ WIN_DISCOS = (
     '/ windows_logical_disk_size_bytes{volume=~"[A-Z]:"}))'
 )
 CARGA = "max by (nombre) (node_load1)"
-TEMP = "max by (nombre) (node_hwmon_temp_celsius)"
+TEMP = (
+    'max by (nombre) (node_hwmon_temp_celsius{job="node"}) or '
+    'max by (nombre) (node_thermal_zone_temp{job="node"})'
+)
 UPTIME = "max by (nombre) (time() - node_boot_time_seconds)"
-CONTENEDORES = 'count by (nombre) (container_last_seen{name!=""})'
+CONTENEDORES = 'count by (nombre) (container_last_seen{job="cadvisor", name!=""})'
 DISP_INFO = "netinv_device_info"
 DISP_ULTIMA = "netinv_device_last_seen_seconds"
 DISP_PRIMERA = "netinv_device_first_seen_seconds"

@@ -206,6 +206,8 @@ def dispositivo(ctx: Contexto, arg: str) -> str:
     if isinstance(d, str):
         return d
     now = ctx.ahora()
+    if d.encendido and not d.ultima:
+        return f"🟢 {esc(d.nombre)} · {esc(d.ip)} · conectado"
     if d.encendido:
         return f"🟢 {esc(d.nombre)} · {esc(d.ip)} · visto hace {duracion(now - d.ultima)}"
     cuando = hora(d.ultima, now, ctx.cfg.zona) if d.ultima else "desconocida"

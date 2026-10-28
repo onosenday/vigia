@@ -5,6 +5,7 @@ from typing import Any
 from vigia.alerting import FS_EXCLUDED
 from vigia.bot import consultas as q
 from vigia.bot.comandos import parsear, responder
+from vigia.bot.config import HostCfg
 
 from .bot_fakes import AHORA, Serie, contexto, ts
 
@@ -167,3 +168,26 @@ def test_dispositivos_sin_netinv_o_sin_prometheus() -> None:
     assert responder("/lista", contexto(DISP, netinv=False)) == sin
     assert responder("/info impresora", contexto(DISP, netinv=False)) == sin
     assert responder("/dispositivo impresora", contexto(prom_caido=True)) == "⚠ Prometheus no responde"
+
+
+def test_estado_escapa_nombres_de_host() -> None:
+    hosts = (HostCfg("raro", "A&B <x>", "10.99.0.30", "linux"),)
+    r = responder("/estado", contexto(hosts=hosts))
+    assert r is not None and "❔ A&amp;B &lt;x&gt;" in r
+
+
+def test_dispositivo_encendido_sin_ultima_vez() -> None:
+    d: dict[str, Serie] = {q.DISP_INFO: [(IMPRESORA, 1)]}
+    assert responder("/dispositivo impresora", contexto(d)) == "🟢 Impresora · 10.99.0.40 · conectado"
+
+
+def test_varios_con_mas_de_ocho_coincidencias() -> None:
+    hs = tuple(HostCfg(f"h{i}", f"Equipo {i}", f"10.99.0.{i}", "linux") for i in range(1, 11))
+    r = responder("/host equipo", contexto(hosts=hs))
+    assert r is not None and r.endswith("Equipo 8 …. Afina un poco.")
+
+
+def test_lista_sin_tipo_va_a_sin_clasificar() -> None:
+    sin_tipo = {**TELE, "encendido": "●"}
+    d: dict[str, Serie] = {q.DISP_INFO: [(sin_tipo, 1)]}
+    assert responder("/lista", contexto(d)) == "<b>Encendidos: 1</b>\nsin clasificar (1): tele-salon ¿?"
