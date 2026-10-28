@@ -610,12 +610,29 @@ class SnmpModule(Base):
     auths: list[SnmpAuth] = []
 
 
+Zona = Annotated[str, StringConstraints(pattern=r"^[A-Za-z]+(/[A-Za-z0-9_+-]+){0,2}$")]
+"""Zona horaria IANA (Europe/Madrid, UTC)."""
+
+
+class Bot(Base):
+    """Bot de consultas por Telegram en el chat de las alertas (solo lectura)."""
+
+    activo: bool = False
+    grafana_token: EnvVarName | None = None
+    """Variable con un token de cuenta de servicio de Grafana con rol Viewer (alertas activas)."""
+    zona: Zona = "Europe/Madrid"
+    """Zona horaria de las horas que muestra."""
+    puerto: Port = 9466
+    """/metrics del bot, solo en la red interna del stack."""
+
+
 class Modules(Base):
     blackbox: bool = True
     netinv: Netinv = Netinv()
     pihole_exporter: PiholeExporter = PiholeExporter()
     updates_exporter: UpdatesExporter = UpdatesExporter()
     snmp: SnmpModule = SnmpModule()
+    bot: Bot = Bot()
 
 
 # --- alertas ---------------------------------------------------------------------------------------
@@ -956,6 +973,13 @@ class Site(Base):
                 errors.append("updates_exporter activo sin `host` válido")
             if not m.updates_exporter.claves:
                 errors.append("updates_exporter activo sin `claves`")
+        if m.bot.activo:
+            if not (self.alertas.activo and self.alertas.telegram):
+                errors.append(
+                    "bot activo sin alertas por Telegram: usa el bot y el chat de `alertas.telegram`"
+                )
+            if not m.bot.grafana_token:
+                errors.append("bot activo sin `grafana_token` (token de Grafana con rol Viewer)")
         for h in self.hosts:
             if h.actualizaciones and not m.updates_exporter.activo:
                 errors.append(f"host {h.id}: tiene `actualizaciones` pero updates_exporter está inactivo")

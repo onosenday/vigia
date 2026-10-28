@@ -116,3 +116,30 @@ def test_subredes_extra(example_data: dict[str, Any]) -> None:
 def test_subredes_solapadas(example_data: dict[str, Any]) -> None:
     example_data["red"]["subredes_extra"] = [{"red": "10.99.0.128/25", "nombre": "Solapada"}]
     _assert_invalid(example_data, "solapadas")
+
+
+def test_bot_inactivo_por_defecto(example_data: dict[str, Any]) -> None:
+    example_data["modulos"].pop("bot", None)
+    assert not _validate(example_data).modulos.bot.activo
+
+
+def test_bot_sin_telegram(example_data: dict[str, Any]) -> None:
+    example_data["modulos"]["bot"] = {"activo": True, "grafana_token": "BOT_GRAFANA_TOKEN"}
+    del example_data["alertas"]["telegram"]
+    _assert_invalid(example_data, "bot activo sin alertas por Telegram")
+
+
+def test_bot_sin_token_de_grafana(example_data: dict[str, Any]) -> None:
+    example_data["modulos"]["bot"] = {"activo": True}
+    _assert_invalid(example_data, "bot activo sin `grafana_token`")
+
+
+def test_bot_zona_no_valida(example_data: dict[str, Any]) -> None:
+    example_data["modulos"]["bot"] = {"activo": True, "grafana_token": "BOT_GRAFANA_TOKEN", "zona": "../etc"}
+    _assert_invalid(example_data, "String should match pattern")
+
+
+def test_bot_valido(example_data: dict[str, Any]) -> None:
+    example_data["modulos"]["bot"] = {"activo": True, "grafana_token": "BOT_GRAFANA_TOKEN"}
+    b = _validate(example_data).modulos.bot
+    assert (b.zona, b.puerto) == ("Europe/Madrid", 9466)
