@@ -69,6 +69,16 @@ def test_snmp_v3_incomplete(example_data: dict[str, Any]) -> None:
     _assert_invalid(example_data, "authPriv")
 
 
+def test_snmp_v3_protocolo_desconocido(example_data: dict[str, Any]) -> None:
+    example_data["modulos"]["snmp"]["auths"][0]["protocolo_auth"] = "SHA1"
+    _assert_invalid(example_data, "protocolo_auth")
+
+
+def test_snmp_protocolos_en_v2c(example_data: dict[str, Any]) -> None:
+    example_data["modulos"]["snmp"]["auths"][2]["protocolo_auth"] = "SHA"
+    _assert_invalid(example_data, "solo valen para v3")
+
+
 def test_path_outside_site(example_data: dict[str, Any]) -> None:
     example_data["branding"]["logo"] = "../../etc/passwd"
     _assert_invalid(example_data, "fuera del sitio")

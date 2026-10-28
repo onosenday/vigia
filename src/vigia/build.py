@@ -194,9 +194,9 @@ def _snmp_auths(s: Site) -> str:
                 "version": 3,
                 "security_level": "authPriv",
                 "username": f"${{{a.usuario}}}",
-                "auth_protocol": "SHA256",
+                "auth_protocol": a.protocolo_auth or "SHA256",
                 "password": f"${{{a.clave_auth}}}",
-                "priv_protocol": "AES",
+                "priv_protocol": a.protocolo_priv or "AES",
                 "priv_password": f"${{{a.clave_priv}}}",
             }
         else:

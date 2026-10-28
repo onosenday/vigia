@@ -5,6 +5,8 @@
 - **Bot de consultas por Telegram** (`modulos.bot`): `/estado`, `/alertas`, `/host`, `/dispositivo`,
   `/info`, `/lista` y `/ayuda` en el chat de las alertas; solo lectura, solo ese chat, sin puertos
   publicados ([docs/bot.md](docs/bot.md)).
+- **SNMPv3 con otros protocolos**: `protocolo_auth` (MD5, SHA, SHA224…SHA512) y `protocolo_priv` (DES, AES,
+  AES192, AES256) en cada `modulos.snmp.auths`; por defecto SHA256/AES. Para equipos que solo admiten SHA-1.
 
 ## 0.3.1 (2026-10-28)
 

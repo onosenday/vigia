@@ -53,7 +53,8 @@ Si se cambió el propio paquete vigia en local: `uv sync --reinstall-package vig
   - Impresoras con `snmp`: panel «Impresoras» y alertas de consumibles y errores (módulos printer_mib,
     hrDevice y vigia_impresora). Si se duermen, `alerta: false` en su ping.
   - NAS, switches, impresoras, SAI: `snmp: {auth: <nombre>}` y la autenticación en `modulos.snmp.auths`
-    (v3 authPriv por defecto; v2c solo si el equipo no admite v3).
+    (v3 authPriv por defecto; v2c solo si el equipo no admite v3). En v3, `protocolo_auth`/`protocolo_priv`
+    si el equipo no admite SHA256/AES (DSM y muchos routers solo SHA).
   - Con Docker: `cadvisor: {puerto: …}`; si no es el host del monitor, `ssh:` y `deploy:` para sus agentes.
   - Para vigilarlo por ping: añadirlo a `ping:` (`- host: <id>`).
 - **Otra subred alcanzable desde el monitor** (VLAN, ruta, VPN): `red.subredes_extra: [{red: <cidr>, nombre: …}]`.

@@ -62,3 +62,11 @@ def test_modulo_snmp_de_impresoras_valido() -> None:
         and err["enum_values"][13] == "inputTrayEmpty"
     )
     assert b"--config.file=/etc/snmp_exporter/auths/vigia-modulos.yml" in gen["ejemplo_monitor.yml"]
+
+
+def test_snmp_protocolos_v3() -> None:
+    import yaml
+
+    auths = yaml.safe_load(_generated()["snmp/auths.yml"])["auths"]
+    assert (auths["nas"]["auth_protocol"], auths["nas"]["priv_protocol"]) == ("SHA256", "AES")
+    assert (auths["nas-sha1"]["auth_protocol"], auths["nas-sha1"]["priv_protocol"]) == ("SHA", "AES256")

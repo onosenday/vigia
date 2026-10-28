@@ -595,6 +595,10 @@ class SnmpAuth(Base):
     clave_priv: EnvVarName | None = None
     comunidad: EnvVarName | None = None
     """Todos son nombres de variables de entorno: los valores no pasan nunca por el modelo."""
+    protocolo_auth: Literal["MD5", "SHA", "SHA224", "SHA256", "SHA384", "SHA512"] | None = None
+    """Solo v3; por defecto SHA256. Muchos equipos (DSM, routers) solo admiten SHA (SHA-1)."""
+    protocolo_priv: Literal["DES", "AES", "AES192", "AES256"] | None = None
+    """Solo v3; por defecto AES."""
 
     @model_validator(mode="after")
     def _check_complete(self) -> SnmpAuth:
@@ -602,6 +606,8 @@ class SnmpAuth(Base):
             raise ValueError(f"snmp {self.nombre}: v3 necesita usuario, clave_auth y clave_priv (authPriv)")
         if self.version == "v2c" and not self.comunidad:
             raise ValueError(f"snmp {self.nombre}: v2c necesita comunidad")
+        if self.version == "v2c" and (self.protocolo_auth or self.protocolo_priv):
+            raise ValueError(f"snmp {self.nombre}: protocolo_auth y protocolo_priv solo valen para v3")
         return self
 
 

@@ -109,6 +109,9 @@ modulos:
     activo: true
     auths:
       - {nombre: nas, usuario: SNMP_NAS_USUARIO, clave_auth: SNMP_NAS_AUTH, clave_priv: SNMP_NAS_PRIV}
+      # protocolos de v3 (por defecto SHA256 y AES): auth MD5|SHA|SHA224|SHA256|SHA384|SHA512, priv DES|AES|AES192|AES256
+      - {nombre: nas-sha1, usuario: SNMP_NAS_USUARIO, clave_auth: SNMP_NAS_AUTH, clave_priv: SNMP_NAS_PRIV,
+         protocolo_auth: SHA, protocolo_priv: AES256}
       - {nombre: lectura, version: v2c, comunidad: SNMP_COMUNIDAD}
   bot: {activo: true, grafana_token: BOT_GRAFANA_TOKEN}
 

@@ -9,6 +9,14 @@ auths:
     password: ${SNMP_NAS_AUTH}
     priv_protocol: AES
     priv_password: ${SNMP_NAS_PRIV}
+  nas-sha1:
+    version: 3
+    security_level: authPriv
+    username: ${SNMP_NAS_USUARIO}
+    auth_protocol: SHA
+    password: ${SNMP_NAS_AUTH}
+    priv_protocol: AES256
+    priv_password: ${SNMP_NAS_PRIV}
   lectura:
     version: 2
     community: ${SNMP_COMUNIDAD}
