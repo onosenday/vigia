@@ -65,6 +65,7 @@ def test_clasificar() -> None:
     assert clasificar(_msg(42), CHAT, desde) == ("otro_chat", "42")
     assert clasificar(_msg(CHAT, date=AHORA - 600), CHAT, desde) == ("ignorar", "")
     assert clasificar(_msg(CHAT, text=None), CHAT, desde) == ("ignorar", "")
+    assert clasificar(_msg(CHAT, date="ayer"), CHAT, desde) == ("ignorar", "")  # type: ignore[arg-type]
     assert clasificar({"update_id": 2, "edited_message": {}}, CHAT, desde) == ("ignorar", "")
 
 

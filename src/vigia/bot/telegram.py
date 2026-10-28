@@ -67,7 +67,9 @@ def clasificar(update: dict[str, Any], chat_id: int, desde: float) -> tuple[str,
     if cid != chat_id:
         return "otro_chat", str(cid)
     texto = m.get("text")
-    if not isinstance(texto, str) or float(m.get("date", 0)) < desde:
+    fecha = m.get("date", 0)
+    fecha_ok = isinstance(fecha, int | float) and not isinstance(fecha, bool)
+    if not isinstance(texto, str) or not fecha_ok or fecha < desde:
         return "ignorar", ""
     return "atender", texto
 

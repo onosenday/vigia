@@ -92,23 +92,33 @@ class Bucle:
         self.desde = reloj() - ANTIGUEDAD
         self.espera = 1.0
 
+    def _fallo(self, e: Exception) -> None:
+        detalle = e if isinstance(e, FuenteError) else type(e).__name__
+        log("telegram:", detalle, f"(reintento en {self.espera:.0f} s)")
+        self.dormir(self.espera)
+        self.espera = min(self.espera * 2, ESPERA_MAX)
+
     def paso(self) -> None:
         try:
             updates = self.tg.actualizaciones(self.offset)
-        except FuenteError as e:
-            log("telegram:", e, f"(reintento en {self.espera:.0f} s)")
-            self.dormir(self.espera)
-            self.espera = min(self.espera * 2, ESPERA_MAX)
+        except Exception as e:  # nada debe tumbar el bucle
+            self._fallo(e)
             return
         self.espera = 1.0
         for u in updates:
-            self.offset = int(u.get("update_id", 0)) + 1
-            tipo, valor = clasificar(u, self.cfg.chat_id, self.desde)
-            if tipo == "otro_chat":
-                self.salud.contar("descartado")
-                log("descartado un mensaje del chat", valor)
-            elif tipo == "atender":
-                self._atender(valor)
+            uid = u.get("update_id")
+            if not isinstance(uid, int) or isinstance(uid, bool):
+                continue
+            self.offset = max(self.offset or 0, uid + 1)  # consumido aunque falle el procesado
+            try:
+                tipo, valor = clasificar(u, self.cfg.chat_id, self.desde)
+                if tipo == "otro_chat":
+                    self.salud.contar("descartado")
+                    log("descartado un mensaje del chat", valor)
+                elif tipo == "atender":
+                    self._atender(valor)
+            except Exception as e:  # un update raro no puede parar el bot
+                self._fallo(e)
 
     def _atender(self, texto: str) -> None:
         try:

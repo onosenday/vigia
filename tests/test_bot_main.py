@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import itertools
+import urllib.error
 import urllib.request
 from typing import Any
+
+import pytest
 
 from vigia.bot.__main__ import ERROR_INTERNO, Bucle, Salud, servir_salud
 from vigia.bot.comandos import Contexto, responder
@@ -93,3 +96,76 @@ def test_metrics_http() -> None:
             assert "vigia_bot_up 1" in r.read().decode()
     finally:
         srv.shutdown()
+        srv.server_close()
+
+
+def test_ruta_desconocida_404() -> None:
+    srv = servir_salud(Salud(), 0)
+    try:
+        url = f"http://127.0.0.1:{srv.server_address[1]}/otra"
+        with pytest.raises(urllib.error.HTTPError) as e:
+            urllib.request.urlopen(url, timeout=5)  # noqa: S310
+        assert e.value.code == 404
+    finally:
+        srv.shutdown()
+        srv.server_close()
+
+
+def test_update_sin_id_valido_se_salta() -> None:
+    sin_id = {"message": {"chat": {"id": CHAT}, "date": AHORA, "text": "/ayuda"}}
+    tg = FakeTg([[sin_id, _msg("x"), _msg(4)]])  # type: ignore[arg-type]
+    b, _ = _bucle(tg)
+    b.paso()
+    assert b.offset == 5
+    assert len(tg.enviados) == 1
+
+
+def test_offset_no_retrocede() -> None:
+    tg = FakeTg([[_msg(10), _msg(3, text="otro")]])
+    b, _ = _bucle(tg)
+    b.paso()
+    assert b.offset == 11
+
+
+def test_excepcion_inesperada_en_actualizaciones() -> None:
+    tg = FakeTg([RuntimeError("raro"), [_msg(1)]])
+    dormidas: list[float] = []
+    b, _ = _bucle(tg, dormidas)
+    b.paso()
+    b.paso()
+    assert dormidas == [1.0]
+    assert len(tg.enviados) == 1
+
+
+def test_excepcion_inesperada_al_procesar_avanza_offset() -> None:
+    class Rota(FakeTg):
+        def enviar(self, chat_id: int, texto: str) -> None:
+            raise RuntimeError("raro")
+
+    tg = Rota([[_msg(7)]])
+    dormidas: list[float] = []
+    b, _ = _bucle(tg, dormidas)
+    b.paso()
+    assert b.offset == 8
+    assert dormidas == [1.0]
+    assert b.espera == 2.0
+
+
+def test_limitado() -> None:
+    tg = FakeTg([[_msg(1), _msg(2)]])
+    c, salud = contexto(), Salud()
+    lim = Limitador(por_minuto=1, reloj=itertools.count(0.0, 2.0).__next__)
+    b = Bucle(c.cfg, tg, c, salud, lim, reloj=lambda: AHORA, dormir=lambda s: None)
+    b.paso()
+    assert len(tg.enviados) == 1
+    assert 'vigia_bot_mensajes_total{resultado="limitado"} 1' in salud.texto()
+
+
+def test_enviar_con_fuenteerror_no_rompe() -> None:
+    class Falla(FakeTg):
+        def enviar(self, chat_id: int, texto: str) -> None:
+            raise FuenteError("HTTP 500")
+
+    b, salud = _bucle(Falla([[_msg(1)]]))
+    b.paso()
+    assert b.offset == 2
