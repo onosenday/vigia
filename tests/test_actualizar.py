@@ -7,6 +7,7 @@ import json
 import sys
 from pathlib import Path
 from types import ModuleType
+from typing import Any
 
 import pytest
 
@@ -72,7 +73,7 @@ def _dash(uid: str, title: str = "Panel") -> str:
     return json.dumps({"uid": uid, "title": title, "panels": []})
 
 
-def _riesgos(hallazgos: list) -> dict[str, str]:
+def _riesgos(hallazgos: list[Any]) -> dict[str, str]:
     return {f"{h.fichero}:{h.motivo.split(':')[0]}": h.riesgo for h in hallazgos}
 
 
