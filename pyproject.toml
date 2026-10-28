@@ -1,6 +1,6 @@
 [project]
 name = "vigia"
-version = "0.3.0"
+version = "0.3.1"
 description = "Monitorización de redes por sitio: Prometheus, Grafana, blackbox, SNMP e inventario, parametrizados por site.yaml y con branding propio"
 readme = "README.md"
 authors = [{ name = "onosenday" }]

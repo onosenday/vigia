@@ -1,6 +1,6 @@
 # Cambios
 
-## 0.3.1 (sin publicar)
+## 0.3.1 (2026-10-28)
 
 - **Skill `vigia-actualizar`**: comprueba en seco el riesgo de subir a otra versión (lo desplegado, novedades,
   validación y diferencias de lo generado por riesgo). `vigia skill` instala todas las skills del paquete.
