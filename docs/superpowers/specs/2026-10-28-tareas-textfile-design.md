@@ -32,6 +32,8 @@ tareas:
   unidad que lleva ese node_exporter (`agentes:<host>` o `monitor` si es el host del monitor) ejecuta
   `install -d -m 755 /var/lib/vigia/textfile` antes del `up`, con el mismo sudo que el resto del script.
   Es idempotente y no toca lo que haya dentro. El rollback no la borra (pueden quedar métricas del usuario).
+  Si el usuario no puede crearla (adaptador compose sin sudo), el despliegue avisa y sigue: la alerta «Tarea
+  sin datos» lo hará visible.
 
 ## Convención de métricas
 
@@ -64,13 +66,13 @@ Solo si hay `tareas`. Una regla por tipo; la condición por tarea se une con `or
 
 ## Panel «Tareas» (`tareas.json`)
 
-Dashboard propio, solo si hay `tareas`. Una tabla compacta, una fila por tarea declarada, en el orden de
-`hosts:` y luego por nombre de tarea:
+Dashboard propio, solo si hay `tareas`. Una tabla compacta, una fila por tarea declarada, ordenada por host
+y tarea (seguir el orden de `hosts:` exigiría una consulta por tarea y columna):
 
-| Host | Tarea | Último éxito (hace) | Límite (h) | Resultado |
+| Host | Tarea | Último éxito (h) | Margen (h) | Resultado |
 
-- «Último éxito» en horas, con umbral de color en `max_horas` de su tarea (override por fila).
-- «Resultado»: mapeo 0 → `bien` (verde), 1 → `error` (rojo); sin datos → `sin datos` (gris).
+- «Margen» = `max_horas` − horas desde el último éxito: rojo si es negativo.
+- «Resultado»: mapeo 0 → `bien` (verde), 1 → `error` (rojo), 2 → `sin datos` (gris; viene de `absent`).
 - Estilo de los paneles existentes (`Brand`, letras pequeñas).
 
 ## Documentación
