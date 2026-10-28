@@ -254,6 +254,44 @@ def iot_cloud_table(pid: int, y: int, h: int) -> Panel:
     return p
 
 
+def activity_timeline(pid: int, y: int, h: int, interval: int) -> Panel:
+    """Activo/inactivo de cada dispositivo en el tiempo (todos los que ve netinv, servidores o no).
+
+    Activo = visto (arp-scan o consulta a Pi-hole) en los dos últimos ciclos de netinv. Se ordena por nombre:
+    Prometheus devuelve las series ordenadas por sus etiquetas, y `mostrar` va antes que `zmac` (desempate).
+    """
+    seen = f"(time() - netinv_device_last_seen_seconds < bool {2 * interval})"
+    named = f"{seen} * on (mac) group_left (mostrar) max by (mac, mostrar) (netinv_device_info)"
+    expr = f'max by (mostrar, zmac) (label_replace({named}, "zmac", "$1", "mac", "(.*)"))'
+    return panel(
+        pid,
+        "Activo / inactivo",
+        "state-timeline",
+        expr,
+        0,
+        y,
+        24,
+        h,
+        legend="{{mostrar}}",
+        mappings=[
+            {
+                "type": "value",
+                "options": {
+                    "0": {"text": "inactivo", "color": "rgba(128, 128, 128, 0.25)"},
+                    "1": {"text": "activo", "color": "green"},
+                },
+            }
+        ],
+        thresholds=[{"color": "rgba(128, 128, 128, 0.25)", "value": None}, {"color": "green", "value": 1}],
+        options={
+            "showValue": "never",
+            "mergeValues": True,
+            "rowHeight": 0.85,
+            "legend": {"showLegend": False},
+        },
+    )
+
+
 def devices(s: Site, m: Brand) -> dict[str, Any]:
     top_dns = panel(
         13,
@@ -261,7 +299,7 @@ def devices(s: Site, m: Brand) -> dict[str, Any]:
         "bargauge",
         f"topk(15, {PCT_DNS} * on (mac) group_left (mostrar) max by (mac, mostrar) (netinv_device_info))",
         12,
-        24,
+        47,
         12,
         9,
         legend="{{mostrar}}",
@@ -270,9 +308,9 @@ def devices(s: Site, m: Brand) -> dict[str, Any]:
         thresholds=[{"color": "blue", "value": None}],
     )
     top_dns["fieldConfig"]["defaults"].update({"decimals": 1, "unit": "percent"})
-    details = row(20, "Detalle técnico (MAC, fabricante, nombres, nubes IoT, mDNS, UPnP, puertos, SO)", 43)
+    details = row(20, "Detalle técnico (MAC, fabricante, nombres, nubes IoT, mDNS, UPnP, puertos, SO)", 66)
     details["collapsed"] = True
-    details["panels"] = [device_table(21, "Detalle técnico", "netinv_device_info", 44, 18)]
+    details["panels"] = [device_table(21, "Detalle técnico", "netinv_device_info", 67, 18)]
     device_panels = [
         row(1, "Resumen", 0),
         count_stat(2, "Encendidos (24 h)", "count(netinv_device_info == 1) or vector(0)", 0),
@@ -291,17 +329,19 @@ def devices(s: Site, m: Brand) -> dict[str, Any]:
         ),
         row(9, "Dispositivos", 4),
         summary_table(11, 5, 18),
-        row(12, "Nubes IoT y actividad DNS (Pi-hole ve consultas, no bytes)", 23),
-        iot_cloud_table(14, 24, 9),
+        row(17, "Actividad (visto por netinv en los dos últimos ciclos)", 23),
+        activity_timeline(18, 24, 22, s.modulos.netinv.intervalo),
+        row(12, "Nubes IoT y actividad DNS (Pi-hole ve consultas, no bytes)", 46),
+        iot_cloud_table(14, 47, 9),
         top_dns,
-        row(15, "Sin clasificar (encendidos en 24 h)", 34),
+        row(15, "Sin clasificar (encendidos en 24 h)", 57),
         device_table(
             16,
             "Pendientes de clasificar (devices.yaml del sitio)",
             'netinv_device_info{clasificado="no"} == 1',
-            35,
+            58,
             8,
         ),
         details,
     ]
-    return m.dash("dispositivos", "Dispositivos", device_panels, refresh="5m", time_from="now-1h")
+    return m.dash("dispositivos", "Dispositivos", device_panels, refresh="5m", time_from="now-24h")

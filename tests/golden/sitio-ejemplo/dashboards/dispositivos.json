@@ -10,7 +10,7 @@
  "refresh": "5m",
  "editable": false,
  "time": {
-  "from": "now-1h",
+  "from": "now-24h",
   "to": "now"
  },
  "panels": [
@@ -487,13 +487,98 @@
    ]
   },
   {
+   "id": 17,
+   "type": "row",
+   "title": "Actividad (visto por netinv en los dos últimos ciclos)",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 23,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "id": 18,
+   "title": "Activo / inactivo",
+   "type": "state-timeline",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 24,
+    "w": 24,
+    "h": 22
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max by (mostrar, zmac) (label_replace((time() - netinv_device_last_seen_seconds < bool 1800) * on (mac) group_left (mostrar) max by (mac, mostrar) (netinv_device_info), \"zmac\", \"$1\", \"mac\", \"(.*)\"))",
+     "legendFormat": "{{mostrar}}",
+     "instant": false,
+     "range": true
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "mappings": [
+      {
+       "type": "value",
+       "options": {
+        "0": {
+         "text": "inactivo",
+         "color": "rgba(128, 128, 128, 0.25)"
+        },
+        "1": {
+         "text": "activo",
+         "color": "green"
+        }
+       }
+      }
+     ],
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "rgba(128, 128, 128, 0.25)",
+        "value": null
+       },
+       {
+        "color": "green",
+        "value": 1
+       }
+      ]
+     },
+     "color": {
+      "mode": "thresholds"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "showValue": "never",
+    "mergeValues": true,
+    "rowHeight": 0.85,
+    "legend": {
+     "showLegend": false
+    }
+   }
+  },
+  {
    "id": 12,
    "type": "row",
    "title": "Nubes IoT y actividad DNS (Pi-hole ve consultas, no bytes)",
    "collapsed": false,
    "gridPos": {
     "x": 0,
-    "y": 23,
+    "y": 46,
     "w": 24,
     "h": 1
    },
@@ -509,7 +594,7 @@
    },
    "gridPos": {
     "x": 0,
-    "y": 24,
+    "y": 47,
     "w": 12,
     "h": 9
    },
@@ -654,7 +739,7 @@
    },
    "gridPos": {
     "x": 12,
-    "y": 24,
+    "y": 47,
     "w": 12,
     "h": 9
    },
@@ -703,7 +788,7 @@
    "collapsed": false,
    "gridPos": {
     "x": 0,
-    "y": 34,
+    "y": 57,
     "w": 24,
     "h": 1
    },
@@ -719,7 +804,7 @@
    },
    "gridPos": {
     "x": 0,
-    "y": 35,
+    "y": 58,
     "w": 24,
     "h": 8
    },
@@ -897,7 +982,7 @@
    "collapsed": true,
    "gridPos": {
     "x": 0,
-    "y": 43,
+    "y": 66,
     "w": 24,
     "h": 1
    },
@@ -912,7 +997,7 @@
      },
      "gridPos": {
       "x": 0,
-      "y": 44,
+      "y": 67,
       "w": 24,
       "h": 18
      },
