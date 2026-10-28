@@ -38,6 +38,7 @@ def test_minimal_site_probes_only(example_data: dict[str, Any]) -> None:
     d = example_data
     d["hosts"] = [{"id": "nodo1", "tipo": "linux", "ip": "10.99.0.10"}]
     d["vips"], d["servicios"], d["dns"], d["bridges"] = [], [], None, []
+    d["tareas"] = []
     d.pop("externos", None)
     d["ping"] = [{"host": "nodo1"}]
     d["modulos"] = {"blackbox": True}

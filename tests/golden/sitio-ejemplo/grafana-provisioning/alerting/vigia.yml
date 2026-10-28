@@ -178,6 +178,111 @@ groups:
     labels:
       vigia: si
     isPaused: false
+  - uid: vigia-tarea-retrasada
+    title: Tarea sin éxito reciente
+    condition: B
+    data:
+    - refId: A
+      relativeTimeRange:
+        from: 600
+        to: 0
+      datasourceUid: prometheus
+      model:
+        refId: A
+        expr: (time() - max by (nombre, tarea) (vigia_tarea_ultimo_exito_timestamp_seconds{nombre="nodo2", tarea="copias-bd"}))
+          / 3600 - 26 or (time() - max by (nombre, tarea) (vigia_tarea_ultimo_exito_timestamp_seconds{nombre="Nodo 1", tarea="informe-diario"}))
+          / 3600 - 30
+        instant: true
+        range: false
+    - refId: B
+      datasourceUid: __expr__
+      model:
+        refId: B
+        type: threshold
+        expression: A
+        conditions:
+        - evaluator:
+            type: gt
+            params:
+            - 0
+    noDataState: OK
+    execErrState: Error
+    for: 5m
+    annotations:
+      summary: '{{ index .Labels "nombre" }}: la tarea {{ index .Labels "tarea" }} no termina bien desde hace demasiado{{
+        with .Values.A }} ({{ humanize .Value }} h de más){{ end }}'
+    labels:
+      vigia: si
+    isPaused: false
+  - uid: vigia-tarea-error
+    title: Tarea con error
+    condition: B
+    data:
+    - refId: A
+      relativeTimeRange:
+        from: 600
+        to: 0
+      datasourceUid: prometheus
+      model:
+        refId: A
+        expr: max by (nombre, tarea) (vigia_tarea_ultimo_resultado{nombre="nodo2", tarea="copias-bd"}) or max by (nombre,
+          tarea) (vigia_tarea_ultimo_resultado{nombre="Nodo 1", tarea="informe-diario"})
+        instant: true
+        range: false
+    - refId: B
+      datasourceUid: __expr__
+      model:
+        refId: B
+        type: threshold
+        expression: A
+        conditions:
+        - evaluator:
+            type: gt
+            params:
+            - 0
+    noDataState: OK
+    execErrState: Error
+    for: 0s
+    annotations:
+      summary: '{{ index .Labels "nombre" }}: la tarea {{ index .Labels "tarea" }} acabó con error en su última ejecución'
+    labels:
+      vigia: si
+    isPaused: false
+  - uid: vigia-tarea-sin-datos
+    title: Tarea sin datos
+    condition: B
+    data:
+    - refId: A
+      relativeTimeRange:
+        from: 600
+        to: 0
+      datasourceUid: prometheus
+      model:
+        refId: A
+        expr: absent(vigia_tarea_ultimo_exito_timestamp_seconds{nombre="nodo2", tarea="copias-bd"}) or absent(vigia_tarea_ultimo_exito_timestamp_seconds{nombre="Nodo
+          1", tarea="informe-diario"})
+        instant: true
+        range: false
+    - refId: B
+      datasourceUid: __expr__
+      model:
+        refId: B
+        type: threshold
+        expression: A
+        conditions:
+        - evaluator:
+            type: gt
+            params:
+            - 0
+    noDataState: OK
+    execErrState: Error
+    for: 1h
+    annotations:
+      summary: '{{ index .Labels "nombre" }}: la tarea {{ index .Labels "tarea" }} no ha escrito nunca su métrica (¿script
+        instalado? ¿textfile activo?)'
+    labels:
+      vigia: si
+    isPaused: false
   - uid: vigia-exporter
     title: Exporter sin respuesta
     condition: B

@@ -38,7 +38,7 @@ hosts:
     nombre: Nodo 1
     tipo: linux
     ip: 10.99.0.10
-    node_exporter: {puerto: 9100}
+    node_exporter: {puerto: 9100, textfile: true}
     cadvisor: {puerto: 9338}
     pihole: {url: "http://10.99.0.10:8081", primaria: true}
     ssh: {usuario: admin}
@@ -46,7 +46,7 @@ hosts:
   - id: nodo2
     tipo: omv
     ip: 10.99.0.11
-    node_exporter: {puerto: 9100}
+    node_exporter: {puerto: 9100, textfile: true}
     cadvisor: {puerto: 9338}
     actualizaciones: {}
     ssh: {usuario: admin, sudo_secreto: [NODO2_SUDO]}
@@ -83,6 +83,11 @@ servicios:
   - {url: "http://10.99.0.11:8000", nombre: Panel nodo2, host: nodo2}
   - {url: "https://10.99.0.20:5001", nombre: DSM, host: nas1, espera_200: true}
   - {url: "10.99.0.2:25565", nombre: Juego, host: vip, modulo: minecraft}
+
+# Tareas programadas que escriben su estado en el textfile de node_exporter (docs/tareas.md).
+tareas:
+  - {nombre: copias-bd, host: nodo2, max_horas: 26}
+  - {nombre: informe-diario, host: nodo1, max_horas: 30}
 
 web:
   ca: assets/ca.crt

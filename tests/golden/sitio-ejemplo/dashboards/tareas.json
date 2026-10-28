@@ -1,0 +1,214 @@
+{
+ "uid": "ejm-tareas",
+ "title": "Ejemplo · Tareas",
+ "tags": [
+  "Ejemplo"
+ ],
+ "timezone": "browser",
+ "schemaVersion": 39,
+ "version": 1,
+ "refresh": "1m",
+ "editable": false,
+ "time": {
+  "from": "now-7d",
+  "to": "now"
+ },
+ "panels": [
+  {
+   "id": 1,
+   "type": "row",
+   "title": "Tareas",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "id": 2,
+   "title": "Tareas programadas",
+   "type": "table",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 1,
+    "w": 24,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "(time() - max by (nombre, tarea) (vigia_tarea_ultimo_exito_timestamp_seconds{nombre=\"nodo2\", tarea=\"copias-bd\"})) / 3600 or (time() - max by (nombre, tarea) (vigia_tarea_ultimo_exito_timestamp_seconds{nombre=\"Nodo 1\", tarea=\"informe-diario\"})) / 3600",
+     "legendFormat": "{{nombre}}",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "26 - (time() - max by (nombre, tarea) (vigia_tarea_ultimo_exito_timestamp_seconds{nombre=\"nodo2\", tarea=\"copias-bd\"})) / 3600 or 30 - (time() - max by (nombre, tarea) (vigia_tarea_ultimo_exito_timestamp_seconds{nombre=\"Nodo 1\", tarea=\"informe-diario\"})) / 3600",
+     "legendFormat": "{{nombre}}",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "refId": "C",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max by (nombre, tarea) (vigia_tarea_ultimo_resultado{nombre=\"nodo2\", tarea=\"copias-bd\"}) or 2 * absent(vigia_tarea_ultimo_resultado{nombre=\"nodo2\", tarea=\"copias-bd\"}) or max by (nombre, tarea) (vigia_tarea_ultimo_resultado{nombre=\"Nodo 1\", tarea=\"informe-diario\"}) or 2 * absent(vigia_tarea_ultimo_resultado{nombre=\"Nodo 1\", tarea=\"informe-diario\"})",
+     "legendFormat": "{{nombre}}",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {},
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Último éxito (h)"
+      },
+      "properties": [
+       {
+        "id": "decimals",
+        "value": 1
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Margen (h)"
+      },
+      "properties": [
+       {
+        "id": "decimals",
+        "value": 1
+       },
+       {
+        "id": "custom.cellOptions",
+        "value": {
+         "type": "color-text"
+        }
+       },
+       {
+        "id": "thresholds",
+        "value": {
+         "mode": "absolute",
+         "steps": [
+          {
+           "color": "red",
+           "value": null
+          },
+          {
+           "color": "green",
+           "value": 0
+          }
+         ]
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Resultado"
+      },
+      "properties": [
+       {
+        "id": "mappings",
+        "value": [
+         {
+          "type": "value",
+          "options": {
+           "0": {
+            "text": "bien",
+            "color": "green"
+           },
+           "1": {
+            "text": "error",
+            "color": "red"
+           },
+           "2": {
+            "text": "sin datos",
+            "color": "text"
+           }
+          }
+         }
+        ]
+       },
+       {
+        "id": "custom.cellOptions",
+        "value": {
+         "type": "color-text"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "showHeader": true,
+    "cellHeight": "sm",
+    "footer": {
+     "show": false
+    },
+    "sortBy": [
+     {
+      "displayName": "Host",
+      "desc": false
+     }
+    ]
+   },
+   "transformations": [
+    {
+     "id": "merge",
+     "options": {}
+    },
+    {
+     "id": "organize",
+     "options": {
+      "excludeByName": {
+       "Time": true
+      },
+      "renameByName": {
+       "nombre": "Host",
+       "Value #A": "Último éxito (h)",
+       "Value #B": "Margen (h)",
+       "Value #C": "Resultado",
+       "tarea": "Tarea"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "links": [
+  {
+   "title": "Inicio · Ejemplo",
+   "type": "link",
+   "icon": "dashboard",
+   "url": "/d/ejm-inicio",
+   "targetBlank": false
+  }
+ ]
+}

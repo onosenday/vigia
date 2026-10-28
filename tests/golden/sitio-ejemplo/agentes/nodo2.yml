@@ -9,6 +9,7 @@ services:
     command:
       - '--path.rootfs=/host'
       - '--collector.filesystem.mount-points-exclude=^/(dev|proc|run|sys|var/lib/docker/.+|srv/.+/docker/.+)($$|/)'
+      - '--collector.textfile.directory=/host/var/lib/vigia/textfile'
     network_mode: host
     pid: host
     volumes:

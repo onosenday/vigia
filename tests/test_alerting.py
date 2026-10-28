@@ -36,6 +36,9 @@ def test_reglas_del_ejemplo(example_data: dict[str, Any]) -> None:
         "vigia-exporter",
         "vigia-consumible",
         "vigia-impresora-error",
+        "vigia-tarea-retrasada",
+        "vigia-tarea-error",
+        "vigia-tarea-sin-datos",
     }
     assert 'alerta!="no"' in rules["vigia-caido"]["data"][0]["model"]["expr"]
     assert rules["vigia-certificado"]["data"][1]["model"]["conditions"][0]["evaluator"] == {
@@ -45,6 +48,7 @@ def test_reglas_del_ejemplo(example_data: dict[str, Any]) -> None:
 
 
 def test_sin_web_ni_nodos_no_hay_reglas_de_certificado_ni_disco(example_data: dict[str, Any]) -> None:
+    example_data["tareas"] = []
     example_data["web"] = {}
     example_data.pop("externos", None)
     for h in example_data["hosts"]:

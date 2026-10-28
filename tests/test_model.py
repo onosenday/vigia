@@ -196,6 +196,7 @@ def test_tarea_host_desconocido(example_data: dict[str, Any]) -> None:
 
 def test_tarea_host_sin_textfile(example_data: dict[str, Any]) -> None:
     _con_tareas(example_data)["tareas"][0]["host"] = "nodo1"
+    example_data["hosts"][1]["node_exporter"]["textfile"] = False
     _assert_invalid(example_data, "tarea copias-bd: nodo1 no tiene node_exporter con `textfile: true`")
 
 
