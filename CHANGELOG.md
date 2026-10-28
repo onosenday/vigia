@@ -1,6 +1,6 @@
 # Cambios
 
-## Sin publicar
+## 0.4.0 (2026-10-28)
 
 - **Tareas programadas** (`tareas`, `node_exporter.textfile`): alertas de tarea retrasada, con error y sin datos,
   y panel «Tareas», con el colector textfile de node_exporter ([docs/tareas.md](docs/tareas.md)).

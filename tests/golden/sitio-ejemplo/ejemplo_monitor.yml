@@ -1,4 +1,4 @@
-# Stack ejemplo_monitor (host nodo1) — generado por vigia 0.3.1 para «Oficina de ejemplo».
+# Stack ejemplo_monitor (host nodo1) — generado por vigia 0.4.0 para «Oficina de ejemplo».
 # No editar: cambia site.yaml y ejecuta `vigia build`.
 services:
   grafana:
