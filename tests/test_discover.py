@@ -17,6 +17,15 @@ from vigia.model import DeviceType, Host, Site
 from .conftest import EXAMPLE
 
 
+@pytest.fixture(autouse=True)
+def _sin_red(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Ningún test hace ping ni lee las IPs de este equipo."""
+    from vigia import discover as disc
+
+    monkeypatch.setattr(disc, "alive_ips", lambda ips, timeout: set())
+    monkeypatch.setattr(disc, "local_ips", set)
+
+
 @pytest.mark.parametrize(
     ("seen", "tipo"),
     [
@@ -33,6 +42,13 @@ from .conftest import EXAMPLE
         (Seen("x", {22, 443}, vendor="Ubiquiti Inc"), DeviceType.switch),
         (Seen("x", {80}, hints="web=openmediavault control panel"), DeviceType.omv),
         (Seen("x", {22}), DeviceType.linux),
+        (Seen("x", {135, 445, 3389, 5985}), DeviceType.windows),  # WinRM
+        (Seen("x", {53, 88, 135, 389, 445}), DeviceType.windows),  # controlador de dominio
+        (Seen("x", {22, 389}), DeviceType.linux),  # LDAP en Linux: no es un controlador de dominio
+        (Seen("x", {80, 443}, hints="web=GWN7605 server="), DeviceType.ap),
+        (Seen("x", {80}, hints="web=Web Switch server=Embedded HTTP Server"), DeviceType.switch),
+        (Seen("x", {443}, hints="web=Vigor2962 server=DWS"), DeviceType.router),
+        (Seen("x", {80}, hints="web=LaserJet MFP"), DeviceType.impresora),
     ],
 )
 def test_clasifica_infraestructura(seen: Seen, tipo: DeviceType) -> None:
@@ -48,6 +64,7 @@ def test_clasifica_infraestructura(seen: Seen, tipo: DeviceType) -> None:
         Seen("x", {445, 3389}),  # puesto Windows sin windows_exporter
         Seen("x", {22, 445, 3389}),
         Seen("x", {80}, vendor="Espressif Inc."),  # IoT
+        Seen("x", {80}, hints="web=Grandstream Device Configuration"),  # teléfono, no punto de acceso
     ],
 )
 def test_clientes_no_se_proponen(seen: Seen) -> None:
@@ -214,3 +231,55 @@ def test_descubrir_barre_todas_las_subredes_o_una(example_data: dict[str, Any]) 
     assert swept == ["10.98.0.0/24"]
     with pytest.raises(ValueError, match="no es una subred"):
         discover(s, "local", scan=scan, prober=lambda d, _t: None, subnet="172.16.0.0/24")
+
+
+def test_lista_clientes_y_hosts_sin_respuesta(
+    example_data: dict[str, Any], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from vigia import discover as disc
+
+    s = _netinv_site(example_data)
+    site_ips = [ip for h in s.hosts for ip in h.ips]
+    monkeypatch.setattr(disc, "alive_ips", lambda ips, timeout: set(ips) - {site_ips[-1]})
+    text = render(s, discover(s, "netinv", fetch=_fake_netinv, prober=_fake_probe))
+    assert "#   10.99.0.51: -" in text  # cliente: IP y puertos, nunca su nombre
+    assert "Movil de alguien" not in text
+    silent = [h.id for h in s.hosts if site_ips[-1] in h.ips]
+    assert f"#   {silent[0]} ({site_ips[-1]})" in text
+    yaml.safe_load(text)  # los añadidos son comentarios: sigue siendo YAML válido
+
+
+def test_no_propone_las_ips_de_este_equipo(
+    example_data: dict[str, Any], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from vigia import discover as disc
+
+    monkeypatch.setattr(disc, "local_ips", lambda: {"10.99.0.50"})
+    r = discover(_netinv_site(example_data), "netinv", fetch=_fake_netinv, prober=_fake_probe)
+    assert [p.seen.ip for p in r.proposals] == ["10.99.0.52"]
+
+
+def test_titulo_web_sin_seguir_redirecciones() -> None:
+    import http.server
+    import threading
+
+    from vigia import discover as disc
+
+    class H(http.server.BaseHTTPRequestHandler):
+        def do_GET(self) -> None:  # noqa: N802
+            self.send_response(302)
+            self.send_header("Location", "http://192.0.2.1/")
+            self.send_header("Server", "Web Switch 1.0")
+            self.end_headers()
+            self.wfile.write(b"<html><title>Login</title></html>")
+
+        def log_message(self, *a: Any) -> None:
+            pass
+
+    srv = http.server.HTTPServer(("127.0.0.1", 0), H)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    try:
+        title, server = disc._web_hint("127.0.0.1", srv.server_port, False, 2)
+        assert title == "Login" and "Web Switch 1.0" in server  # la respuesta 302, no la de 192.0.2.1
+    finally:
+        srv.shutdown()

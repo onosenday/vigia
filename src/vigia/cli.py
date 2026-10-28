@@ -299,8 +299,8 @@ def descubrir(
         raise typer.Exit(1) from None
     out.write_text(render(s, r), encoding="utf-8")
     typer.echo(
-        f"{len(r.proposals)} equipos propuestos, {r.clients} clientes sin proponer, {r.known} ya en el sitio "
-        f"(fuente: {r.source}) → {out}"
+        f"{len(r.proposals)} equipos propuestos, {r.clients} clientes sin proponer, "
+        f"{r.known} ya en el sitio, {len(r.silent)} del sitio sin respuesta (fuente: {r.source}) → {out}"
     )
 
 

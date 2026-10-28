@@ -68,7 +68,9 @@ Si se cambió el propio paquete vigia en local: `uv sync --reinstall-package vig
   lanza. Exige `modulos.netinv.autorizacion` y que `propuesta.yaml` esté en `.gitignore`. Lee netinv si está
   activo (si no, barre la subred desde este equipo) y sondea por TCP puertos de infraestructura. Propone solo
   infraestructura, con ids genéricos (`nas-1`); los nombres vistos van en comentarios. Revisar el tipo y copiar
-  a `site.yaml` lo que proceda; nunca se pega sin mirar.
+  a `site.yaml` lo que proceda; nunca se pega sin mirar. Al final, comentados: los clientes sin proponer (IP y
+  puertos, para revisarlos a mano) y los hosts del sitio que no respondieron (¿apagados o con otra IP?). Por VPN
+  (sin fabricante) clasifica por el título y la cabecera `Server` de la web; las IPs del propio equipo se omiten.
 - **Algo que se apaga a propósito**: `alerta: false` en su entrada de `ping`, `servicios` o `web.objetivos`
   (sigue en los paneles, no avisa).
 - **Alertas**: bloque `alertas` (Telegram y correo; solo nombres de variables, también las direcciones de
