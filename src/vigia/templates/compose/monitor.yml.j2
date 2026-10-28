@@ -158,6 +158,30 @@ services:
       - netinv_data:/data
       - ./netinv:/etc/netinv:ro         # devices.yaml (clasificación manual del sitio)
 {% endif %}
+{% if s.modulos.bot.activo %}
+
+  # Bot de consultas por Telegram en el chat de las alertas (solo lectura). Imagen local desde ./bot;
+  # /metrics en :{{ s.modulos.bot.puerto | raw }}, solo para Prometheus (sin puerto publicado).
+  bot:
+    build: ./bot
+    image: vigia-bot:local
+    container_name: {{ prefix ~ "bot" }}
+    restart: unless-stopped
+    user: "65534:65534"
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      - {{ "TELEGRAM_TOKEN=${" ~ s.alertas.telegram.token ~ "}" }}
+      - {{ "GRAFANA_TOKEN=${" ~ s.modulos.bot.grafana_token ~ "}" }}
+    volumes:
+      - ./bot:/etc/vigia-bot:ro        # carpeta, no el fichero: el despliegue la reescribe por inodo
+    depends_on:
+      - prometheus
+      - grafana
+{% endif %}
 
 volumes:
   grafana_data:

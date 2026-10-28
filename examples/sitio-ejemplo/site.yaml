@@ -110,6 +110,7 @@ modulos:
     auths:
       - {nombre: nas, usuario: SNMP_NAS_USUARIO, clave_auth: SNMP_NAS_AUTH, clave_priv: SNMP_NAS_PRIV}
       - {nombre: lectura, version: v2c, comunidad: SNMP_COMUNIDAD}
+  bot: {activo: true, grafana_token: BOT_GRAFANA_TOKEN}
 
 # Fuera de la red del sitio: solo sondas salientes desde el monitor.
 externos:

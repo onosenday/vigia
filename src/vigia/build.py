@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 import shutil
 from dataclasses import dataclass
@@ -271,6 +272,9 @@ def build_site(s: Site, site_root: Path) -> dict[str, str | bytes]:
         if s.modulos.netinv.dispositivos:
             out["netinv/devices.yaml"] = (site_root / s.modulos.netinv.dispositivos).read_bytes()
 
+    if s.modulos.bot.activo:
+        out.update(_bot(s))
+
     out[f"{s.monitor.proyecto}.yml"] = render_template(
         "compose/monitor.yml.j2",
         s=s,
@@ -331,6 +335,34 @@ def _bundled_image(name: str, dest: str) -> dict[str, str | bytes]:
         for f in sorted(Path(path).rglob("*")):
             if f.is_file() and "__pycache__" not in f.parts:
                 out[f"{dest}/{f.relative_to(path).as_posix()}"] = f.read_bytes()
+    return out
+
+
+def bot_config(s: Site) -> str:
+    """config.json del bot: sin secretos (los tokens llegan por el entorno del contenedor)."""
+    assert s.alertas.telegram  # lo garantiza la validación del modelo
+    b = s.modulos.bot
+    data = {
+        "sitio": s.branding.nombre,
+        "chat_id": int(s.alertas.telegram.chat_id),
+        "zona": b.zona,
+        "puerto": b.puerto,
+        "prometheus": "http://prometheus:9090",
+        "grafana": "http://grafana:3000",
+        "netinv": s.modulos.netinv.activo,
+        "disco_pct": s.alertas.umbrales.disco_pct,
+        "hosts": [{"id": h.id, "nombre": h.display_name, "ip": h.ip, "tipo": h.tipo.value} for h in s.hosts],
+    }
+    return json.dumps(data, ensure_ascii=False, indent=1) + "\n"
+
+
+def _bot(s: Site) -> dict[str, str | bytes]:
+    """Dockerfile, código de `vigia.bot` (será el paquete `vigia_bot` del contenedor) y config.json."""
+    out = _bundled_image("bot", "bot")
+    with as_file(files("vigia").joinpath("bot")) as path:
+        for f in sorted(Path(path).glob("*.py")):
+            out[f"bot/{f.name}"] = f.read_bytes()
+    out["bot/config.json"] = bot_config(s)
     return out
 
 

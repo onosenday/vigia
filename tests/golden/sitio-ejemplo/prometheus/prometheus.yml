@@ -59,6 +59,13 @@ scrape_configs:
     static_configs:
       - targets: ["10.99.0.10:9877"]
 
+  # Bot de consultas por Telegram (salud)
+  - job_name: bot
+    scrape_interval: 60s
+    static_configs:
+      - targets: ["bot:9466"]
+        labels: {nombre: Bot de Telegram}
+
   # Equipos por SNMP (NAS, switches, impresoras, SAI): módulo y autenticación por objetivo
   - job_name: snmp
     scrape_interval: 60s

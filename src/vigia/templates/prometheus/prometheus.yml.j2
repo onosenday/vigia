@@ -75,6 +75,15 @@ scrape_configs:
     static_configs:
       - targets: [{{ s.monitor_host.ip ~ ":" ~ s.modulos.netinv.puerto }}]
 {% endif %}
+{% if s.modulos.bot.activo %}
+
+  # Bot de consultas por Telegram (salud)
+  - job_name: bot
+    scrape_interval: 60s
+    static_configs:
+      - targets: [{{ "bot:" ~ s.modulos.bot.puerto }}]
+        labels: {nombre: Bot de Telegram}
+{% endif %}
 {% if present.snmp %}
 
   # Equipos por SNMP (NAS, switches, impresoras, SAI): módulo y autenticación por objetivo

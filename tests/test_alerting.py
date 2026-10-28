@@ -58,6 +58,7 @@ def test_sin_web_ni_nodos_no_hay_reglas_de_certificado_ni_disco(example_data: di
 
 def test_inactivo_no_genera_nada(example_data: dict[str, Any]) -> None:
     example_data["alertas"]["activo"] = False
+    example_data["modulos"]["bot"]["activo"] = False  # el bot exige alertas por Telegram
     out = _build(example_data)
     assert ALERTING not in out
     assert "GF_SMTP" not in out["ejemplo_monitor.yml"]

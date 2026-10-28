@@ -1,0 +1,48 @@
+{
+ "sitio": "Ejemplo",
+ "chat_id": -1000000000001,
+ "zona": "Europe/Madrid",
+ "puerto": 9466,
+ "prometheus": "http://prometheus:9090",
+ "grafana": "http://grafana:3000",
+ "netinv": true,
+ "disco_pct": 90,
+ "hosts": [
+  {
+   "id": "router",
+   "nombre": "router",
+   "ip": "10.99.0.1",
+   "tipo": "router"
+  },
+  {
+   "id": "nodo1",
+   "nombre": "Nodo 1",
+   "ip": "10.99.0.10",
+   "tipo": "linux"
+  },
+  {
+   "id": "nodo2",
+   "nombre": "nodo2",
+   "ip": "10.99.0.11",
+   "tipo": "omv"
+  },
+  {
+   "id": "nas1",
+   "nombre": "NAS",
+   "ip": "10.99.0.20",
+   "tipo": "synology"
+  },
+  {
+   "id": "puesto1",
+   "nombre": "puesto1",
+   "ip": "10.99.0.30",
+   "tipo": "windows"
+  },
+  {
+   "id": "impresora1",
+   "nombre": "Impresora planta 1",
+   "ip": "10.99.0.40",
+   "tipo": "impresora"
+  }
+ ]
+}
