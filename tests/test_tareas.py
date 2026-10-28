@@ -61,3 +61,18 @@ def test_resultado_y_sin_datos(example_data: dict[str, Any]) -> None:
 def test_escapa_el_nombre_del_host(example_data: dict[str, Any]) -> None:
     example_data["hosts"][2]["nombre"] = 'Nodo "dos"'
     assert 'nombre="Nodo \\"dos\\""' in sin_datos(_site(example_data))
+
+
+def test_compose_con_textfile(example_data: dict[str, Any]) -> None:
+    from vigia.build import build_site
+
+    from .conftest import EXAMPLE
+
+    s = _site(example_data)
+    out = build_site(s, EXAMPLE)
+    flag = "--collector.textfile.directory=/host/var/lib/vigia/textfile"
+    assert flag in out["agentes/nodo2.yml"]
+    assert flag in out["ejemplo_monitor.yml"]  # nodo1 es el host del monitor
+    example_data["hosts"][2]["node_exporter"]["textfile"] = False
+    example_data["tareas"] = [t for t in example_data["tareas"] if t["host"] != "nodo2"]
+    assert flag not in build_site(Site.model_validate(example_data), EXAMPLE)["agentes/nodo2.yml"]

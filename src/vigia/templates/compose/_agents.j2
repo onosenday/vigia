@@ -16,6 +16,9 @@
       - {{ "--web.listen-address=:" ~ h.node_exporter.puerto }}
 {% endif %}
       - '--collector.filesystem.mount-points-exclude=^/(dev|proc|run|sys|var/lib/docker/.+|srv/.+/docker/.+)($$|/)'
+{% if h.node_exporter.textfile %}
+      - '--collector.textfile.directory=/host/var/lib/vigia/textfile'
+{% endif %}
     network_mode: host
     pid: host
     volumes:
