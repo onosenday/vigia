@@ -45,10 +45,11 @@ MONITOR_DIRS = [
     "netinv",
     "snmp",
     "branding",
+    "bot",
 ]
 """Carpetas que vigia gestiona enteras (se vacían y se vuelven a copiar, dentro de la misma carpeta:
 los contenedores montan por inodo y recrearla los dejaría apuntando a la vieja)."""
-RELOAD = ["prometheus", "blackbox", "grafana", "snmp-exporter"]
+RELOAD = ["prometheus", "blackbox", "grafana", "snmp-exporter", "bot"]
 MAX_REMOTE_FILE = 20 * 1024 * 1024
 MAX_REMOTE_TOTAL = 100 * 1024 * 1024
 
@@ -82,6 +83,8 @@ def units(s: Site, build: Mapping[str, bytes]) -> dict[str, Unit]:
             secrets += [v for v in (a.usuario, a.clave_auth, a.clave_priv, a.comunidad) if v]
         if s.alertas.activo:
             secrets += s.alertas.env_vars
+        if s.modulos.bot.activo and s.modulos.bot.grafana_token:
+            secrets.append(s.modulos.bot.grafana_token)
         out["monitor"] = Unit(
             "monitor",
             mon,
@@ -145,6 +148,8 @@ def secret_names(s: Site) -> set[str]:
     for a in s.modulos.snmp.auths:
         out |= {v for v in (a.usuario, a.clave_auth, a.clave_priv, a.comunidad) if v}
     out |= set(s.alertas.secret_vars)
+    if s.modulos.bot.grafana_token:
+        out.add(s.modulos.bot.grafana_token)
     for h in s.hosts:
         if h.ssh:
             out |= set(h.ssh.sudo_secreto) | ({h.ssh.secreto} if h.ssh.secreto else set())

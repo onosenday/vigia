@@ -18,6 +18,7 @@ from vigia.deploy import (
     read_env_file,
     rollback_script,
     run_deploy,
+    secret_names,
     units,
 )
 from vigia.model import Site
@@ -36,6 +37,7 @@ SECRETS = {
     "ALERTAS_SMTP_CLAVE": "smtp-sintetica-789",
     "ALERTAS_SMTP_REMITENTE": "alertas@ejemplo.lan",
     "ALERTAS_CORREO_DESTINO": "sistemas@ejemplo.lan",
+    "BOT_GRAFANA_TOKEN": "glsa-sintetico-000",
 }
 
 
@@ -207,3 +209,12 @@ def test_comprobacion_env_omv(
     assert (r.returncode == 0) is ok, r.stderr
     if not ok:
         assert "ALERTAS_SMTP_CLAVE" in r.stderr
+
+
+def test_unidad_monitor_con_bot(example_data: dict[str, Any]) -> None:
+    s, built = _built(example_data)
+    u = units(s, built)["monitor"]
+    assert "bot" in u.dirs and "ejm-bot" in u.restart
+    assert "BOT_GRAFANA_TOKEN" in u.secrets and "ALERTAS_TELEGRAM_TOKEN" in u.secrets
+    assert "BOT_GRAFANA_TOKEN" in secret_names(s)
+    assert check_no_secrets(built, SECRETS, secret_names(s)) == []
