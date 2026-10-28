@@ -8,8 +8,9 @@ from typing import Any
 from urllib.parse import parse_qs, urlsplit
 from zoneinfo import ZoneInfo
 
+from vigia.bot.comandos import Contexto
 from vigia.bot.config import Config, HostCfg
-from vigia.bot.fuentes import FuenteError, Http
+from vigia.bot.fuentes import FuenteError, Grafana, Http, Prometheus
 
 ZONA = "Europe/Madrid"
 TZ = ZoneInfo(ZONA)
@@ -72,3 +73,16 @@ def fake_http(
         raise AssertionError(f"URL inesperada: {url}")
 
     return http
+
+
+def contexto(
+    prom: Mapping[str, Serie] | None = None,
+    alertas: list[dict[str, Any]] | None = None,
+    prom_caido: bool = False,
+    grafana_caida: bool = False,
+    **cambios: Any,
+) -> Contexto:
+    c = cfg(**cambios)
+    h = fake_http(prom, alertas, prom_caido, grafana_caida)
+    prom_, grafana = Prometheus(c.prometheus, h), Grafana(c.grafana, c.grafana_token, h)
+    return Contexto(c, prom_, grafana, ahora=lambda: AHORA)
