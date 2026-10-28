@@ -218,3 +218,18 @@ def test_unidad_monitor_con_bot(example_data: dict[str, Any]) -> None:
     assert "BOT_GRAFANA_TOKEN" in u.secrets and "ALERTAS_TELEGRAM_TOKEN" in u.secrets
     assert "BOT_GRAFANA_TOKEN" in secret_names(s)
     assert check_no_secrets(built, SECRETS, secret_names(s)) == []
+
+
+def test_carpeta_textfile_solo_si_hace_falta(example_data: dict[str, Any]) -> None:
+    example_data["tareas"] = []  # el ejemplo trae textfile en nodo1 y nodo2 (Task 7)
+    example_data["hosts"][1]["node_exporter"]["textfile"] = False
+    example_data["hosts"][2]["node_exporter"]["textfile"] = False
+    s, built = _built(example_data)
+    assert "/var/lib/vigia/textfile" not in deploy_script(units(s, built)["agentes:nodo2"], "/tmp/vigia.x")
+    example_data["hosts"][2]["node_exporter"]["textfile"] = True
+    s, built = _built(example_data)
+    script = deploy_script(units(s, built)["agentes:nodo2"], "/tmp/vigia.x")
+    assert "install -d -m 755 /var/lib/vigia/textfile" in script
+    assert script.index("install -d") < script.index("up -d")
+    assert "/var/lib/vigia/textfile" not in deploy_script(units(s, built)["monitor"], "/tmp/vigia.x")
+    subprocess.run(["bash", "-n"], input=script.encode(), check=True)

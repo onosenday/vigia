@@ -23,6 +23,7 @@ from pathlib import Path
 
 from vigia.deploy.remote import Remote, RemoteError, Runner, subprocess_runner
 from vigia.model import Deploy, DeployOMV, DeploySynology, Host, Site
+from vigia.tareas import TEXTFILE_DIR, textfile_activo
 
 __all__ = [
     "Remote",
@@ -70,6 +71,8 @@ class Unit:
     restart: list[str] = field(default_factory=list)
     secrets: list[str] = field(default_factory=list)
     """Variables que necesita el compose (para el `.env` de los adaptadores compose/synology)."""
+    textfile: bool = False
+    """Su node_exporter lee la carpeta de tareas: se crea antes del `up`."""
 
 
 def units(s: Site, build: Mapping[str, bytes]) -> dict[str, Unit]:
@@ -95,11 +98,17 @@ def units(s: Site, build: Mapping[str, bytes]) -> dict[str, Unit]:
             files=["prometheus/prometheus.yml"],
             restart=[pre + c for c in RELOAD],
             secrets=secrets,
+            textfile=textfile_activo(mon),
         )
     for h in s.hosts:
         if h.deploy and f"agentes/{h.id}.yml" in build:
             out[f"agentes:{h.id}"] = Unit(
-                f"agentes:{h.id}", h, h.deploy, f"{h.id}-agentes", f"agentes/{h.id}.yml"
+                f"agentes:{h.id}",
+                h,
+                h.deploy,
+                f"{h.id}-agentes",
+                f"agentes/{h.id}.yml",
+                textfile=textfile_activo(h),
             )
     u = s.modulos.updates_exporter
     if u.activo and u.deploy and u.host:
@@ -317,6 +326,19 @@ def _restart_script(u: Unit) -> str:
     )
 
 
+def _textfile_script(u: Unit) -> str:
+    """Carpeta de las tareas (idempotente). Sin root (compose sin sudo) avisa y sigue: la alerta «Tarea sin
+    datos» lo hará visible."""
+    if not u.textfile:
+        return ""
+    d = q(TEXTFILE_DIR)
+    return (
+        f"install -d -m 755 {d} 2>/dev/null || "
+        f'echo "aviso: no se pudo crear {TEXTFILE_DIR}; '
+        f'créala como root (install -d -m 755 {TEXTFILE_DIR})" >&2'
+    )
+
+
 def _needs_sudo(u: Unit) -> bool:
     return isinstance(u.deploy, DeployOMV | DeploySynology) or bool(u.host.ssh and u.host.ssh.sudo_secreto)
 
@@ -328,6 +350,7 @@ def deploy_script(u: Unit, up: str) -> str:
         _env_check_script(u),
         _backup_script(u),
         _sync_script(u, up),
+        _textfile_script(u),
         _up_script(u, up),
         _restart_script(u),
         "echo desplegado",
