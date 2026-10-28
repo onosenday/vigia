@@ -12,6 +12,7 @@ from typing import Any
 
 import yaml
 
+from vigia import tareas
 from vigia.model import Site
 from vigia.render import Raw, dump_yaml
 
@@ -123,6 +124,8 @@ def rules(s: Site) -> list[dict[str, Any]]:
         )
     if s.printers_snmp:
         out += printer_rules(s)
+    if s.tareas:
+        out += task_rules(s)
     out.append(
         _rule(
             "vigia-exporter",
@@ -186,6 +189,40 @@ def printer_rules(s: Site) -> list[dict[str, Any]]:
             0,
             "10m",
             '{{ index .Labels "nombre" }}: {{ index .Labels "vigia_impresora_error" }}',
+        ),
+    ]
+
+
+def task_rules(s: Site) -> list[dict[str, Any]]:
+    tarea = '{{ index .Labels "nombre" }}: la tarea {{ index .Labels "tarea" }}'
+    return [
+        _rule(
+            "vigia-tarea-retrasada",
+            "Tarea sin éxito reciente",
+            tareas.retraso(s),
+            "gt",
+            0,
+            "5m",
+            tarea + " no termina bien desde hace demasiado"
+            "{{ with .Values.A }} ({{ humanize .Value }} h de más){{ end }}",
+        ),
+        _rule(
+            "vigia-tarea-error",
+            "Tarea con error",
+            tareas.ultimo_error(s),
+            "gt",
+            0,
+            "0s",
+            tarea + " acabó con error en su última ejecución",
+        ),
+        _rule(
+            "vigia-tarea-sin-datos",
+            "Tarea sin datos",
+            tareas.sin_datos(s),
+            "gt",
+            0,
+            "1h",
+            tarea + " no ha escrito nunca su métrica (¿script instalado? ¿textfile activo?)",
         ),
     ]
 

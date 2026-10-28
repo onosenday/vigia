@@ -131,3 +131,27 @@ def test_impresora_dormida_no_avisa_de_exporter(example_data: dict[str, Any]) ->
     assert by_name["Impresora planta 1"]["alerta"] == "no"  # su ping lleva alerta: false
     assert by_name["Impresora planta 1"]["__param_module"] == "printer_mib,hrDevice,vigia_impresora"
     assert "alerta" not in by_name["NAS"]
+
+
+def _con_tareas(d: dict[str, Any]) -> dict[str, Any]:
+    d["hosts"][2]["node_exporter"]["textfile"] = True
+    d["tareas"] = [{"nombre": "copias-bd", "host": "nodo2", "max_horas": 26}]
+    return d
+
+
+def test_reglas_de_tareas(example_data: dict[str, Any]) -> None:
+    rules = _rules(_build(_con_tareas(example_data)))
+    sel = 'nombre="nodo2", tarea="copias-bd"'
+    r = rules["vigia-tarea-retrasada"]
+    assert r["data"][0]["model"]["expr"].endswith(f"{{{sel}}})) / 3600 - 26")
+    assert r["data"][1]["model"]["conditions"][0]["evaluator"] == {"type": "gt", "params": [0]}
+    assert rules["vigia-tarea-error"]["data"][0]["model"]["expr"] == (
+        f"max by (nombre, tarea) (vigia_tarea_ultimo_resultado{{{sel}}})"
+    )
+    assert rules["vigia-tarea-sin-datos"]["for"] == "1h"
+    assert "absent(" in rules["vigia-tarea-sin-datos"]["data"][0]["model"]["expr"]
+
+
+def test_sin_tareas_no_hay_reglas_de_tareas(example_data: dict[str, Any]) -> None:
+    example_data["tareas"] = []
+    assert not any(uid.startswith("vigia-tarea") for uid in _rules(_build(example_data)))
