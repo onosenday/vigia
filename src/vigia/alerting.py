@@ -8,7 +8,7 @@ Solo se alerta de infraestructura del site.yaml; los dispositivos de netinv no g
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 
 import yaml
 
@@ -33,7 +33,27 @@ DATASOURCE_UID = "prometheus"
 FS_EXCLUDED = "tmpfs|ramfs|overlay|squashfs|nsfs|devtmpfs|fuse.+"
 
 
+Gravedad = Literal["critical", "warning", "info"]
+Categoria = Literal["incidencia", "mantenimiento"]
+
+CLASIFICACION: dict[str, tuple[Gravedad, Categoria]] = {
+    "vigia-caido": ("critical", "incidencia"),
+    "vigia-exporter": ("warning", "incidencia"),
+    "vigia-impresora-error": ("warning", "incidencia"),
+    "vigia-tarea-retrasada": ("warning", "incidencia"),
+    "vigia-tarea-error": ("warning", "incidencia"),
+    "vigia-tarea-sin-datos": ("warning", "incidencia"),
+    "vigia-certificado": ("warning", "mantenimiento"),
+    "vigia-disco": ("warning", "mantenimiento"),
+    "vigia-consumible": ("warning", "mantenimiento"),
+}
+"""Gravedad y categoría de cada regla, como etiquetas `gravedad` y `categoria`. `incidencia`: algo falla
+ahora (`/alertas`); `mantenimiento`: algo pide una acción planificada (`/pendientes`). Los avisos `info` se
+repiten con `alertas.repetir_info` en vez de `alertas.repetir`."""
+
+
 def _rule(uid: str, title: str, expr: str, op: str, value: float, for_: str, summary: str) -> dict[str, Any]:
+    gravedad, categoria = CLASIFICACION[uid]
     return {
         "uid": uid,
         "title": title,
@@ -60,7 +80,7 @@ def _rule(uid: str, title: str, expr: str, op: str, value: float, for_: str, sum
         "execErrState": "Error",
         "for": for_,
         "annotations": {"summary": summary},
-        "labels": {"vigia": "si"},
+        "labels": {"vigia": "si", "gravedad": gravedad, "categoria": categoria},
         "isPaused": False,
     }
 
@@ -297,6 +317,13 @@ def alerting(s: Site, header: Raw) -> str:
                 "group_wait": "30s",
                 "group_interval": "5m",
                 "repeat_interval": a.repetir,
+                "routes": [
+                    {
+                        "receiver": "vigia",
+                        "object_matchers": [["gravedad", "=", "info"]],
+                        "repeat_interval": a.repetir_info,
+                    }
+                ],
             }
         ],
     }

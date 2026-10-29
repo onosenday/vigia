@@ -705,6 +705,8 @@ class Alerts(Base):
     umbrales: Thresholds = Thresholds()
     repetir: Duration = "12h"
     """Cada cuánto se repite el aviso de algo que sigue fallando."""
+    repetir_info: Duration = "168h"
+    """Lo mismo para los avisos informativos (versión mayor nueva, catálogo viejo…)."""
 
     @model_validator(mode="after")
     def _check_channel(self) -> Alerts:

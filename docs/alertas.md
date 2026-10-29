@@ -16,6 +16,7 @@ alertas:
   umbrales: {caido: 5m, exporter_caido: 5m, certificado_dias: 15, disco_pct: 90, disco_durante: 15m,
              consumible_pct: 15}
   repetir: 12h
+  repetir_info: 168h        # avisos informativos (versión mayor nueva, catálogo viejo…)
 ```
 
 Todos los valores son **nombres de variables** del fichero de entorno del sitio, salvo `chat_id`. Las
@@ -34,6 +35,10 @@ id. No es secreto (sin el token no sirve de nada); usa un **grupo** para que no 
 | Consumible de impresora bajo | tóner, tinta, tambor… de las impresoras con `snmp` (no los depósitos de residuos) | por debajo de `consumible_pct` durante 30 min |
 | Error de impresora | sin papel o tóner, puerta abierta, atasco, desconectada, servicio, bandeja o consumible ausente, salida llena, mantenimiento vencido | activo durante 10 min |
 | Tarea sin éxito reciente · con error · sin datos | `tareas` ([tareas.md](tareas.md)) | más de `max_horas` sin éxito, última ejecución con error, o nunca ha escrito su métrica |
+
+Cada regla lleva las etiquetas `gravedad` (`critical`, `warning`, `info`) y `categoria`: `incidencia` si algo
+falla ahora, `mantenimiento` si pide una acción planificada (certificados, discos, consumibles, soporte). Los
+avisos `info` se repiten cada `repetir_info` en vez de cada `repetir`.
 
 Los avisos se agrupan por `nombre`: si un servidor se cae, la sonda y su exporter llegan en el mismo mensaje.
 Lo que se apaga (o se duerme, como muchas impresoras) se marca con `alerta: false` en su entrada de `ping`, `servicios` o

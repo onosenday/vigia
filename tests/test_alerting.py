@@ -173,3 +173,20 @@ def test_reglas_de_tareas_en_dos_hosts(example_data: dict[str, Any]) -> None:
 def test_sin_tareas_no_hay_reglas_de_tareas(example_data: dict[str, Any]) -> None:
     example_data["tareas"] = []
     assert not any(uid.startswith("vigia-tarea") for uid in _rules(_build(example_data)))
+
+
+def test_todas_las_reglas_llevan_gravedad_y_categoria(example_data: dict[str, Any]) -> None:
+    for uid, r in _rules(_build(example_data)).items():
+        assert r["labels"]["gravedad"] in {"critical", "warning", "info"}, uid
+        assert r["labels"]["categoria"] in {"incidencia", "mantenimiento"}, uid
+    assert _rules(_build(example_data))["vigia-certificado"]["labels"]["categoria"] == "mantenimiento"
+    assert _rules(_build(example_data))["vigia-caido"]["labels"]["gravedad"] == "critical"
+
+
+def test_avisos_info_con_su_propia_repeticion(example_data: dict[str, Any]) -> None:
+    example_data["alertas"]["repetir_info"] = "72h"
+    (politica,) = yaml.safe_load(_build(example_data)[ALERTING])["policies"]
+    (ruta,) = politica["routes"]
+    assert ruta["object_matchers"] == [["gravedad", "=", "info"]]
+    assert ruta["repeat_interval"] == "72h"
+    assert politica["repeat_interval"] == example_data["alertas"].get("repetir", "12h")

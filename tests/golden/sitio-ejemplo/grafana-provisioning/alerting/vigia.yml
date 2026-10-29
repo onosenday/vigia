@@ -39,6 +39,8 @@ groups:
       summary: '{{ index .Labels "nombre" }} no responde ({{ index .Labels "job" }}: {{ index .Labels "instance" }})'
     labels:
       vigia: si
+      gravedad: critical
+      categoria: incidencia
     isPaused: false
   - uid: vigia-certificado
     title: Certificado a punto de caducar
@@ -73,6 +75,8 @@ groups:
         end }}'
     labels:
       vigia: si
+      gravedad: warning
+      categoria: mantenimiento
     isPaused: false
   - uid: vigia-disco
     title: Disco casi lleno
@@ -109,6 +113,8 @@ groups:
         .Values.A }} ({{ humanize .Value }} %){{ end }}'
     labels:
       vigia: si
+      gravedad: warning
+      categoria: mantenimiento
     isPaused: false
   - uid: vigia-consumible
     title: Consumible de impresora bajo
@@ -144,6 +150,8 @@ groups:
         with .Values.A }} al {{ humanize .Value }} %{{ end }}'
     labels:
       vigia: si
+      gravedad: warning
+      categoria: mantenimiento
     isPaused: false
   - uid: vigia-impresora-error
     title: Error de impresora
@@ -177,6 +185,8 @@ groups:
       summary: '{{ index .Labels "nombre" }}: {{ index .Labels "vigia_impresora_error" }}'
     labels:
       vigia: si
+      gravedad: warning
+      categoria: incidencia
     isPaused: false
   - uid: vigia-tarea-retrasada
     title: Tarea sin éxito reciente
@@ -213,6 +223,8 @@ groups:
         with .Values.A }} ({{ printf "%.1f" .Value }} h de más){{ end }}'
     labels:
       vigia: si
+      gravedad: warning
+      categoria: incidencia
     isPaused: false
   - uid: vigia-tarea-error
     title: Tarea con error
@@ -247,6 +259,8 @@ groups:
       summary: '{{ index .Labels "nombre" }}: la tarea {{ index .Labels "tarea" }} acabó con error en su última ejecución'
     labels:
       vigia: si
+      gravedad: warning
+      categoria: incidencia
     isPaused: false
   - uid: vigia-tarea-sin-datos
     title: Tarea sin datos
@@ -282,6 +296,8 @@ groups:
         (¿script instalado? ¿textfile activo?)'
     labels:
       vigia: si
+      gravedad: warning
+      categoria: incidencia
     isPaused: false
   - uid: vigia-exporter
     title: Exporter sin respuesta
@@ -316,6 +332,8 @@ groups:
         }})
     labels:
       vigia: si
+      gravedad: warning
+      categoria: incidencia
     isPaused: false
 templates:
 - orgId: 1
@@ -359,3 +377,10 @@ policies:
   group_wait: 30s
   group_interval: 5m
   repeat_interval: 12h
+  routes:
+  - receiver: vigia
+    object_matchers:
+    - - gravedad
+      - '='
+      - info
+    repeat_interval: 168h
