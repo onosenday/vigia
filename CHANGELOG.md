@@ -9,6 +9,10 @@
 - **Avisos de fin de soporte**: sistema sin soporte, fin de soporte cercano (`umbrales.soporte_dias`), versión
   mayor disponible, versión fuera del catálogo y catálogo antiguo (`umbrales.catalogo_dias`), con la versión de
   la distribución de `node_os_info`.
+- **updates-exporter con métricas** (`/metrics.txt`, job `actualizaciones`) y **scripts de host v2**, que
+  además informan de la versión del sistema y de OMV, Proxmox VE y DSM. Alertas de seguridad pendiente
+  (`umbrales.seguridad_durante`), script antiguo y host sin comprobar ([docs/actualizaciones.md](docs/actualizaciones.md)).
+  Hay que reinstalar el script en cada host para tener sus versiones.
 - **Gravedad y categoría** en todas las alertas (etiquetas `gravedad` y `categoria`); los avisos `info` se
   repiten cada `alertas.repetir_info` (168h).
 

@@ -258,17 +258,19 @@ def test_superados_y_derivadas() -> None:
     tabla = grupo["rules"]
     fuentes = [r for r in tabla if r["record"] == ciclos.PRODUCTO_CICLO]
     derivadas = [r for r in tabla if r["record"] in (ciclos.RESTANTE, ciclos.MAYOR)]
-    assert tabla[-3:] == fuentes + derivadas  # orden: tabla, fuentes y derivadas
+    assert tabla[-4:] == fuentes + derivadas  # orden: tabla, fuentes y derivadas
     sup = [r["labels"] for r in tabla if r["record"] == ciclos.SUPERADO]
     assert sup == [{"producto": "nas-os", "ciclo": "2", "ultimo": "3"}]
-    (fuente,) = fuentes
-    assert fuente["record"] == ciclos.PRODUCTO_CICLO
-    assert 'node_os_info{id=~"nasos"}' in fuente["expr"]
-    assert '"ciclo", "$1", "version_id", "(\\\\d+)\\\\..*"' in fuente["expr"]
+    os, exporter = fuentes
+    assert 'node_os_info{id=~"nasos"}' in os["expr"]
+    assert '"ciclo", "$1", "version_id", "(\\\\d+)\\\\..*"' in os["expr"]
+    assert 'vigia_producto_info{producto="nas-os"}' in exporter["expr"]
+    assert '"ciclo", "$1", "version", "(\\\\d+)\\\\..*"' in exporter["expr"]
     assert [r["record"] for r in derivadas] == [ciclos.RESTANTE, ciclos.MAYOR]
 
 
-def test_sin_os_ids_no_hay_fuente() -> None:
+def test_sin_os_ids_solo_la_fuente_del_exporter() -> None:
     p = Producto.model_validate(_producto())
     (grupo,) = ciclos.reglas({p.producto: p})["groups"]
-    assert not [r for r in grupo["rules"] if r["record"] == ciclos.PRODUCTO_CICLO]
+    (fuente,) = [r for r in grupo["rules"] if r["record"] == ciclos.PRODUCTO_CICLO]
+    assert "node_os_info" not in fuente["expr"]

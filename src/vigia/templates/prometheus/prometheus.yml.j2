@@ -78,6 +78,26 @@ scrape_configs:
     static_configs:
       - targets: [{{ s.monitor_host.ip ~ ":" ~ s.modulos.netinv.puerto }}]
 {% endif %}
+{% if s.modulos.updates_exporter.activo %}
+
+  # Actualizaciones y versión de cada host (updates-exporter, docs/actualizaciones.md). Un solo objetivo
+  # con las métricas de todos los hosts: su etiqueta `host` (id) pasa a `nombre`, como en los demás jobs.
+  - job_name: actualizaciones
+    scrape_interval: 60s
+    metrics_path: /metrics.txt
+    static_configs:
+      - targets: [{{ s.get_host(s.modulos.updates_exporter.host).ip ~ ":" ~ s.modulos.updates_exporter.puerto }}]
+        labels: {nombre: updates-exporter}
+{% if s.hosts | selectattr("actualizaciones") | list %}
+    metric_relabel_configs:
+{% endif %}
+{% for h in s.hosts if h.actualizaciones %}
+      - source_labels: [host]
+        regex: {{ h.id }}
+        target_label: nombre
+        replacement: {{ h.display_name }}
+{% endfor %}
+{% endif %}
 {% if s.modulos.bot.activo %}
 
   # Bot de consultas por Telegram (salud)

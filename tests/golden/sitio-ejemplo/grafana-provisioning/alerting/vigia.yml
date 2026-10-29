@@ -480,6 +480,112 @@ groups:
       gravedad: info
       categoria: mantenimiento
     isPaused: false
+  - uid: vigia-seguridad-pendiente
+    title: Actualizaciones de seguridad pendientes
+    condition: B
+    data:
+    - refId: A
+      relativeTimeRange:
+        from: 600
+        to: 0
+      datasourceUid: prometheus
+      model:
+        refId: A
+        expr: max by (nombre) (vigia_actualizaciones_seguridad)
+        instant: true
+        range: false
+    - refId: B
+      datasourceUid: __expr__
+      model:
+        refId: B
+        type: threshold
+        expression: A
+        conditions:
+        - evaluator:
+            type: gt
+            params:
+            - 0
+    noDataState: OK
+    execErrState: Error
+    for: 72h
+    annotations:
+      summary: '{{ index .Labels "nombre" }}: actualizaciones de seguridad sin aplicar{{ with .Values.A }} ({{ .Value }}){{
+        end }}'
+    labels:
+      vigia: si
+      gravedad: warning
+      categoria: mantenimiento
+    isPaused: false
+  - uid: vigia-script-anticuado
+    title: Script de actualizaciones antiguo
+    condition: B
+    data:
+    - refId: A
+      relativeTimeRange:
+        from: 600
+        to: 0
+      datasourceUid: prometheus
+      model:
+        refId: A
+        expr: max by (nombre) (vigia_updexp_formato)
+        instant: true
+        range: false
+    - refId: B
+      datasourceUid: __expr__
+      model:
+        refId: B
+        type: threshold
+        expression: A
+        conditions:
+        - evaluator:
+            type: lt
+            params:
+            - 2
+    noDataState: OK
+    execErrState: Error
+    for: 1h
+    annotations:
+      summary: '{{ index .Labels "nombre" }}: su script del updates-exporter es antiguo y no informa de versiones (reinstálalo)'
+    labels:
+      vigia: si
+      gravedad: info
+      categoria: mantenimiento
+    isPaused: false
+  - uid: vigia-actualizaciones-sin-datos
+    title: Actualizaciones sin comprobar
+    condition: B
+    data:
+    - refId: A
+      relativeTimeRange:
+        from: 600
+        to: 0
+      datasourceUid: prometheus
+      model:
+        refId: A
+        expr: max by (nombre) (1 - vigia_updexp_ok)
+        instant: true
+        range: false
+    - refId: B
+      datasourceUid: __expr__
+      model:
+        refId: B
+        type: threshold
+        expression: A
+        conditions:
+        - evaluator:
+            type: gt
+            params:
+            - 0
+    noDataState: OK
+    execErrState: Error
+    for: 24h
+    annotations:
+      summary: '{{ index .Labels "nombre" }}: el updates-exporter no puede consultar sus actualizaciones'
+    labels:
+      vigia: si
+      gravedad: warning
+      categoria: incidencia
+    isPaused: false
   - uid: vigia-exporter
     title: Exporter sin respuesta
     condition: B

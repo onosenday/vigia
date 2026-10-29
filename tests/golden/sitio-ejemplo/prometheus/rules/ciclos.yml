@@ -1503,6 +1503,24 @@ groups:
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(node_os_info{id=~"ubuntu"},
       "producto", "ubuntu", "", ""), "producto_nombre", "Ubuntu", "", ""), "version", "$1", "version_id", "(.*)"), "ciclo",
       "$1", "version_id", "(\\d+\\.\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="debian"},
+      "producto_nombre", "Debian", "", ""), "ciclo", "$1", "version", "(\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="openmediavault"},
+      "producto_nombre", "OpenMediaVault", "", ""), "ciclo", "$1", "version", "(\\d+)\\..*"))
+  - record: vigia_producto_ciclo
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="proxmox-ve"},
+      "producto_nombre", "Proxmox VE", "", ""), "ciclo", "$1", "version", "(\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="synology-dsm"},
+      "producto_nombre", "Synology DSM", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="truenas"},
+      "producto_nombre", "TrueNAS", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="ubuntu"},
+      "producto_nombre", "Ubuntu", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
   - record: vigia_soporte_restante_dias
     expr: (vigia_producto_ciclo * on (producto, ciclo) group_left () vigia_ciclo_fin_soporte_timestamp - time()) / 86400
   - record: vigia_version_mayor_disponible

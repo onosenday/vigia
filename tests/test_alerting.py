@@ -44,6 +44,9 @@ def test_reglas_del_ejemplo(example_data: dict[str, Any]) -> None:
         "vigia-version-mayor",
         "vigia-ciclo-desconocido",
         "vigia-catalogo-viejo",
+        "vigia-seguridad-pendiente",
+        "vigia-script-anticuado",
+        "vigia-actualizaciones-sin-datos",
     }
     assert 'alerta!="no"' in rules["vigia-caido"]["data"][0]["model"]["expr"]
     assert rules["vigia-certificado"]["data"][1]["model"]["conditions"][0]["evaluator"] == {
@@ -61,6 +64,7 @@ def test_sin_web_ni_nodos_no_hay_reglas_de_certificado_ni_disco(example_data: di
         h.pop("windows_exporter", None)
         h.pop("cadvisor", None)
     example_data["hosts"] = [h for h in example_data["hosts"] if h.get("tipo") != "windows"]
+    _sin_actualizaciones(example_data)
     rules = _rules(_build(example_data))
     assert set(rules) == {"vigia-caido", "vigia-exporter", "vigia-consumible", "vigia-impresora-error"}
 
@@ -208,9 +212,26 @@ def test_reglas_de_soporte(example_data: dict[str, Any]) -> None:
     assert "ultimo" in rules["vigia-version-mayor"]["data"][0]["model"]["expr"]
 
 
+def _sin_actualizaciones(data: dict[str, Any]) -> None:
+    data["modulos"]["updates_exporter"] = {"activo": False}
+    for h in data["hosts"]:
+        h.pop("actualizaciones", None)
+
+
 def test_sin_nodos_no_hay_reglas_de_soporte(example_data: dict[str, Any]) -> None:
     for h in example_data["hosts"]:
         h.pop("node_exporter", None)
     example_data["tareas"] = []
+    _sin_actualizaciones(example_data)
     rules = _rules(_build(example_data))
     assert not {u for u in rules if "soporte" in u or "version" in u or "catalogo" in u}
+
+
+def test_reglas_de_actualizaciones(example_data: dict[str, Any]) -> None:
+    example_data["alertas"].setdefault("umbrales", {})["seguridad_durante"] = "48h"
+    rules = _rules(_build(example_data))
+    assert rules["vigia-seguridad-pendiente"]["for"] == "48h"
+    assert rules["vigia-actualizaciones-sin-datos"]["labels"]["categoria"] == "incidencia"
+    _sin_actualizaciones(example_data)
+    rules = _rules(_build(example_data))
+    assert not {"vigia-seguridad-pendiente", "vigia-script-anticuado"} & set(rules)

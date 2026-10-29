@@ -11,9 +11,11 @@
 #       su último JSON (p. ej. 6 h en un NAS cuyos discos hibernan).
 #   KEY  (def. /keys/id_ed25519)  clave privada dedicada, montada solo-lectura
 #   OUT  (def. /www/updates.json) fichero agregado que sirve el httpd
+#   METRICS (def. /www/metrics.txt) lo mismo en formato de Prometheus (metrics.sh)
 set -u
 KEY="${KEY:-/keys/id_ed25519}"
 OUT="${OUT:-/www/updates.json}"
+METRICS="${METRICS:-/www/metrics.txt}"
 CACHE="${CACHE:-/www/cache}"
 mkdir -p "$CACHE"
 SSHOPTS="-i $KEY -o BatchMode=yes -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 -o ServerAliveInterval=5"
@@ -44,3 +46,7 @@ tmp="$(mktemp)"
   printf '}\n'
 } > "$tmp"
 mv "$tmp" "$OUT"
+
+# métricas de Prometheus (atómico); si falla, se conserva el fichero anterior
+tmpm="$(mktemp)"
+if /usr/local/bin/metrics.sh "$OUT" > "$tmpm"; then mv "$tmpm" "$METRICS"; else rm -f "$tmpm"; fi

@@ -51,6 +51,9 @@ CLASIFICACION: dict[str, tuple[Gravedad, Categoria]] = {
     "vigia-version-mayor": ("info", "mantenimiento"),
     "vigia-ciclo-desconocido": ("info", "mantenimiento"),
     "vigia-catalogo-viejo": ("info", "mantenimiento"),
+    "vigia-seguridad-pendiente": ("warning", "mantenimiento"),
+    "vigia-script-anticuado": ("info", "mantenimiento"),
+    "vigia-actualizaciones-sin-datos": ("warning", "incidencia"),
 }
 """Gravedad y categoría de cada regla, como etiquetas `gravedad` y `categoria`. `incidencia`: algo falla
 ahora (`/alertas`); `mantenimiento`: algo pide una acción planificada (`/pendientes`). Los avisos `info` se
@@ -153,6 +156,8 @@ def rules(s: Site) -> list[dict[str, Any]]:
         out += task_rules(s)
     if hay_versiones(s):
         out += support_rules(s)
+    if s.modulos.updates_exporter.activo:
+        out += updates_rules(s)
     out.append(
         _rule(
             "vigia-exporter",
@@ -255,8 +260,42 @@ def task_rules(s: Site) -> list[dict[str, Any]]:
 
 
 def hay_versiones(s: Site) -> bool:
-    """Hay alguna fuente de versiones instaladas (node_os_info de los node_exporter)."""
-    return any(h.node_exporter for h in s.hosts)
+    """Hay alguna fuente de versiones instaladas (node_os_info o el updates-exporter)."""
+    return any(h.node_exporter for h in s.hosts) or s.modulos.updates_exporter.activo
+
+
+def updates_rules(s: Site) -> list[dict[str, Any]]:
+    """Actualizaciones de los hosts que sondea el updates-exporter (docs/actualizaciones.md)."""
+    quien = '{{ index .Labels "nombre" }}'
+    return [
+        _rule(
+            "vigia-seguridad-pendiente",
+            "Actualizaciones de seguridad pendientes",
+            "max by (nombre) (vigia_actualizaciones_seguridad)",
+            "gt",
+            0,
+            s.alertas.umbrales.seguridad_durante,
+            quien + ": actualizaciones de seguridad sin aplicar{{ with .Values.A }} ({{ .Value }}){{ end }}",
+        ),
+        _rule(
+            "vigia-script-anticuado",
+            "Script de actualizaciones antiguo",
+            "max by (nombre) (vigia_updexp_formato)",
+            "lt",
+            2,
+            "1h",
+            quien + ": su script del updates-exporter es antiguo y no informa de versiones (reinstálalo)",
+        ),
+        _rule(
+            "vigia-actualizaciones-sin-datos",
+            "Actualizaciones sin comprobar",
+            "max by (nombre) (1 - vigia_updexp_ok)",
+            "gt",
+            0,
+            "24h",
+            quien + ": el updates-exporter no puede consultar sus actualizaciones",
+        ),
+    ]
 
 
 def support_rules(s: Site) -> list[dict[str, Any]]:

@@ -10,7 +10,7 @@ alertas, paneles y bot usen la misma tabla:
   vigia_ciclos_catalogo_timestamp{producto}             epoch de la última comprobación del producto
   vigia_ciclo_superado{producto, ciclo, ultimo}         1 por ciclo anterior al de referencia
 
-y, con la versión instalada en cada equipo (de node_os_info y de las demás fuentes), las derivadas:
+y, con la versión instalada en cada equipo (de node_os_info y de vigia_producto_info), las derivadas:
 
   vigia_producto_ciclo{nombre, producto, producto_nombre, ciclo, version}   1 por equipo y producto
   vigia_soporte_restante_dias{…}            días hasta el fin de soporte (negativo: ya sin soporte)
@@ -42,6 +42,8 @@ SUPERADO = "vigia_ciclo_superado"
 PRODUCTO_CICLO = "vigia_producto_ciclo"
 RESTANTE = "vigia_soporte_restante_dias"
 MAYOR = "vigia_version_mayor_disponible"
+PRODUCTO_INFO = "vigia_producto_info"
+"""Lo publica el updates-exporter: producto y versión que informa cada host (docs/actualizaciones.md)."""
 
 ProductoId = Annotated[str, StringConstraints(pattern=r"^[a-z][a-z0-9-]{0,39}$")]
 CicloId = Annotated[str, StringConstraints(pattern=r"^[0-9A-Za-z][0-9A-Za-z._-]{0,19}$")]
@@ -202,6 +204,14 @@ def _desde_os(p: Producto) -> str:
     return f"max by (nombre, producto, producto_nombre, ciclo, version) ({e})"
 
 
+def _desde_exporter(p: Producto) -> str:
+    """vigia_producto_ciclo de un producto a partir de vigia_producto_info (updates-exporter)."""
+    e = f"{PRODUCTO_INFO}{{producto={_q(p.producto)}}}"
+    e = _replace(e, "producto_nombre", p.nombre)
+    e = _replace(e, "ciclo", "$1", "version", p.regex_promql)
+    return f"max by (nombre, producto, producto_nombre, ciclo, version) ({e})"
+
+
 def reglas(catalogo: Catalogo, fecha_aviso: Mapping[str, FechaAviso] | None = None) -> dict[str, Any]:
     """Reglas de grabación de Prometheus: la tabla de ciclos (constantes) y lo derivado por equipo."""
     fecha_aviso = fecha_aviso or {}
@@ -217,6 +227,7 @@ def reglas(catalogo: Catalogo, fecha_aviso: Mapping[str, FechaAviso] | None = No
         for c in p.superados:
             tabla.append(_regla(SUPERADO, 1, producto=p.producto, ciclo=c.ciclo, ultimo=p.ultimo.ciclo))
     fuentes = [{"record": PRODUCTO_CICLO, "expr": _desde_os(p)} for p in catalogo.values() if p.os_ids]
+    fuentes += [{"record": PRODUCTO_CICLO, "expr": _desde_exporter(p)} for p in catalogo.values()]
     derivadas = [
         {
             "record": RESTANTE,

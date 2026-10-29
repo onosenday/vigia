@@ -77,6 +77,8 @@ def test_reglas_y_alertas_en_prometheus(tmp_path: Path, example_data: dict[str, 
                 {"labels": info("pi-1", "debian", "11", "11", ultimo="13"), "value": 1},
                 # Ubuntu: la referencia es la última LTS (26.04), no la 26.10
                 {"labels": info("srv-3", "ubuntu", "24.04", "24.04", ultimo="26.04"), "value": 1},
+                # OMV 7 por el updates-exporter: ya existe la 8
+                {"labels": info("nas-omv", "openmediavault", "7", "7.7.24-7", ultimo="8"), "value": 1},
             ],
         ),
         _muestras(
@@ -91,7 +93,14 @@ def test_reglas_y_alertas_en_prometheus(tmp_path: Path, example_data: dict[str, 
         # Raspberry Pi OS 11 (raspbian): ya sin soporte; el aviso da los días desde el fin
         _muestras(
             exprs["vigia-soporte-caducado"],
-            [{"labels": info("pi-1", "debian", "11", "11"), "value": -_dias("debian", "11")}],
+            [
+                {"labels": info("pi-1", "debian", "11", "11"), "value": -_dias("debian", "11")},
+                # OMV 7 (fin el 30-06-2026)
+                {
+                    "labels": info("nas-omv", "openmediavault", "7", "7.7.24-7"),
+                    "value": -_dias("openmediavault", "7"),
+                },
+            ],
         ),
         # con soporte_dias = 700 solo Debian 12 (610 días); Debian 13 y Ubuntu 24.04 tienen más margen
         _muestras(
@@ -115,6 +124,12 @@ def test_reglas_y_alertas_en_prometheus(tmp_path: Path, example_data: dict[str, 
                     _serie("srv-3", "ubuntu", "24.04"),
                     _serie("pi-1", "raspbian", "11"),
                     _serie("raro", "debian", "99"),
+                    # OMV 7 que informa el updates-exporter (ya con `nombre` tras el relabel del job)
+                    {
+                        "series": 'vigia_producto_info{nombre="nas-omv", host="nas-omv", '
+                        'producto="openmediavault", version="7.7.24-7", job="actualizaciones"}',
+                        "values": "1 1",
+                    },
                 ],
                 "promql_expr_test": pruebas,
             }

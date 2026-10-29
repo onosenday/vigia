@@ -53,7 +53,7 @@ Y, con la versión instalada en cada equipo, en el mismo grupo (en orden, en la 
 
 | Serie | Qué es |
 |-------|--------|
-| `vigia_producto_ciclo{nombre, producto, producto_nombre, ciclo, version}` | 1 por equipo y producto. Sale de `node_os_info` (`os_ids` del catálogo: debian, raspbian, ubuntu) |
+| `vigia_producto_ciclo{nombre, producto, producto_nombre, ciclo, version}` | 1 por equipo y producto. La distribución sale de `node_os_info` (`os_ids` del catálogo: debian, raspbian, ubuntu); OMV, Proxmox VE y DSM, de `vigia_producto_info` del updates-exporter ([actualizaciones.md](actualizaciones.md)) |
 | `vigia_soporte_restante_dias{…}` | Días hasta el fin de soporte; negativo si ya no tiene |
 | `vigia_version_mayor_disponible{…, ultimo}` | 1 si el ciclo instalado es anterior al de referencia |
 
@@ -67,8 +67,8 @@ Y, con la versión instalada en cada equipo, en el mismo grupo (en orden, en la 
 | Versión fuera del catálogo | info | la versión instalada no está en el catálogo: ¿actualizar vigia? |
 | Catálogo de ciclos antiguo | info | el catálogo de un producto en uso tiene más de `umbrales.catalogo_dias` (180) |
 
-Todas son de categoría `mantenimiento` y se generan si hay algún node_exporter. Un host con OMV recibe los
-avisos de Debian y, cuando el updates-exporter informe de su versión, también los de OMV.
+Todas son de categoría `mantenimiento` y se generan si hay algún node_exporter o el updates-exporter está
+activo. Un host con OMV recibe los avisos de Debian (node_exporter) y los de OMV (updates-exporter, script v2).
 
 El catálogo viaja con cada versión de vigia: un sitio que no actualiza vigia se queda con las fechas de esa
 versión.

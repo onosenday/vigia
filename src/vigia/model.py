@@ -696,6 +696,8 @@ class Thresholds(Base):
     """Consumible de impresora (tóner, tinta, tambor…) por debajo de este % → aviso."""
     soporte_dias: int = Field(default=90, ge=1, le=730)
     """Días antes del fin de soporte de un sistema en que se avisa (docs/ciclos.md)."""
+    seguridad_durante: Duration = "72h"
+    """Tiempo con actualizaciones de seguridad sin aplicar antes de avisar."""
     catalogo_dias: int = Field(default=180, ge=30, le=730)
     """Antigüedad del catálogo de ciclos (de esta versión de vigia) a partir de la que se avisa."""
 
