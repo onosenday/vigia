@@ -1,4 +1,4 @@
-"""metrics.sh del updates-exporter: del updates.json agregado (scripts de host v1 y v2) a métricas de texto."""
+"""metrics.sh del updates-exporter: del updates.json agregado (scripts v1 y v2) a métricas de texto."""
 
 from __future__ import annotations
 

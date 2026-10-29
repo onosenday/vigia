@@ -24,6 +24,6 @@ familia vigia_updexp_formato "Versión del formato del script del host." 'select
 familia vigia_actualizaciones_pendientes "Actualizaciones pendientes (paquetes; en DSM, 1 o 0)." \
   '(.updates // .dsm_update) | select(type == "number") | {l: "", v: .}'
 familia vigia_actualizaciones_seguridad "Actualizaciones de seguridad pendientes." '.security | select(type == "number") | {l: "", v: .}'
-familia vigia_producto_info "Producto y versión que informa el host." '(.productos // [])[]
-  | select((.producto | type == "string") and (.version | type == "string"))
+familia vigia_producto_info "Producto y versión que informa el host." '(.productos | if type == "array" then .[] else empty end)
+  | select(type == "object" and (.producto | type == "string") and (.version | type == "string"))
   | {l: ",producto=\(.producto | @json),version=\(.version | @json)", v: 1}'
