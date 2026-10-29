@@ -1,4 +1,4 @@
-# updates-exporter (host nodo1) — generado por vigia 0.4.0 para «Oficina de ejemplo».
+# updates-exporter (host nodo1) — generado por vigia 0.4.1 para «Oficina de ejemplo».
 # No editar: cambia site.yaml y ejecuta `vigia build`.
 # Sondea por SSH (clave dedicada + forced-command + sudo acotado) las actualizaciones de SO de cada host
 # y publica /www/updates.json. La clave privada se monta :ro desde el host; nunca va en el compose ni en git.

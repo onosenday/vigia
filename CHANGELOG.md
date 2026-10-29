@@ -1,6 +1,6 @@
 # Cambios
 
-## Sin publicar
+## 0.4.1 (2026-10-29)
 
 - **Contexto SNMPv3** (`contexto` en `modulos.snmp.auths`, solo v3) → `context_name` de snmp_exporter. Para
   equipos que sin él devuelven el walk vacío (impresoras HP con Jetdirect).

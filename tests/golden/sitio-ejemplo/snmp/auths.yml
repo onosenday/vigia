@@ -1,4 +1,4 @@
-# Autenticaciones SNMP (solo referencias ${VAR}) — generado por vigia 0.4.0 para «Oficina de ejemplo».
+# Autenticaciones SNMP (solo referencias ${VAR}) — generado por vigia 0.4.1 para «Oficina de ejemplo».
 # No editar: cambia site.yaml y ejecuta `vigia build`.
 auths:
   nas:
