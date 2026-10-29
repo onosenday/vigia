@@ -299,6 +299,187 @@ groups:
       gravedad: warning
       categoria: incidencia
     isPaused: false
+  - uid: vigia-soporte-caducado
+    title: Sistema sin soporte
+    condition: B
+    data:
+    - refId: A
+      relativeTimeRange:
+        from: 600
+        to: 0
+      datasourceUid: prometheus
+      model:
+        refId: A
+        expr: -max by (nombre, producto, producto_nombre, ciclo, version) (vigia_soporte_restante_dias)
+        instant: true
+        range: false
+    - refId: B
+      datasourceUid: __expr__
+      model:
+        refId: B
+        type: threshold
+        expression: A
+        conditions:
+        - evaluator:
+            type: gt
+            params:
+            - 0
+    noDataState: OK
+    execErrState: Error
+    for: 1h
+    annotations:
+      summary: '{{ index .Labels "nombre" }}: {{ index .Labels "producto_nombre" }} {{ index .Labels "ciclo" }} ya no tiene
+        soporte{{ with .Values.A }} (desde hace {{ humanize .Value }} días){{ end }}'
+    labels:
+      vigia: si
+      gravedad: critical
+      categoria: mantenimiento
+    isPaused: false
+  - uid: vigia-soporte-caduca
+    title: Fin de soporte cercano
+    condition: B
+    data:
+    - refId: A
+      relativeTimeRange:
+        from: 600
+        to: 0
+      datasourceUid: prometheus
+      model:
+        refId: A
+        expr: max by (nombre, producto, producto_nombre, ciclo, version) (vigia_soporte_restante_dias >= 0)
+        instant: true
+        range: false
+    - refId: B
+      datasourceUid: __expr__
+      model:
+        refId: B
+        type: threshold
+        expression: A
+        conditions:
+        - evaluator:
+            type: lt
+            params:
+            - 90
+    noDataState: OK
+    execErrState: Error
+    for: 1h
+    annotations:
+      summary: '{{ index .Labels "nombre" }}: {{ index .Labels "producto_nombre" }} {{ index .Labels "ciclo" }} pierde el
+        soporte pronto{{ with .Values.A }} (en {{ humanize .Value }} días){{ end }}'
+    labels:
+      vigia: si
+      gravedad: warning
+      categoria: mantenimiento
+    isPaused: false
+  - uid: vigia-version-mayor
+    title: Versión mayor disponible
+    condition: B
+    data:
+    - refId: A
+      relativeTimeRange:
+        from: 600
+        to: 0
+      datasourceUid: prometheus
+      model:
+        refId: A
+        expr: max by (nombre, producto, producto_nombre, ciclo, version, ultimo) (vigia_version_mayor_disponible)
+        instant: true
+        range: false
+    - refId: B
+      datasourceUid: __expr__
+      model:
+        refId: B
+        type: threshold
+        expression: A
+        conditions:
+        - evaluator:
+            type: gt
+            params:
+            - 0
+    noDataState: OK
+    execErrState: Error
+    for: 1h
+    annotations:
+      summary: '{{ index .Labels "nombre" }}: {{ index .Labels "producto_nombre" }} {{ index .Labels "ciclo" }}: ya existe
+        la {{ index .Labels "ultimo" }}'
+    labels:
+      vigia: si
+      gravedad: info
+      categoria: mantenimiento
+    isPaused: false
+  - uid: vigia-ciclo-desconocido
+    title: Versión fuera del catálogo
+    condition: B
+    data:
+    - refId: A
+      relativeTimeRange:
+        from: 600
+        to: 0
+      datasourceUid: prometheus
+      model:
+        refId: A
+        expr: max by (nombre, producto, producto_nombre, ciclo, version) (vigia_producto_ciclo unless on (producto, ciclo)
+          vigia_ciclo_info)
+        instant: true
+        range: false
+    - refId: B
+      datasourceUid: __expr__
+      model:
+        refId: B
+        type: threshold
+        expression: A
+        conditions:
+        - evaluator:
+            type: gt
+            params:
+            - 0
+    noDataState: OK
+    execErrState: Error
+    for: 1h
+    annotations:
+      summary: '{{ index .Labels "nombre" }}: la versión {{ index .Labels "version" }} de {{ index .Labels "producto_nombre"
+        }} no está en el catálogo de vigia (¿actualizar vigia?)'
+    labels:
+      vigia: si
+      gravedad: info
+      categoria: mantenimiento
+    isPaused: false
+  - uid: vigia-catalogo-viejo
+    title: Catálogo de ciclos antiguo
+    condition: B
+    data:
+    - refId: A
+      relativeTimeRange:
+        from: 600
+        to: 0
+      datasourceUid: prometheus
+      model:
+        refId: A
+        expr: max by (producto) ((time() - vigia_ciclos_catalogo_timestamp) / 86400 and on (producto) vigia_producto_ciclo)
+        instant: true
+        range: false
+    - refId: B
+      datasourceUid: __expr__
+      model:
+        refId: B
+        type: threshold
+        expression: A
+        conditions:
+        - evaluator:
+            type: gt
+            params:
+            - 180
+    noDataState: OK
+    execErrState: Error
+    for: 1h
+    annotations:
+      summary: 'el catálogo de {{ index .Labels "producto" }} se comprobó hace {{ with .Values.A }}{{ humanize .Value }} {{
+        end }}días: actualiza vigia'
+    labels:
+      vigia: si
+      gravedad: info
+      categoria: mantenimiento
+    isPaused: false
   - uid: vigia-exporter
     title: Exporter sin respuesta
     condition: B

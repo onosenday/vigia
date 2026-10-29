@@ -14,7 +14,7 @@ alertas:
     remitente: ALERTAS_SMTP_REMITENTE
     destinatarios: ALERTAS_CORREO_DESTINO   # varias, separadas por ;
   umbrales: {caido: 5m, exporter_caido: 5m, certificado_dias: 15, disco_pct: 90, disco_durante: 15m,
-             consumible_pct: 15}
+             consumible_pct: 15, soporte_dias: 90, catalogo_dias: 180}
   repetir: 12h
   repetir_info: 168h        # avisos informativos (versión mayor nueva, catálogo viejo…)
 ```
@@ -35,6 +35,7 @@ id. No es secreto (sin el token no sirve de nada); usa un **grupo** para que no 
 | Consumible de impresora bajo | tóner, tinta, tambor… de las impresoras con `snmp` (no los depósitos de residuos) | por debajo de `consumible_pct` durante 30 min |
 | Error de impresora | sin papel o tóner, puerta abierta, atasco, desconectada, servicio, bandeja o consumible ausente, salida llena, mantenimiento vencido | activo durante 10 min |
 | Tarea sin éxito reciente · con error · sin datos | `tareas` ([tareas.md](tareas.md)) | más de `max_horas` sin éxito, última ejecución con error, o nunca ha escrito su métrica |
+| Sistema sin soporte · fin de soporte cercano · versión mayor · fuera del catálogo · catálogo antiguo | versión de cada sistema contra el catálogo ([ciclos.md](ciclos.md)) | pasado el fin, menos de `soporte_dias`, hay versión mayor nueva, versión desconocida o catálogo con más de `catalogo_dias` |
 
 Cada regla lleva las etiquetas `gravedad` (`critical`, `warning`, `info`) y `categoria`: `incidencia` si algo
 falla ahora, `mantenimiento` si pide una acción planificada (certificados, discos, consumibles, soporte). Los

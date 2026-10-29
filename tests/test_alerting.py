@@ -39,6 +39,11 @@ def test_reglas_del_ejemplo(example_data: dict[str, Any]) -> None:
         "vigia-tarea-retrasada",
         "vigia-tarea-error",
         "vigia-tarea-sin-datos",
+        "vigia-soporte-caducado",
+        "vigia-soporte-caduca",
+        "vigia-version-mayor",
+        "vigia-ciclo-desconocido",
+        "vigia-catalogo-viejo",
     }
     assert 'alerta!="no"' in rules["vigia-caido"]["data"][0]["model"]["expr"]
     assert rules["vigia-certificado"]["data"][1]["model"]["conditions"][0]["evaluator"] == {
@@ -190,3 +195,22 @@ def test_avisos_info_con_su_propia_repeticion(example_data: dict[str, Any]) -> N
     assert ruta["object_matchers"] == [["gravedad", "=", "info"]]
     assert ruta["repeat_interval"] == "72h"
     assert politica["repeat_interval"] == example_data["alertas"].get("repetir", "12h")
+
+
+def test_reglas_de_soporte(example_data: dict[str, Any]) -> None:
+    example_data["alertas"].setdefault("umbrales", {})["soporte_dias"] = 120
+    rules = _rules(_build(example_data))
+    caduca = rules["vigia-soporte-caduca"]
+    assert "vigia_soporte_restante_dias >= 0" in caduca["data"][0]["model"]["expr"]
+    assert caduca["data"][1]["model"]["conditions"][0]["evaluator"] == {"type": "lt", "params": [120]}
+    assert rules["vigia-soporte-caducado"]["labels"]["gravedad"] == "critical"
+    assert rules["vigia-version-mayor"]["labels"]["gravedad"] == "info"
+    assert "ultimo" in rules["vigia-version-mayor"]["data"][0]["model"]["expr"]
+
+
+def test_sin_nodos_no_hay_reglas_de_soporte(example_data: dict[str, Any]) -> None:
+    for h in example_data["hosts"]:
+        h.pop("node_exporter", None)
+    example_data["tareas"] = []
+    rules = _rules(_build(example_data))
+    assert not {u for u in rules if "soporte" in u or "version" in u or "catalogo" in u}

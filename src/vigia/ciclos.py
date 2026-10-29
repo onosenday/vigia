@@ -8,6 +8,13 @@ alertas, paneles y bot usen la misma tabla:
   vigia_ciclo_fin_soporte_timestamp{producto, ciclo}   epoch del fin de soporte que cuenta (ver fecha_aviso)
   vigia_ciclo_info{producto, ciclo, ultimo}             1 por ciclo conocido; `ultimo` = ciclo más reciente
   vigia_ciclos_catalogo_timestamp{producto}             epoch de la última comprobación del producto
+  vigia_ciclo_superado{producto, ciclo, ultimo}         1 por ciclo anterior al de referencia
+
+y, con la versión instalada en cada equipo (de node_os_info y de las demás fuentes), las derivadas:
+
+  vigia_producto_ciclo{nombre, producto, producto_nombre, ciclo, version}   1 por equipo y producto
+  vigia_soporte_restante_dias{…}            días hasta el fin de soporte (negativo: ya sin soporte)
+  vigia_version_mayor_disponible{…, ultimo} 1 si el ciclo instalado es anterior al de referencia
 """
 
 from __future__ import annotations
@@ -31,6 +38,10 @@ ENDOFLIFE_API = "https://endoflife.date/api/{slug}.json"
 FIN = "vigia_ciclo_fin_soporte_timestamp"
 INFO = "vigia_ciclo_info"
 COMPROBADO = "vigia_ciclos_catalogo_timestamp"
+SUPERADO = "vigia_ciclo_superado"
+PRODUCTO_CICLO = "vigia_producto_ciclo"
+RESTANTE = "vigia_soporte_restante_dias"
+MAYOR = "vigia_version_mayor_disponible"
 
 ProductoId = Annotated[str, StringConstraints(pattern=r"^[a-z][a-z0-9-]{0,39}$")]
 CicloId = Annotated[str, StringConstraints(pattern=r"^[0-9A-Za-z][0-9A-Za-z._-]{0,19}$")]
@@ -71,8 +82,11 @@ class Producto(_Base):
     fecha_aviso: FechaAviso = "normal"
     ultimo_lts: bool = False
     """La versión de referencia es el último ciclo LTS (Ubuntu), no el último publicado."""
+    os_ids: list[ProductoId] = []
+    """`ID` de os-release con que aparece en node_os_info (debian, raspbian…): de ahí sale su versión."""
     ciclo_regex: str
-    """Expresión que extrae el ciclo (primer grupo) de una versión instalada, p. ej. `7.7.24-7` → `7`."""
+    """Expresión (desde el principio, `^…`) que extrae el ciclo de una versión instalada en su primer
+    grupo, p. ej. `7.7.24-7` → `7`. Sirve en Python y en PromQL (RE2): nada de `(?…)`."""
     ejemplos: dict[str, CicloId] = Field(min_length=1)
     """Versión instalada → ciclo esperado: los tests comprueban `ciclo_regex` con ellos."""
     comprobado: date
@@ -88,8 +102,12 @@ class Producto(_Base):
             raise ValueError(f"ciclo_regex no compila: {e}") from e
         if r.groups < 1:
             raise ValueError("ciclo_regex necesita un grupo con el ciclo")
-        if '"' in v or "\n" in v:
-            raise ValueError("ciclo_regex no puede llevar comillas ni saltos de línea")
+        if '"' in v or "\n" in v or "(?" in v:
+            raise ValueError("ciclo_regex no puede llevar comillas, saltos de línea ni `(?…)`")
+        if not v.startswith("^") or v.endswith("$"):
+            raise ValueError(
+                "ciclo_regex empieza por `^` y no acaba en `$` (casa el principio de la versión)"
+            )
         return v
 
     @model_validator(mode="after")
@@ -126,6 +144,16 @@ class Producto(_Base):
         m = re.match(self.ciclo_regex, version)
         return m.group(1) if m else None
 
+    @property
+    def regex_promql(self) -> str:
+        """La misma expresión para label_replace, que ancla al principio y al final."""
+        return self.ciclo_regex.removeprefix("^") + ".*"
+
+    @property
+    def superados(self) -> list[Ciclo]:
+        """Ciclos publicados antes que el de referencia (los posteriores, como un Ubuntu no LTS, no)."""
+        return [c for c in self.ciclos if c.publicado < self.ultimo.publicado]
+
 
 Catalogo = dict[str, Producto]
 
@@ -154,19 +182,52 @@ def _regla(record: str, valor: int, **labels: str) -> dict[str, Any]:
     return {"record": record, "expr": f"vector({valor})", "labels": labels}
 
 
+def _q(v: str) -> str:
+    """Cadena de PromQL entre comillas dobles."""
+    return '"' + v.replace("\\", "\\\\").replace('"', '\\"') + '"'
+
+
+def _replace(expr: str, label: str, value: str, src: str = "", regex: str = "") -> str:
+    return f"label_replace({expr}, {_q(label)}, {_q(value)}, {_q(src)}, {_q(regex)})"
+
+
+def _desde_os(p: Producto) -> str:
+    """vigia_producto_ciclo de un producto a partir de node_os_info (distribución del sistema)."""
+    ids = "|".join(re.escape(i) for i in p.os_ids)
+    e = f"node_os_info{{id=~{_q(ids)}}}"
+    e = _replace(e, "producto", p.producto)
+    e = _replace(e, "producto_nombre", p.nombre)
+    e = _replace(e, "version", "$1", "version_id", "(.*)")
+    e = _replace(e, "ciclo", "$1", "version_id", p.regex_promql)
+    return f"max by (nombre, producto, producto_nombre, ciclo, version) ({e})"
+
+
 def reglas(catalogo: Catalogo, fecha_aviso: Mapping[str, FechaAviso] | None = None) -> dict[str, Any]:
-    """Grupo de reglas de grabación de Prometheus con la tabla de ciclos (constantes)."""
+    """Reglas de grabación de Prometheus: la tabla de ciclos (constantes) y lo derivado por equipo."""
     fecha_aviso = fecha_aviso or {}
-    rules: list[dict[str, Any]] = []
+    tabla: list[dict[str, Any]] = []
     for p in catalogo.values():
         aviso = fecha_aviso.get(p.producto, p.fecha_aviso)
-        rules.append(_regla(COMPROBADO, _epoch(p.comprobado), producto=p.producto))
+        tabla.append(_regla(COMPROBADO, _epoch(p.comprobado), producto=p.producto))
         for c in p.ciclos:
-            rules.append(_regla(INFO, 1, producto=p.producto, ciclo=c.ciclo, ultimo=p.ultimo.ciclo))
+            tabla.append(_regla(INFO, 1, producto=p.producto, ciclo=c.ciclo, ultimo=p.ultimo.ciclo))
             fin = c.fin(aviso)
             if fin:
-                rules.append(_regla(FIN, _epoch(fin), producto=p.producto, ciclo=c.ciclo))
-    return {"groups": [{"name": "vigia-ciclos", "rules": rules}]}
+                tabla.append(_regla(FIN, _epoch(fin), producto=p.producto, ciclo=c.ciclo))
+        for c in p.superados:
+            tabla.append(_regla(SUPERADO, 1, producto=p.producto, ciclo=c.ciclo, ultimo=p.ultimo.ciclo))
+    fuentes = [{"record": PRODUCTO_CICLO, "expr": _desde_os(p)} for p in catalogo.values() if p.os_ids]
+    derivadas = [
+        {
+            "record": RESTANTE,
+            "expr": f"({PRODUCTO_CICLO} * on (producto, ciclo) group_left () {FIN} - time()) / 86400",
+        },
+        {"record": MAYOR, "expr": f"{PRODUCTO_CICLO} * on (producto, ciclo) group_left (ultimo) {SUPERADO}"},
+    ]
+    return {
+        # un solo grupo: Prometheus evalúa sus reglas en orden y cada una ve las anteriores en la misma pasada
+        "groups": [{"name": "vigia-ciclos", "rules": tabla + fuentes + derivadas}]
+    }
 
 
 # --- refresco desde endoflife.date -------------------------------------------------------------------

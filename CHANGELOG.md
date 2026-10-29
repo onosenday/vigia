@@ -5,7 +5,12 @@
 - **Catálogo de ciclos de vida** (`vigia ciclos lista|actualizar`, `ciclos.fecha_aviso` en el sitio): fechas de fin
   de soporte de Debian, Ubuntu, Proxmox VE, TrueNAS (desde endoflife.date), OpenMediaVault y Synology DSM (a
   mano), llevadas a Prometheus como reglas de grabación (`prometheus/rules/ciclos.yml`,
-  [docs/ciclos.md](docs/ciclos.md)). Base de los avisos de fin de soporte y de versión mayor nueva.
+  [docs/ciclos.md](docs/ciclos.md)).
+- **Avisos de fin de soporte**: sistema sin soporte, fin de soporte cercano (`umbrales.soporte_dias`), versión
+  mayor disponible, versión fuera del catálogo y catálogo antiguo (`umbrales.catalogo_dias`), con la versión de
+  la distribución de `node_os_info`.
+- **Gravedad y categoría** en todas las alertas (etiquetas `gravedad` y `categoria`); los avisos `info` se
+  repiten cada `alertas.repetir_info` (168h).
 
 ## 0.4.1 (2026-10-29)
 

@@ -1,0 +1,125 @@
+"""Las reglas de ciclos y las alertas de soporte evaluadas por Prometheus de verdad (`promtool test rules`).
+
+Se salta si no hay promtool. Con Docker: VIGIA_PROMTOOL='docker run --rm -u {uid} -v {dir}:{dir} -w {dir}
+--entrypoint promtool prom/prometheus:latest' uv run pytest tests/test_ciclos_promtool.py
+"""
+
+from __future__ import annotations
+
+import os
+import shlex
+import shutil
+import subprocess
+from datetime import UTC, datetime
+from pathlib import Path
+from typing import Any
+
+import pytest
+import yaml
+
+from vigia import alerting, ciclos
+from vigia.model import Site
+
+HOY = datetime(2026, 10, 29, tzinfo=UTC)
+HORAS = int(HOY.timestamp()) // 3600
+
+
+def _promtool(d: Path) -> list[str] | None:
+    plantilla = os.environ.get("VIGIA_PROMTOOL")
+    if plantilla:
+        return shlex.split(plantilla.format(dir=d, uid=os.getuid()))
+    exe = shutil.which("promtool")
+    return [exe] if exe else None
+
+
+def _dias(producto: str, ciclo: str) -> float:
+    p = ciclos.catalogo()[producto]
+    c = next(c for c in p.ciclos if c.ciclo == ciclo)
+    fin = c.fin(p.fecha_aviso)
+    assert fin is not None
+    return (ciclos._epoch(fin) - HOY.timestamp()) / 86400
+
+
+def _serie(nombre: str, os_id: str, version: str) -> dict[str, str]:
+    return {
+        "series": f'node_os_info{{nombre="{nombre}", id="{os_id}", version_id="{version}", job="node"}}',
+        "values": "1 1",  # una muestra en 0 y otra en HOY (interval = HORAS)
+    }
+
+
+def _muestras(expr: str, esperado: list[dict[str, Any]]) -> dict[str, Any]:
+    return {"expr": expr, "eval_time": f"{HORAS}h", "exp_samples": esperado}
+
+
+def test_reglas_y_alertas_en_prometheus(tmp_path: Path, example_data: dict[str, Any]) -> None:
+    cmd = _promtool(tmp_path)
+    if not cmd:
+        pytest.skip("sin promtool (ver VIGIA_PROMTOOL)")
+    (tmp_path / "ciclos.yml").write_text(yaml.safe_dump(ciclos.reglas(ciclos.catalogo())), encoding="utf-8")
+    example_data["alertas"].setdefault("umbrales", {})["soporte_dias"] = 700
+    ops = {"gt": ">", "lt": "<"}
+    exprs = {}  # cada expresión con el umbral que aplica Grafana: lo que queda es lo que avisa
+    for r in alerting.support_rules(Site.model_validate(example_data)):
+        cond = r["data"][1]["model"]["conditions"][0]["evaluator"]
+        exprs[r["uid"]] = f"({r['data'][0]['model']['expr']}) {ops[cond['type']]} {cond['params'][0]}"
+
+    def info(nombre: str, producto: str, ciclo: str, version: str, **extra: str) -> str:
+        base = {"nombre": nombre, "producto": producto, "producto_nombre": ciclos.catalogo()[producto].nombre}
+        labels = base | {"ciclo": ciclo, "version": version} | extra
+        return "{" + ", ".join(f'{k}="{v}"' for k, v in labels.items()) + "}"
+
+    pruebas = [
+        # Debian 12: con soporte (610 días) y con versión mayor (13)
+        _muestras(
+            exprs["vigia-version-mayor"],
+            [
+                {"labels": info("srv-1", "debian", "12", "12", ultimo="13"), "value": 1},
+                {"labels": info("pi-1", "debian", "11", "11", ultimo="13"), "value": 1},
+                # Ubuntu: la referencia es la última LTS (26.04), no la 26.10
+                {"labels": info("srv-3", "ubuntu", "24.04", "24.04", ultimo="26.04"), "value": 1},
+            ],
+        ),
+        _muestras(
+            ciclos.RESTANTE + '{nombre="srv-1"}',
+            [
+                {
+                    "labels": "vigia_soporte_restante_dias" + info("srv-1", "debian", "12", "12"),
+                    "value": _dias("debian", "12"),
+                }
+            ],
+        ),
+        # Raspberry Pi OS 11 (raspbian): ya sin soporte; el aviso da los días desde el fin
+        _muestras(
+            exprs["vigia-soporte-caducado"],
+            [{"labels": info("pi-1", "debian", "11", "11"), "value": -_dias("debian", "11")}],
+        ),
+        # con soporte_dias = 700 solo Debian 12 (610 días); Debian 13 y Ubuntu 24.04 tienen más margen
+        _muestras(
+            exprs["vigia-soporte-caduca"],
+            [{"labels": info("srv-1", "debian", "12", "12"), "value": _dias("debian", "12")}],
+        ),
+        # una versión que el catálogo no conoce
+        _muestras(
+            exprs["vigia-ciclo-desconocido"], [{"labels": info("raro", "debian", "99", "99"), "value": 1}]
+        ),
+    ]
+    prueba = {
+        "rule_files": ["ciclos.yml"],
+        "evaluation_interval": f"{HORAS}h",
+        "tests": [
+            {
+                "interval": f"{HORAS}h",
+                "input_series": [
+                    _serie("srv-1", "debian", "12"),
+                    _serie("srv-2", "debian", "13"),
+                    _serie("srv-3", "ubuntu", "24.04"),
+                    _serie("pi-1", "raspbian", "11"),
+                    _serie("raro", "debian", "99"),
+                ],
+                "promql_expr_test": pruebas,
+            }
+        ],
+    }
+    (tmp_path / "prueba.yml").write_text(yaml.safe_dump(prueba, sort_keys=False), encoding="utf-8")
+    res = subprocess.run([*cmd, "test", "rules", "prueba.yml"], cwd=tmp_path, capture_output=True, text=True)  # noqa: S603
+    assert res.returncode == 0, res.stdout + res.stderr

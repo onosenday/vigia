@@ -694,6 +694,10 @@ class Thresholds(Base):
     disco_durante: Duration = "15m"
     consumible_pct: int = Field(default=15, ge=1, le=90)
     """Consumible de impresora (tóner, tinta, tambor…) por debajo de este % → aviso."""
+    soporte_dias: int = Field(default=90, ge=1, le=730)
+    """Días antes del fin de soporte de un sistema en que se avisa (docs/ciclos.md)."""
+    catalogo_dias: int = Field(default=180, ge=30, le=730)
+    """Antigüedad del catálogo de ciclos (de esta versión de vigia) a partir de la que se avisa."""
 
 
 class Alerts(Base):

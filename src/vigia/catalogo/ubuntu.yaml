@@ -4,6 +4,7 @@ fuente: endoflife
 endoflife: ubuntu
 fecha_aviso: normal
 ultimo_lts: true
+os_ids: [ubuntu]
 ciclo_regex: ^(\d+\.\d+)
 ejemplos:
   '24.04': '24.04'

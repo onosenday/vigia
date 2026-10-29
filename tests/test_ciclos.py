@@ -235,3 +235,40 @@ def test_build_genera_las_reglas(example_data: dict[str, Any]) -> None:
     assert fin is not None
     assert debian13["expr"] == f"vector({ciclos._epoch(fin)})"
     assert "/etc/prometheus/rules/*.yml" in str(out["prometheus/prometheus.yml"])
+
+
+def test_regex_promql_equivale_a_la_de_python() -> None:
+    import re
+
+    for p in ciclos.catalogo().values():
+        for version, ciclo in p.ejemplos.items():
+            m = re.fullmatch(p.regex_promql, version)
+            assert m and m.group(1) == ciclo, (p.producto, version)
+
+
+@pytest.mark.parametrize("rx", [r"(\d+)", r"^(\d+)$", r"^(?P<c>\d+)"])
+def test_regex_no_admitida(rx: str) -> None:
+    with pytest.raises(ValidationError, match="ciclo_regex"):
+        Producto.model_validate(_producto(ciclo_regex=rx))
+
+
+def test_superados_y_derivadas() -> None:
+    p = Producto.model_validate(_producto(os_ids=["nasos"]))
+    (grupo,) = ciclos.reglas({p.producto: p})["groups"]
+    tabla = grupo["rules"]
+    fuentes = [r for r in tabla if r["record"] == ciclos.PRODUCTO_CICLO]
+    derivadas = [r for r in tabla if r["record"] in (ciclos.RESTANTE, ciclos.MAYOR)]
+    assert tabla[-3:] == fuentes + derivadas  # orden: tabla, fuentes y derivadas
+    sup = [r["labels"] for r in tabla if r["record"] == ciclos.SUPERADO]
+    assert sup == [{"producto": "nas-os", "ciclo": "2", "ultimo": "3"}]
+    (fuente,) = fuentes
+    assert fuente["record"] == ciclos.PRODUCTO_CICLO
+    assert 'node_os_info{id=~"nasos"}' in fuente["expr"]
+    assert '"ciclo", "$1", "version_id", "(\\\\d+)\\\\..*"' in fuente["expr"]
+    assert [r["record"] for r in derivadas] == [ciclos.RESTANTE, ciclos.MAYOR]
+
+
+def test_sin_os_ids_no_hay_fuente() -> None:
+    p = Producto.model_validate(_producto())
+    (grupo,) = ciclos.reglas({p.producto: p})["groups"]
+    assert not [r for r in grupo["rules"] if r["record"] == ciclos.PRODUCTO_CICLO]

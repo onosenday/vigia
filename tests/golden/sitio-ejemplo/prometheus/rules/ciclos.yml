@@ -205,6 +205,108 @@ groups:
     labels:
       producto: debian
       ciclo: '1.1'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: debian
+      ciclo: '12'
+      ultimo: '13'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: debian
+      ciclo: '11'
+      ultimo: '13'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: debian
+      ciclo: '10'
+      ultimo: '13'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: debian
+      ciclo: '9'
+      ultimo: '13'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: debian
+      ciclo: '8'
+      ultimo: '13'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: debian
+      ciclo: '7'
+      ultimo: '13'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: debian
+      ciclo: '6'
+      ultimo: '13'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: debian
+      ciclo: '5'
+      ultimo: '13'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: debian
+      ciclo: '4'
+      ultimo: '13'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: debian
+      ciclo: '3.1'
+      ultimo: '13'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: debian
+      ciclo: '3.0'
+      ultimo: '13'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: debian
+      ciclo: '2.2'
+      ultimo: '13'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: debian
+      ciclo: '2.1'
+      ultimo: '13'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: debian
+      ciclo: '2.0'
+      ultimo: '13'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: debian
+      ciclo: '1.3'
+      ultimo: '13'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: debian
+      ciclo: '1.2'
+      ultimo: '13'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: debian
+      ciclo: '1.1'
+      ultimo: '13'
   - record: vigia_ciclos_catalogo_timestamp
     expr: vector(1793232000)
     labels:
@@ -248,6 +350,24 @@ groups:
     labels:
       producto: openmediavault
       ciclo: '5'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: openmediavault
+      ciclo: '7'
+      ultimo: '8'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: openmediavault
+      ciclo: '6'
+      ultimo: '8'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: openmediavault
+      ciclo: '5'
+      ultimo: '8'
   - record: vigia_ciclos_catalogo_timestamp
     expr: vector(1793232000)
     labels:
@@ -346,6 +466,54 @@ groups:
     labels:
       producto: proxmox-ve
       ciclo: '1'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: proxmox-ve
+      ciclo: '8'
+      ultimo: '9'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: proxmox-ve
+      ciclo: '7'
+      ultimo: '9'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: proxmox-ve
+      ciclo: '6'
+      ultimo: '9'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: proxmox-ve
+      ciclo: '5'
+      ultimo: '9'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: proxmox-ve
+      ciclo: '4'
+      ultimo: '9'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: proxmox-ve
+      ciclo: '3'
+      ultimo: '9'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: proxmox-ve
+      ciclo: '2'
+      ultimo: '9'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: proxmox-ve
+      ciclo: '1'
+      ultimo: '9'
   - record: vigia_ciclos_catalogo_timestamp
     expr: vector(1793232000)
     labels:
@@ -449,6 +617,54 @@ groups:
     labels:
       producto: synology-dsm
       ciclo: '5.2'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: synology-dsm
+      ciclo: '7.3'
+      ultimo: '7.4'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: synology-dsm
+      ciclo: '7.2'
+      ultimo: '7.4'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: synology-dsm
+      ciclo: '7.1'
+      ultimo: '7.4'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: synology-dsm
+      ciclo: '7.0'
+      ultimo: '7.4'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: synology-dsm
+      ciclo: '6.2'
+      ultimo: '7.4'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: synology-dsm
+      ciclo: '6.1'
+      ultimo: '7.4'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: synology-dsm
+      ciclo: '6.0'
+      ultimo: '7.4'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: synology-dsm
+      ciclo: '5.2'
+      ultimo: '7.4'
   - record: vigia_ciclos_catalogo_timestamp
     expr: vector(1793232000)
     labels:
@@ -498,6 +714,30 @@ groups:
     labels:
       producto: truenas
       ciclo: '23.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: truenas
+      ciclo: '25.04'
+      ultimo: '25.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: truenas
+      ciclo: '24.10'
+      ultimo: '25.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: truenas
+      ciclo: '24.04'
+      ultimo: '25.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: truenas
+      ciclo: '23.10'
+      ultimo: '25.10'
   - record: vigia_ciclos_catalogo_timestamp
     expr: vector(1793232000)
     labels:
@@ -997,3 +1237,273 @@ groups:
     labels:
       producto: ubuntu
       ciclo: '4.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '25.10'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '25.04'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '24.10'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '24.04'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '23.10'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '23.04'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '22.10'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '22.04'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '21.10'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '21.04'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '20.10'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '20.04'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '19.10'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '19.04'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '18.10'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '18.04'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '17.10'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '17.04'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '16.10'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '16.04'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '15.10'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '15.04'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '14.10'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '14.04'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '13.10'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '13.04'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '12.10'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '12.04'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '11.10'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '11.04'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '10.10'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '10.04'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '9.10'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '9.04'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '8.10'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '8.04'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '7.10'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '7.04'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '6.10'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '6.06'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '5.10'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '5.04'
+      ultimo: '26.04'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: ubuntu
+      ciclo: '4.10'
+      ultimo: '26.04'
+  - record: vigia_producto_ciclo
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(node_os_info{id=~"debian|raspbian"},
+      "producto", "debian", "", ""), "producto_nombre", "Debian", "", ""), "version", "$1", "version_id", "(.*)"), "ciclo",
+      "$1", "version_id", "(\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(node_os_info{id=~"ubuntu"},
+      "producto", "ubuntu", "", ""), "producto_nombre", "Ubuntu", "", ""), "version", "$1", "version_id", "(.*)"), "ciclo",
+      "$1", "version_id", "(\\d+\\.\\d+).*"))
+  - record: vigia_soporte_restante_dias
+    expr: (vigia_producto_ciclo * on (producto, ciclo) group_left () vigia_ciclo_fin_soporte_timestamp - time()) / 86400
+  - record: vigia_version_mayor_disponible
+    expr: vigia_producto_ciclo * on (producto, ciclo) group_left (ultimo) vigia_ciclo_superado

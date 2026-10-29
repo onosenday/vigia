@@ -4,6 +4,7 @@ fuente: endoflife
 endoflife: debian
 fecha_aviso: normal
 ultimo_lts: false
+os_ids: [debian, raspbian]
 ciclo_regex: ^(\d+)
 ejemplos:
   '12': '12'

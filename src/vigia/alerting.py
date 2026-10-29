@@ -12,7 +12,7 @@ from typing import Any, Literal
 
 import yaml
 
-from vigia import tareas
+from vigia import ciclos, tareas
 from vigia.model import Site
 from vigia.render import Raw, dump_yaml
 
@@ -46,6 +46,11 @@ CLASIFICACION: dict[str, tuple[Gravedad, Categoria]] = {
     "vigia-certificado": ("warning", "mantenimiento"),
     "vigia-disco": ("warning", "mantenimiento"),
     "vigia-consumible": ("warning", "mantenimiento"),
+    "vigia-soporte-caducado": ("critical", "mantenimiento"),
+    "vigia-soporte-caduca": ("warning", "mantenimiento"),
+    "vigia-version-mayor": ("info", "mantenimiento"),
+    "vigia-ciclo-desconocido": ("info", "mantenimiento"),
+    "vigia-catalogo-viejo": ("info", "mantenimiento"),
 }
 """Gravedad y categoría de cada regla, como etiquetas `gravedad` y `categoria`. `incidencia`: algo falla
 ahora (`/alertas`); `mantenimiento`: algo pide una acción planificada (`/pendientes`). Los avisos `info` se
@@ -146,6 +151,8 @@ def rules(s: Site) -> list[dict[str, Any]]:
         out += printer_rules(s)
     if s.tareas:
         out += task_rules(s)
+    if hay_versiones(s):
+        out += support_rules(s)
     out.append(
         _rule(
             "vigia-exporter",
@@ -243,6 +250,69 @@ def task_rules(s: Site) -> list[dict[str, Any]]:
             0,
             "1h",
             tarea + " no tiene ninguna ejecución correcta registrada (¿script instalado? ¿textfile activo?)",
+        ),
+    ]
+
+
+def hay_versiones(s: Site) -> bool:
+    """Hay alguna fuente de versiones instaladas (node_os_info de los node_exporter)."""
+    return any(h.node_exporter for h in s.hosts)
+
+
+def support_rules(s: Site) -> list[dict[str, Any]]:
+    """Fin de soporte y versión mayor nueva, con las series de ciclos.reglas (docs/ciclos.md)."""
+    u = s.alertas.umbrales
+    por = "nombre, producto, producto_nombre, ciclo, version"
+    quien = '{{ index .Labels "nombre" }}: {{ index .Labels "producto_nombre" }} {{ index .Labels "ciclo" }}'
+    return [
+        _rule(
+            "vigia-soporte-caducado",
+            "Sistema sin soporte",
+            f"-max by ({por}) ({ciclos.RESTANTE})",
+            "gt",
+            0,
+            "1h",
+            quien + " ya no tiene soporte"
+            "{{ with .Values.A }} (desde hace {{ humanize .Value }} días){{ end }}",
+        ),
+        _rule(
+            "vigia-soporte-caduca",
+            "Fin de soporte cercano",
+            f"max by ({por}) ({ciclos.RESTANTE} >= 0)",
+            "lt",
+            u.soporte_dias,
+            "1h",
+            quien + " pierde el soporte pronto{{ with .Values.A }} (en {{ humanize .Value }} días){{ end }}",
+        ),
+        _rule(
+            "vigia-version-mayor",
+            "Versión mayor disponible",
+            f"max by ({por}, ultimo) ({ciclos.MAYOR})",
+            "gt",
+            0,
+            "1h",
+            quien + ': ya existe la {{ index .Labels "ultimo" }}',
+        ),
+        _rule(
+            "vigia-ciclo-desconocido",
+            "Versión fuera del catálogo",
+            f"max by ({por}) ({ciclos.PRODUCTO_CICLO} unless on (producto, ciclo) {ciclos.INFO})",
+            "gt",
+            0,
+            "1h",
+            '{{ index .Labels "nombre" }}: la versión {{ index .Labels "version" }} de '
+            '{{ index .Labels "producto_nombre" }} no está en el catálogo de vigia (¿actualizar vigia?)',
+        ),
+        _rule(
+            "vigia-catalogo-viejo",
+            "Catálogo de ciclos antiguo",
+            f"max by (producto) ((time() - {ciclos.COMPROBADO}) / 86400"
+            f" and on (producto) {ciclos.PRODUCTO_CICLO})",
+            "gt",
+            u.catalogo_dias,
+            "1h",
+            'el catálogo de {{ index .Labels "producto" }} se comprobó hace '
+            "{{ with .Values.A }}{{ humanize .Value }} {{ end }}días: actualiza vigia",
         ),
     ]
 
