@@ -82,3 +82,5 @@ def test_snmp_protocolos_v3() -> None:
     auths = yaml.safe_load(_generated()["snmp/auths.yml"])["auths"]
     assert (auths["nas"]["auth_protocol"], auths["nas"]["priv_protocol"]) == ("SHA256", "AES")
     assert (auths["nas-sha1"]["auth_protocol"], auths["nas-sha1"]["priv_protocol"]) == ("SHA", "AES256")
+    assert "context_name" not in auths["nas"]
+    assert auths["jetdirect"]["context_name"] == "Jetdirect"

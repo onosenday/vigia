@@ -605,6 +605,8 @@ class SnmpAuth(Base):
     """Solo v3; por defecto SHA256. Muchos equipos (DSM, routers) solo admiten SHA (SHA-1)."""
     protocolo_priv: Literal["DES", "AES", "AES192", "AES256"] | None = None
     """Solo v3; por defecto AES."""
+    contexto: Annotated[str, StringConstraints(pattern=r"^[A-Za-z0-9_.-]{1,32}$")] | None = None
+    """Solo v3: contexto SNMP (context_name); sin él, hay equipos que no devuelven nada (HP: Jetdirect)."""
 
     @model_validator(mode="after")
     def _check_complete(self) -> SnmpAuth:
@@ -612,8 +614,8 @@ class SnmpAuth(Base):
             raise ValueError(f"snmp {self.nombre}: v3 necesita usuario, clave_auth y clave_priv (authPriv)")
         if self.version == "v2c" and not self.comunidad:
             raise ValueError(f"snmp {self.nombre}: v2c necesita comunidad")
-        if self.version == "v2c" and (self.protocolo_auth or self.protocolo_priv):
-            raise ValueError(f"snmp {self.nombre}: protocolo_auth y protocolo_priv solo valen para v3")
+        if self.version == "v2c" and (self.protocolo_auth or self.protocolo_priv or self.contexto):
+            raise ValueError(f"snmp {self.nombre}: protocolo_auth, protocolo_priv y contexto solo van en v3")
         return self
 
 

@@ -76,7 +76,17 @@ def test_snmp_v3_protocolo_desconocido(example_data: dict[str, Any]) -> None:
 
 def test_snmp_protocolos_en_v2c(example_data: dict[str, Any]) -> None:
     example_data["modulos"]["snmp"]["auths"][2]["protocolo_auth"] = "SHA"
-    _assert_invalid(example_data, "solo valen para v3")
+    _assert_invalid(example_data, "solo van en v3")
+
+
+def test_snmp_contexto_en_v2c(example_data: dict[str, Any]) -> None:
+    example_data["modulos"]["snmp"]["auths"][2]["contexto"] = "Jetdirect"
+    _assert_invalid(example_data, "solo van en v3")
+
+
+def test_snmp_contexto_invalido(example_data: dict[str, Any]) -> None:
+    example_data["modulos"]["snmp"]["auths"][0]["contexto"] = "a b"
+    _assert_invalid(example_data, "contexto")
 
 
 def test_path_outside_site(example_data: dict[str, Any]) -> None:

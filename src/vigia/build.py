@@ -199,6 +199,8 @@ def _snmp_auths(s: Site) -> str:
                 "priv_protocol": a.protocolo_priv or "AES",
                 "priv_password": f"${{{a.clave_priv}}}",
             }
+            if a.contexto:
+                auths[a.nombre]["context_name"] = a.contexto
         else:
             auths[a.nombre] = {"version": 2, "community": f"${{{a.comunidad}}}"}
     return dump_yaml({"auths": auths}, _header(s, "Autenticaciones SNMP (solo referencias ${VAR})"))

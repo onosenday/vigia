@@ -20,3 +20,12 @@ auths:
   lectura:
     version: 2
     community: ${SNMP_COMUNIDAD}
+  jetdirect:
+    version: 3
+    security_level: authPriv
+    username: ${SNMP_NAS_USUARIO}
+    auth_protocol: MD5
+    password: ${SNMP_NAS_AUTH}
+    priv_protocol: DES
+    priv_password: ${SNMP_NAS_PRIV}
+    context_name: Jetdirect

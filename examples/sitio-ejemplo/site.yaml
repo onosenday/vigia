@@ -118,6 +118,9 @@ modulos:
       - {nombre: nas-sha1, usuario: SNMP_NAS_USUARIO, clave_auth: SNMP_NAS_AUTH, clave_priv: SNMP_NAS_PRIV,
          protocolo_auth: SHA, protocolo_priv: AES256}
       - {nombre: lectura, version: v2c, comunidad: SNMP_COMUNIDAD}
+      # contexto (context_name), solo v3: impresoras HP con Jetdirect no devuelven nada sin él
+      - {nombre: jetdirect, usuario: SNMP_NAS_USUARIO, clave_auth: SNMP_NAS_AUTH, clave_priv: SNMP_NAS_PRIV,
+         protocolo_auth: MD5, protocolo_priv: DES, contexto: Jetdirect}
   bot: {activo: true, grafana_token: BOT_GRAFANA_TOKEN}
 
 # Fuera de la red del sitio: solo sondas salientes desde el monitor.
