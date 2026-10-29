@@ -100,21 +100,43 @@ services:
 
 
   # What's Up Docker: ¿hay imagen nueva de cada contenedor? Métricas en :9339/metrics
-  # (docs/imagenes.md). Solo lee el socket de Docker: sin triggers, no actualiza nada.
+  # (docs/imagenes.md). Sin triggers: no actualiza nada. No toca el socket de Docker: pasa por wud-socket.
   wud:
     image: "getwud/wud"
     container_name: "ejm-wud"
     restart: unless-stopped
+    depends_on: [wud-socket]
     environment:
+      - WUD_WATCHER_LOCAL_HOST=wud-socket
+      - WUD_WATCHER_LOCAL_PORT=2375
       - "WUD_WATCHER_LOCAL_CRON=17 */6 * * *"
       - WUD_WATCHER_LOCAL_WATCHDIGESTDEFAULT=true
       - WUD_PROMETHEUS_AUTH=false
       - WUD_AUTH_ADMIN_USER=vigia
-      - "WUD_AUTH_ADMIN_PASSWORD=${WUD_ADMIN_CLAVE}"
+      - "WUD_AUTH_ADMIN_PASSWORD=${WUD_ADMIN_CLAVE:?falta WUD_ADMIN_CLAVE}"
     ports:
-      - "9339:3000"
+      - "10.99.0.10:9339:3000"
+    read_only: true
+    tmpfs: [/store]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+
+
+  # Proxy del socket de Docker solo de lectura para wud: contenedores, imágenes, eventos e info; nada de
+  # POST (montar el socket en :ro no limita la API: con él se podría crear un contenedor privilegiado).
+  wud-socket:
+    image: "tecnativa/docker-socket-proxy"
+    container_name: "ejm-wud-socket"
+    restart: unless-stopped
+    environment:
+      - CONTAINERS=1
+      - IMAGES=1
+      - EVENTS=1
+      - INFO=1
+      - POST=0
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    security_opt: [no-new-privileges:true]
 
 
   # Métricas de las Pi-hole (consultas, bloqueos, clientes). Las claves van en el env del stack.

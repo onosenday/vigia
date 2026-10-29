@@ -36,10 +36,13 @@ tmp="$(mktemp)"
     else
       # El forced-command del host ignora el argumento "x" y emite su JSON.
       j="$(ssh $SSHOPTS -p "$port" "$user@$ip" x 2>/dev/null)"
-      case "$j" in
-        '{'*'}') printf '%s' "$j" > "$CACHE/$label.json"; echo "$now" > "$CACHE/$label.ts" ;;
-        *)       j='{"error":"unreachable"}' ;;   # sin caché: se reintenta en la próxima vuelta
-      esac
+      # solo un objeto JSON válido: uno roto invalidaría updates.json y las métricas de todos los hosts
+      if printf '%s' "$j" | jq -e 'type == "object"' >/dev/null 2>&1; then
+        j="$(printf '%s' "$j" | jq -c .)"
+        printf '%s' "$j" > "$CACHE/$label.json"; echo "$now" > "$CACHE/$label.ts"
+      else
+        j='{"error":"unreachable"}'   # sin caché: se reintenta en la próxima vuelta
+      fi
     fi
     printf ',"%s":%s' "$label" "$j"
   done

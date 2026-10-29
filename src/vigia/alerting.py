@@ -288,11 +288,14 @@ def updates_rules(s: Site) -> list[dict[str, Any]]:
         _rule(
             "vigia-actualizaciones-sin-datos",
             "Actualizaciones sin comprobar",
-            "max by (nombre) (1 - vigia_updexp_ok)",
+            # un host que no responde, o el recolector entero parado (sus datos se quedarían viejos)
+            "max by (nombre) (1 - vigia_updexp_ok) or max by (nombre) "
+            f"(time() - vigia_updexp_comprobado_timestamp > bool {3 * s.modulos.updates_exporter.intervalo})",
             "gt",
             0,
             "24h",
-            quien + ": el updates-exporter no puede consultar sus actualizaciones",
+            quien
+            + ": el updates-exporter no puede consultar sus actualizaciones (o lleva tiempo sin hacerlo)",
         ),
     ]
 

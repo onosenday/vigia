@@ -62,7 +62,7 @@ class _Base(BaseModel):
 
 def _promql(rx: str) -> str:
     """Una expresión `^…` del catálogo para PromQL (label_replace y `=~` anclan al principio y al final)."""
-    return rx.removeprefix("^") + ".*"
+    return "(?:" + rx.removeprefix("^") + ")" + ".*"  # agrupada: un `|` no rompe el anclaje
 
 
 class Ciclo(_Base):
@@ -236,7 +236,7 @@ def _replace(expr: str, label: str, value: str, src: str = "", regex: str = "") 
 def _desde_os(p: Producto) -> str:
     """vigia_producto_ciclo de un producto a partir de node_os_info (distribución del sistema)."""
     ids = "|".join(re.escape(i) for i in p.os_ids)
-    e = f"node_os_info{{id=~{_q(ids)}}}"
+    e = f'node_os_info{{id=~{_q(ids)}, version_id!=""}}'  # sin VERSION_ID (testing, sid): sin ciclo
     e = _replace(e, "producto", p.producto)
     e = _replace(e, "producto_nombre", p.nombre)
     e = _replace(e, "version", "$1", "version_id", "(.*)")

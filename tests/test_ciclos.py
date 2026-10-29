@@ -262,10 +262,11 @@ def test_superados_y_derivadas() -> None:
     sup = [r["labels"] for r in tabla if r["record"] == ciclos.SUPERADO]
     assert sup == [{"producto": "nas-os", "ciclo": "2", "ultimo": "3"}]
     os, exporter = fuentes
-    assert 'node_os_info{id=~"nasos"}' in os["expr"]
-    assert '"ciclo", "$1", "version_id", "(\\\\d+)\\\\..*"' in os["expr"]
+    assert 'node_os_info{id=~"nasos", version_id!=""}' in os["expr"]
+    rx = ciclos._q(ciclos._promql(p.ciclo_regex))  # (?:(\d+)\.) seguido de cualquier cosa
+    assert f'"ciclo", "$1", "version_id", {rx}' in os["expr"]
     assert 'vigia_producto_info{producto="nas-os"}' in exporter["expr"]
-    assert '"ciclo", "$1", "version", "(\\\\d+)\\\\..*"' in exporter["expr"]
+    assert f'"ciclo", "$1", "version", {rx}' in exporter["expr"]
     assert [r["record"] for r in derivadas] == [ciclos.RESTANTE, ciclos.MAYOR]
 
 
@@ -324,3 +325,10 @@ def test_fuente_de_contenedores() -> None:
     )
     selector = 'container_last_seen{image=~"' + ciclos._promql(IMAGEN).replace("\\", "\\\\") + '", name!=""}'
     assert selector in fuente["expr"]
+
+
+def test_promql_agrupa_las_alternativas() -> None:
+    import re
+
+    rx = ciclos._promql(r"^(\d+)|v(\d+)")
+    assert rx.startswith("(?:") and re.fullmatch(rx, "v3-extra")  # el resto cuelga de las dos alternativas

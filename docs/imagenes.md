@@ -23,6 +23,10 @@ alertas:
 - Desde What's Up Docker 9.6 la interfaz web exige un administrador. vigia lo crea con usuario `vigia` y la
   contraseña de la variable `clave` (fichero de entorno del sitio, como los demás secretos). Las métricas no
   la piden (`WUD_PROMETHEUS_AUTH=false`), igual que cAdvisor o node_exporter.
+- No monta el socket de Docker: lo lee a través de `wud-socket` (docker-socket-proxy) que solo deja consultar
+  contenedores, imágenes, eventos e info y rechaza cualquier POST. Montar el socket en `:ro` no bastaría: no
+  limita la API y con ella se podría crear un contenedor privilegiado. What's Up Docker corre además con el
+  sistema de ficheros de solo lectura, sin capacidades y con su puerto solo en la IP del host.
 - Cada 6 h para no gastar el límite de consultas de Docker Hub sin cuenta. Se vigilan también los *digests*
   de las etiquetas que no son versiones (`latest`, `stable`…).
 

@@ -73,6 +73,8 @@ class Avisos:
 
 
 def serie(prom: Prometheus, avisos: Avisos, expr: str) -> list[tuple[dict[str, str], float]]:
+    if PROM_CAIDO in avisos.lineas:
+        return []  # ya falló en esta respuesta: no se espera otro timeout por cada consulta
     try:
         return prom.query(expr)
     except FuenteError:

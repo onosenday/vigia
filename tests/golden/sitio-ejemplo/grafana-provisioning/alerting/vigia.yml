@@ -565,7 +565,8 @@ groups:
       datasourceUid: prometheus
       model:
         refId: A
-        expr: max by (nombre) (1 - vigia_updexp_ok)
+        expr: max by (nombre) (1 - vigia_updexp_ok) or max by (nombre) (time() - vigia_updexp_comprobado_timestamp > bool
+          10800)
         instant: true
         range: false
     - refId: B
@@ -583,7 +584,8 @@ groups:
     execErrState: Error
     for: 24h
     annotations:
-      summary: '{{ index .Labels "nombre" }}: el updates-exporter no puede consultar sus actualizaciones'
+      summary: '{{ index .Labels "nombre" }}: el updates-exporter no puede consultar sus actualizaciones (o lleva tiempo sin
+        hacerlo)'
     labels:
       vigia: si
       gravedad: warning

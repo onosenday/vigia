@@ -174,6 +174,8 @@ def pendientes(cfg: Config, prom: Prometheus, ahora: float) -> list[str]:
         lineas.append(f"{esc(n)}: {len(cs)} con imagen nueva sin cambiar de etiqueta ({lista})")
     out += _seccion("🐳 Imágenes", lineas)
 
+    if not out and av.lineas:
+        return av.lineas  # sin datos no se puede decir que no haya nada pendiente
     return (out or ["Nada pendiente ✅"]) + av.lineas
 
 

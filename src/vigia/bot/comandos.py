@@ -37,6 +37,8 @@ from .pendientes import versiones_host
 MAX_ARG = 64
 MAX_OPCIONES = 8
 MAX_ALERTAS_ESTADO = 5
+MAX_PENDIENTES = 60
+"""/pendientes tiene varias secciones: más líneas que el resto (Telegram limita a 4096 caracteres)."""
 SIN_NETINV = "Este sitio no tiene netinv: no hay inventario de dispositivos."
 SIN_TIPO = "sin clasificar"
 
@@ -188,7 +190,7 @@ def _ficha_host(ctx: Contexto, h: HostCfg) -> str:
 
 
 def pendientes(ctx: Contexto, arg: str) -> str:
-    return recortar(_pendientes(ctx.cfg, ctx.prom, ctx.ahora()))
+    return recortar(_pendientes(ctx.cfg, ctx.prom, ctx.ahora()), maximo=MAX_PENDIENTES)
 
 
 def _un_dispositivo(ctx: Contexto, arg: str, uso: str) -> Dispositivo | str:

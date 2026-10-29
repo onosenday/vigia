@@ -33,10 +33,15 @@ def test_agente_y_job(example_data: dict[str, Any]) -> None:
     wud = monitor["services"]["wud"]
     assert wud["image"] == "getwud/wud"
     assert "WUD_WATCHER_LOCAL_CRON=0 3 * * *" in wud["environment"]
-    assert wud["volumes"] == ["/var/run/docker.sock:/var/run/docker.sock:ro"]
-    assert "WUD_AUTH_ADMIN_PASSWORD=${WUD_ADMIN_CLAVE}" in wud["environment"]
+    assert "volumes" not in wud  # no toca el socket: pasa por el proxy
+    assert "WUD_WATCHER_LOCAL_HOST=wud-socket" in wud["environment"]
+    assert wud["read_only"] is True and wud["cap_drop"] == ["ALL"]
+    proxy = monitor["services"]["wud-socket"]
+    assert proxy["volumes"] == ["/var/run/docker.sock:/var/run/docker.sock:ro"]
+    assert "POST=0" in proxy["environment"] and "ports" not in proxy
+    assert "WUD_AUTH_ADMIN_PASSWORD=${WUD_ADMIN_CLAVE:?falta WUD_ADMIN_CLAVE}" in wud["environment"]
     assert "WUD_PROMETHEUS_AUTH=false" in wud["environment"]
-    assert wud["ports"] == ["9339:3000"]
+    assert wud["ports"] == ["10.99.0.10:9339:3000"]  # solo en la IP del host
     job = _job(out)
     assert job["metric_relabel_configs"][0] == {
         "source_labels": ["__name__"],

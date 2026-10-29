@@ -20,6 +20,7 @@ producto() {  # <producto del catálogo de vigia> <paquete>
     "ii "*) v="$(printf '%s' "${s#ii }" | tr -cd 'A-Za-z0-9._+~:-')" ;;
     *) return 0 ;;
   esac
+  [ -n "$v" ] || return 0
   productos="${productos:+$productos,}{\"producto\":\"$1\",\"version\":\"$v\"}"
 }
 producto openmediavault openmediavault

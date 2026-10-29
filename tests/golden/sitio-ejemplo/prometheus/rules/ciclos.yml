@@ -5112,183 +5112,183 @@ groups:
       ciclo: '7.2'
       ultimo: '9.1'
   - record: vigia_producto_ciclo
-    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(node_os_info{id=~"debian|raspbian"},
-      "producto", "debian", "", ""), "producto_nombre", "Debian", "", ""), "version", "$1", "version_id", "(.*)"), "ciclo",
-      "$1", "version_id", "(\\d+).*"))
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(node_os_info{id=~"debian|raspbian",
+      version_id!=""}, "producto", "debian", "", ""), "producto_nombre", "Debian", "", ""), "version", "$1", "version_id",
+      "(.*)"), "ciclo", "$1", "version_id", "(?:(\\d+)).*"))
     labels:
       producto: debian
       fuente: sistema
   - record: vigia_producto_ciclo
-    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(node_os_info{id=~"ubuntu"},
-      "producto", "ubuntu", "", ""), "producto_nombre", "Ubuntu", "", ""), "version", "$1", "version_id", "(.*)"), "ciclo",
-      "$1", "version_id", "(\\d+\\.\\d+).*"))
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(node_os_info{id=~"ubuntu",
+      version_id!=""}, "producto", "ubuntu", "", ""), "producto_nombre", "Ubuntu", "", ""), "version", "$1", "version_id",
+      "(.*)"), "ciclo", "$1", "version_id", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: ubuntu
       fuente: sistema
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="debian"},
-      "producto_nombre", "Debian", "", ""), "ciclo", "$1", "version", "(\\d+).*"))
+      "producto_nombre", "Debian", "", ""), "ciclo", "$1", "version", "(?:(\\d+)).*"))
     labels:
       producto: debian
       fuente: updates-exporter
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="grafana"},
-      "producto_nombre", "Grafana", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+      "producto_nombre", "Grafana", "", ""), "ciclo", "$1", "version", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: grafana
       fuente: updates-exporter
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="mariadb"},
-      "producto_nombre", "MariaDB", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+      "producto_nombre", "MariaDB", "", ""), "ciclo", "$1", "version", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: mariadb
       fuente: updates-exporter
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="mongodb"},
-      "producto_nombre", "MongoDB", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+      "producto_nombre", "MongoDB", "", ""), "ciclo", "$1", "version", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: mongodb
       fuente: updates-exporter
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="mysql"},
-      "producto_nombre", "MySQL", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+      "producto_nombre", "MySQL", "", ""), "ciclo", "$1", "version", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: mysql
       fuente: updates-exporter
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="nginx"},
-      "producto_nombre", "nginx", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+      "producto_nombre", "nginx", "", ""), "ciclo", "$1", "version", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: nginx
       fuente: updates-exporter
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="openmediavault"},
-      "producto_nombre", "OpenMediaVault", "", ""), "ciclo", "$1", "version", "(\\d+)\\..*"))
+      "producto_nombre", "OpenMediaVault", "", ""), "ciclo", "$1", "version", "(?:(\\d+)\\.).*"))
     labels:
       producto: openmediavault
       fuente: updates-exporter
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="postgresql"},
-      "producto_nombre", "PostgreSQL", "", ""), "ciclo", "$1", "version", "(\\d+).*"))
+      "producto_nombre", "PostgreSQL", "", ""), "ciclo", "$1", "version", "(?:(\\d+)).*"))
     labels:
       producto: postgresql
       fuente: updates-exporter
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="prometheus"},
-      "producto_nombre", "Prometheus", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+      "producto_nombre", "Prometheus", "", ""), "ciclo", "$1", "version", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: prometheus
       fuente: updates-exporter
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="proxmox-ve"},
-      "producto_nombre", "Proxmox VE", "", ""), "ciclo", "$1", "version", "(\\d+).*"))
+      "producto_nombre", "Proxmox VE", "", ""), "ciclo", "$1", "version", "(?:(\\d+)).*"))
     labels:
       producto: proxmox-ve
       fuente: updates-exporter
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="redis"},
-      "producto_nombre", "Redis", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+      "producto_nombre", "Redis", "", ""), "ciclo", "$1", "version", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: redis
       fuente: updates-exporter
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="synology-dsm"},
-      "producto_nombre", "Synology DSM", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+      "producto_nombre", "Synology DSM", "", ""), "ciclo", "$1", "version", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: synology-dsm
       fuente: updates-exporter
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="traefik"},
-      "producto_nombre", "Traefik", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+      "producto_nombre", "Traefik", "", ""), "ciclo", "$1", "version", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: traefik
       fuente: updates-exporter
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="truenas"},
-      "producto_nombre", "TrueNAS", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+      "producto_nombre", "TrueNAS", "", ""), "ciclo", "$1", "version", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: truenas
       fuente: updates-exporter
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="ubuntu"},
-      "producto_nombre", "Ubuntu", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+      "producto_nombre", "Ubuntu", "", ""), "ciclo", "$1", "version", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: ubuntu
       fuente: updates-exporter
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="valkey"},
-      "producto_nombre", "Valkey", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+      "producto_nombre", "Valkey", "", ""), "ciclo", "$1", "version", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: valkey
       fuente: updates-exporter
   - record: vigia_producto_ciclo
-    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:.*/)?grafana(?:-oss|-enterprise)?:v?(\\d+\\.\\d+).*",
+    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:(?:.*/)?grafana(?:-oss|-enterprise)?:v?(\\d+\\.\\d+)).*",
       name!=""}, "producto", "grafana", "", ""), "producto_nombre", "Grafana", "", ""), "contenedor", "$1", "name", "(.*)"),
-      "version", "$1", "image", "(?:.*/)?grafana(?:-oss|-enterprise)?:v?(\\d+\\.\\d+).*"), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+      "version", "$1", "image", "(?:(?:.*/)?grafana(?:-oss|-enterprise)?:v?(\\d+\\.\\d+)).*"), "ciclo", "$1", "version", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: grafana
       fuente: contenedor
   - record: vigia_producto_ciclo
-    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:.*/)?mariadb:(\\d+\\.\\d+).*",
+    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:(?:.*/)?mariadb:(\\d+\\.\\d+)).*",
       name!=""}, "producto", "mariadb", "", ""), "producto_nombre", "MariaDB", "", ""), "contenedor", "$1", "name", "(.*)"),
-      "version", "$1", "image", "(?:.*/)?mariadb:(\\d+\\.\\d+).*"), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+      "version", "$1", "image", "(?:(?:.*/)?mariadb:(\\d+\\.\\d+)).*"), "ciclo", "$1", "version", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: mariadb
       fuente: contenedor
   - record: vigia_producto_ciclo
-    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:.*/)?mongo(?:db)?:(\\d+\\.\\d+).*",
+    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:(?:.*/)?mongo(?:db)?:(\\d+\\.\\d+)).*",
       name!=""}, "producto", "mongodb", "", ""), "producto_nombre", "MongoDB", "", ""), "contenedor", "$1", "name", "(.*)"),
-      "version", "$1", "image", "(?:.*/)?mongo(?:db)?:(\\d+\\.\\d+).*"), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+      "version", "$1", "image", "(?:(?:.*/)?mongo(?:db)?:(\\d+\\.\\d+)).*"), "ciclo", "$1", "version", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: mongodb
       fuente: contenedor
   - record: vigia_producto_ciclo
-    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:.*/)?mysql:(\\d+\\.\\d+).*",
+    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:(?:.*/)?mysql:(\\d+\\.\\d+)).*",
       name!=""}, "producto", "mysql", "", ""), "producto_nombre", "MySQL", "", ""), "contenedor", "$1", "name", "(.*)"), "version",
-      "$1", "image", "(?:.*/)?mysql:(\\d+\\.\\d+).*"), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+      "$1", "image", "(?:(?:.*/)?mysql:(\\d+\\.\\d+)).*"), "ciclo", "$1", "version", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: mysql
       fuente: contenedor
   - record: vigia_producto_ciclo
-    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:.*/)?nginx:(\\d+\\.\\d+).*",
+    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:(?:.*/)?nginx:(\\d+\\.\\d+)).*",
       name!=""}, "producto", "nginx", "", ""), "producto_nombre", "nginx", "", ""), "contenedor", "$1", "name", "(.*)"), "version",
-      "$1", "image", "(?:.*/)?nginx:(\\d+\\.\\d+).*"), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+      "$1", "image", "(?:(?:.*/)?nginx:(\\d+\\.\\d+)).*"), "ciclo", "$1", "version", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: nginx
       fuente: contenedor
   - record: vigia_producto_ciclo
-    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:.*/)?(?:postgres(?:ql)?:|pgvecto-rs:pg)(\\d+).*",
+    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:(?:.*/)?(?:postgres(?:ql)?:|pgvecto-rs:pg)(\\d+)).*",
       name!=""}, "producto", "postgresql", "", ""), "producto_nombre", "PostgreSQL", "", ""), "contenedor", "$1", "name",
-      "(.*)"), "version", "$1", "image", "(?:.*/)?(?:postgres(?:ql)?:|pgvecto-rs:pg)(\\d+).*"), "ciclo", "$1", "version",
-      "(\\d+).*"))
+      "(.*)"), "version", "$1", "image", "(?:(?:.*/)?(?:postgres(?:ql)?:|pgvecto-rs:pg)(\\d+)).*"), "ciclo", "$1", "version",
+      "(?:(\\d+)).*"))
     labels:
       producto: postgresql
       fuente: contenedor
   - record: vigia_producto_ciclo
-    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:.*/)?prometheus:v?(\\d+\\.\\d+).*",
+    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:(?:.*/)?prometheus:v?(\\d+\\.\\d+)).*",
       name!=""}, "producto", "prometheus", "", ""), "producto_nombre", "Prometheus", "", ""), "contenedor", "$1", "name",
-      "(.*)"), "version", "$1", "image", "(?:.*/)?prometheus:v?(\\d+\\.\\d+).*"), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+      "(.*)"), "version", "$1", "image", "(?:(?:.*/)?prometheus:v?(\\d+\\.\\d+)).*"), "ciclo", "$1", "version", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: prometheus
       fuente: contenedor
   - record: vigia_producto_ciclo
-    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:.*/)?redis:(\\d+\\.\\d+).*",
+    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:(?:.*/)?redis:(\\d+\\.\\d+)).*",
       name!=""}, "producto", "redis", "", ""), "producto_nombre", "Redis", "", ""), "contenedor", "$1", "name", "(.*)"), "version",
-      "$1", "image", "(?:.*/)?redis:(\\d+\\.\\d+).*"), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+      "$1", "image", "(?:(?:.*/)?redis:(\\d+\\.\\d+)).*"), "ciclo", "$1", "version", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: redis
       fuente: contenedor
   - record: vigia_producto_ciclo
-    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:.*/)?traefik:v?(\\d+\\.\\d+).*",
+    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:(?:.*/)?traefik:v?(\\d+\\.\\d+)).*",
       name!=""}, "producto", "traefik", "", ""), "producto_nombre", "Traefik", "", ""), "contenedor", "$1", "name", "(.*)"),
-      "version", "$1", "image", "(?:.*/)?traefik:v?(\\d+\\.\\d+).*"), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+      "version", "$1", "image", "(?:(?:.*/)?traefik:v?(\\d+\\.\\d+)).*"), "ciclo", "$1", "version", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: traefik
       fuente: contenedor
   - record: vigia_producto_ciclo
-    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:.*/)?valkey:(\\d+\\.\\d+).*",
+    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:(?:.*/)?valkey:(\\d+\\.\\d+)).*",
       name!=""}, "producto", "valkey", "", ""), "producto_nombre", "Valkey", "", ""), "contenedor", "$1", "name", "(.*)"),
-      "version", "$1", "image", "(?:.*/)?valkey:(\\d+\\.\\d+).*"), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+      "version", "$1", "image", "(?:(?:.*/)?valkey:(\\d+\\.\\d+)).*"), "ciclo", "$1", "version", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: valkey
       fuente: contenedor

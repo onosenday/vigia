@@ -679,7 +679,7 @@ class Imagenes(Base):
     """Cada cuánto consulta los registros (cada 6 h: los límites de Docker Hub sin cuenta son bajos)."""
     clave: EnvVarName | None = None
     """Variable con la contraseña del administrador (`vigia`) de su interfaz web: obligatoria desde
-    What's Up Docker 9.6. Las métricas no la piden."""
+    What's Up Docker 9.6. Las métricas no la piden. Sin `$` en el valor (compose lo interpolaría)."""
 
 
 class Modules(Base):
@@ -785,6 +785,7 @@ DEFAULT_IMAGES: dict[str, str] = {
     "pihole_exporter": "ekofr/pihole-exporter",
     "snmp_exporter": "prom/snmp-exporter",
     "wud": "getwud/wud",
+    "socket_proxy": "tecnativa/docker-socket-proxy",
 }
 
 
@@ -981,6 +982,12 @@ class Site(Base):
                 out.append(f"externo {o.nombre}: http sin TLS; si la web tiene https, mejor esa URL")
         if self.modulos.netinv.activo and self.modulos.netinv.nmap:
             out.append("netinv con nmap: escaneo activo de puertos; confirma que la autorización lo cubre")
+        u = self.modulos.updates_exporter
+        if u.activo and not u.deploy:
+            out.append(
+                "updates_exporter sin `deploy`: Prometheus lee su /metrics.txt, que solo sirve la imagen de "
+                "vigia ≥ 0.5 (despliégala antes que el monitor o salta «Exporter sin respuesta»)"
+            )
         if (
             not self.monitor.imagenes.get("grafana", "").count(":")
             and self.branding.grafana

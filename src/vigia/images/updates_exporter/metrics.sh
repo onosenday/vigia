@@ -6,7 +6,9 @@
 #   vigia_actualizaciones_pendientes{host}      paquetes pendientes (apt) o 1/0 (DSM)
 #   vigia_actualizaciones_seguridad{host}       de ellos, de seguridad (solo apt)
 #   vigia_producto_info{host,producto,version}  1 por producto que informa el host (v2)
-# Los valores de las etiquetas pasan por @json (escapa comillas y barras como pide el formato de texto).
+#   vigia_updexp_comprobado_timestamp           última vuelta del recolector (sin `host`): frescura
+# Los valores de las etiquetas solo pasan si son caracteres de versión (el host no es de fiar): el formato de
+# texto de Prometheus solo admite \\, \" y \n, y un escape raro tiraría el scrape de todos.
 set -eu
 IN="$1"
 
@@ -20,10 +22,16 @@ familia() {
 }
 
 familia vigia_updexp_ok "El host respondió al sondeo (o hay caché)." '{l: "", v: (if .error then 0 else 1 end)}'
-familia vigia_updexp_formato "Versión del formato del script del host." 'select(.error | not) | {l: "", v: (.v // 1)}'
+familia vigia_updexp_formato "Versión del formato del script del host." \
+  'select(.error | not) | {l: "", v: (.v | if type == "number" then . else 1 end)}'
 familia vigia_actualizaciones_pendientes "Actualizaciones pendientes (paquetes; en DSM, 1 o 0)." \
   '(.updates // .dsm_update) | select(type == "number") | {l: "", v: .}'
 familia vigia_actualizaciones_seguridad "Actualizaciones de seguridad pendientes." '.security | select(type == "number") | {l: "", v: .}'
 familia vigia_producto_info "Producto y versión que informa el host." '(.productos | if type == "array" then .[] else empty end)
-  | select(type == "object" and (.producto | type == "string") and (.version | type == "string"))
+  | select(type == "object" and (.producto | type == "string" and test("^[a-z0-9-]{1,40}$"))
+      and (.version | type == "string" and test("^[A-Za-z0-9._+~:-]{1,40}$")))
   | {l: ",producto=\(.producto | @json),version=\(.version | @json)", v: 1}'
+
+printf '# HELP vigia_updexp_comprobado_timestamp Última vuelta del recolector.\n'
+printf '# TYPE vigia_updexp_comprobado_timestamp gauge\n'
+jq -r '._checked | select(type == "string") | fromdateiso8601? | "vigia_updexp_comprobado_timestamp \(.)"' "$IN"

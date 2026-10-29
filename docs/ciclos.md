@@ -32,6 +32,8 @@ ciclos:
   Las etiquetas sin versión suficiente (`latest`, `redis:8` cuando los ciclos son `8.x`) no casan y no avisan;
   `ejemplos_imagen` fija qué casa y qué no. Los productos de ciclos cortos llevan su propio margen
   (`aviso_dias`: Prometheus 14, Grafana y nginx 30) y no avisan de versión mayor (`aviso_version: false`).
+  Límite: si un contenedor sigue con una imagen cuya etiqueta ya apunta a otra (watchtower la bajó pero aún no
+  lo recreó), cAdvisor da `sha256:…` en vez del nombre y ese contenedor no cuenta hasta que se recree.
 - `uv run vigia ciclos lista` muestra el ciclo de referencia y la última comprobación de cada producto.
 
 ## En el sitio
@@ -76,7 +78,8 @@ Y, con la versión instalada en cada equipo, en el mismo grupo (en orden, en la 
 Todas son de categoría `mantenimiento` y se generan si hay algún node_exporter o el updates-exporter está
 activo. Un host con OMV recibe los avisos de Debian (node_exporter) y los de OMV (updates-exporter, script v2).
 
-El panel **Mantenimiento** y el comando `/pendientes` del bot ([bot.md](bot.md)) muestran lo mismo.
+El panel **Mantenimiento** (colores con `umbrales.soporte_dias`; los productos con `aviso_dias` propio
+avisan antes) y el comando `/pendientes` del bot ([bot.md](bot.md)) muestran lo mismo.
 
 El catálogo viaja con cada versión de vigia: un sitio que no actualiza vigia se queda con las fechas de esa
 versión.

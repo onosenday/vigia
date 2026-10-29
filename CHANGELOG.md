@@ -2,6 +2,14 @@
 
 ## Sin publicar
 
+Al actualizar un sitio:
+- Todas las alertas ganan las etiquetas `gravedad` y `categoria`: las que estén disparadas se resuelven y
+  vuelven a dispararse una vez (un aviso repetido) y su `for` empieza de cero.
+- El job `actualizaciones` lee `/metrics.txt` del updates-exporter, que solo sirve su imagen nueva: despliega
+  `updates` antes que `monitor` (si no, «Exporter sin respuesta» hasta que llegue). Para tener versiones de OMV,
+  Proxmox y DSM, reinstala en cada host su script (formato v2, [docs/actualizaciones.md](docs/actualizaciones.md)).
+- `imagenes` necesita `modulos.imagenes.clave` en el fichero de entorno (sin `$`).
+
 - **Catálogo de ciclos de vida** (`vigia ciclos lista|actualizar`, `ciclos.fecha_aviso` en el sitio): fechas de fin
   de soporte de Debian, Ubuntu, Proxmox VE, TrueNAS (desde endoflife.date), OpenMediaVault y Synology DSM (a
   mano), llevadas a Prometheus como reglas de grabación (`prometheus/rules/ciclos.yml`,
@@ -15,6 +23,8 @@
 - **Imágenes nuevas de los contenedores** (`imagenes` por host, `modulos.imagenes`): What's Up Docker junto
   a los agentes y avisos de versión nueva de una imagen y de imagen nueva sin aplicar
   (`umbrales.imagen_durante`, para lo que queda fuera de watchtower) ([docs/imagenes.md](docs/imagenes.md)).
+  What's Up Docker no toca el socket de Docker: pasa por un proxy de solo lectura (sin POST), corre con el
+  sistema de ficheros de solo lectura y sin capacidades, y publica su puerto solo en la IP del host.
 - **`/pendientes`** en el bot (certificados, consumibles, discos, soporte, versiones mayores,
   actualizaciones, imágenes nuevas; ⚠ si ya avisa, «próximo» dentro de `modulos.bot.proximo`), **versión y
   soporte en `/host`** y panel **Mantenimiento** ([docs/bot.md](docs/bot.md)).

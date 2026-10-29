@@ -114,7 +114,7 @@ def test_nada_pendiente() -> None:
 
 def test_pendientes_con_prometheus_caido() -> None:
     texto = responder("/pendientes", contexto(prom_caido=True))
-    assert texto == "Nada pendiente ✅\n⚠ Prometheus no responde"
+    assert texto == "⚠ Prometheus no responde"  # sin datos no dice que no haya nada pendiente
 
 
 def test_margenes_propios() -> None:

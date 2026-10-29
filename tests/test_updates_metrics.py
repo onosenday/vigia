@@ -58,6 +58,7 @@ def test_v1_v2_dsm_y_caido(tmp_path: Path) -> None:
         'vigia_actualizaciones_seguridad{host="srv-2"} 0',
         'vigia_producto_info{host="srv-1",producto="openmediavault",version="7.7.24-7"} 1',
         'vigia_producto_info{host="nas",producto="synology-dsm",version="7.4-81000"} 1',
+        "vigia_updexp_comprobado_timestamp 1793268000",
     ]
 
 
@@ -71,9 +72,11 @@ def test_valores_raros_se_escapan_o_se_ignoran(tmp_path: Path) -> None:
                 "productos": [{"producto": 'x"y', "version": "1\\2"}, {"producto": "sin-version"}, "basura"],
             },
             "lista": ["no", "es", "objeto"],
-            "productos-raro": {"v": 2, "productos": "no es una lista"},
+            "productos-raro": {"v": "2; rm -rf", "productos": "no es una lista"},
         },
     )
-    assert 'vigia_producto_info{host="srv",producto="x\\"y",version="1\\\\2"} 1' in lineas
+    # producto y versión con caracteres raros no pasan (el host no es de fiar)
+    assert not [x for x in lineas if x.startswith("vigia_producto_info")]
     assert not [x for x in lineas if "sin-version" in x or "lista" in x or "pendientes" in x]
     assert 'vigia_updexp_ok{host="productos-raro"} 1' in lineas
+    assert 'vigia_updexp_formato{host="productos-raro"} 1' in lineas  # `v` que no es número: formato 1
