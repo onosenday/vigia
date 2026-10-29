@@ -359,3 +359,57 @@ def skill(dest: Annotated[Path, typer.Argument(help="repo del sitio")] = Path(".
 
     for f in install_skill(dest):
         typer.echo(f"skill actualizada: {f}")
+
+
+ciclos_app = typer.Typer(no_args_is_help=True, help="Catálogo de ciclos de vida (docs/ciclos.md).")
+app.add_typer(ciclos_app, name="ciclos")
+
+
+@ciclos_app.command("lista")
+def ciclos_lista() -> None:
+    """Productos del catálogo: ciclo de referencia y fecha de la última comprobación."""
+    from vigia import ciclos  # noqa: PLC0415
+
+    for p in ciclos.catalogo().values():
+        fin = p.ultimo.fin(p.fecha_aviso)
+        typer.echo(
+            f"{p.producto:16} {p.nombre:16} último {p.ultimo.ciclo:7} "
+            f"(soporte {fin or 'sin fecha'})  comprobado {p.comprobado}  [{p.fuente}]"
+        )
+
+
+@ciclos_app.command("actualizar")
+def ciclos_actualizar(
+    productos: Annotated[list[str] | None, typer.Argument(help="productos (por defecto, todos)")] = None,
+    directorio: Annotated[
+        Path | None, typer.Option("--dir", help="carpeta del catálogo (por defecto, la del paquete)")
+    ] = None,
+) -> None:
+    """Refresca desde endoflife.date los productos que se mantienen desde allí (para el mantenedor)."""
+    from vigia import ciclos  # noqa: PLC0415
+
+    d = directorio or ciclos.CATALOGO_DIR
+    cat = ciclos.cargar(d)
+    desconocidos = sorted(set(productos or []) - set(cat))
+    if desconocidos:
+        typer.echo(f"productos desconocidos: {', '.join(desconocidos)}", err=True)
+        raise typer.Exit(1)
+    fallos = 0
+    for p in cat.values():
+        if productos and p.producto not in productos:
+            continue
+        if p.fuente == "manual":
+            typer.echo(f"{p.producto}: a mano (comprobado {p.comprobado}; {p.referencia})")
+            continue
+        try:
+            nuevo = ciclos.desde_endoflife(p)
+        except (OSError, ValueError, KeyError) as e:
+            typer.echo(f"{p.producto}: no se pudo actualizar: {e}", err=True)
+            fallos += 1
+            continue
+        antes = {c.ciclo: c for c in p.ciclos}
+        cambios = [c.ciclo for c in nuevo.ciclos if antes.get(c.ciclo) != c]
+        ciclos.guardar(nuevo, d)
+        typer.echo(f"{p.producto}: {len(nuevo.ciclos)} ciclos, cambian {', '.join(cambios) or 'ninguno'}")
+    if fallos:
+        raise typer.Exit(1)

@@ -1,0 +1,56 @@
+producto: proxmox-ve
+nombre: Proxmox VE
+fuente: endoflife
+endoflife: proxmox-ve
+fecha_aviso: normal
+ultimo_lts: false
+ciclo_regex: ^(\d+)
+ejemplos:
+  8.4.1: '8'
+  9.0.3: '9'
+comprobado: '2026-10-29'
+ciclos:
+- ciclo: '9'
+  publicado: '2025-08-05'
+  ultima_version: '9.2'
+  lts: false
+- ciclo: '8'
+  publicado: '2023-06-22'
+  fin_soporte: '2026-08-31'
+  ultima_version: '8.4'
+  lts: false
+- ciclo: '7'
+  publicado: '2021-07-06'
+  fin_soporte: '2024-07-31'
+  ultima_version: '7.4'
+  lts: false
+- ciclo: '6'
+  publicado: '2019-07-16'
+  fin_soporte: '2022-09-30'
+  ultima_version: '6.4'
+  lts: false
+- ciclo: '5'
+  publicado: '2017-07-04'
+  fin_soporte: '2020-07-31'
+  ultima_version: '5.4'
+  lts: false
+- ciclo: '4'
+  publicado: '2015-10-06'
+  fin_soporte: '2018-06-30'
+  ultima_version: '4.4'
+  lts: false
+- ciclo: '3'
+  publicado: '2013-05-24'
+  fin_soporte: '2017-02-28'
+  ultima_version: '3.4'
+  lts: false
+- ciclo: '2'
+  publicado: '2012-03-30'
+  fin_soporte: '2014-05-31'
+  ultima_version: '2.3'
+  lts: false
+- ciclo: '1'
+  publicado: '2008-10-29'
+  fin_soporte: '2013-01-31'
+  ultima_version: '1.9'
+  lts: false

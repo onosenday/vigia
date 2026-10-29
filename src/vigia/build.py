@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
-from vigia import __version__
+from vigia import __version__, ciclos
 from vigia.alerting import alerting, smtp_env
 from vigia.model import Host, Site
 from vigia.render import Raw, dump_yaml, render_template
@@ -235,6 +235,10 @@ def build_site(s: Site, site_root: Path) -> dict[str, str | bytes]:
 
     out["prometheus/prometheus.yml"] = render_template(
         "prometheus/prometheus.yml.j2", s=s, present=h, probes=_probes(s), header=_header(s, "Prometheus")
+    )
+    out["prometheus/rules/ciclos.yml"] = dump_yaml(
+        ciclos.reglas(ciclos.catalogo(), s.ciclos.fecha_aviso),
+        _header(s, "Ciclos de vida (reglas de grabación constantes, docs/ciclos.md)"),
     )
     for name, groups in targets(s).items():
         out[f"prometheus/targets/{name}"] = dump_yaml(groups, _header(s, "Objetivos de Prometheus"))

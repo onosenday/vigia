@@ -1,5 +1,12 @@
 # Cambios
 
+## Sin publicar
+
+- **Catálogo de ciclos de vida** (`vigia ciclos lista|actualizar`, `ciclos.fecha_aviso` en el sitio): fechas de fin
+  de soporte de Debian, Ubuntu, Proxmox VE, TrueNAS (desde endoflife.date), OpenMediaVault y Synology DSM (a
+  mano), llevadas a Prometheus como reglas de grabación (`prometheus/rules/ciclos.yml`,
+  [docs/ciclos.md](docs/ciclos.md)). Base de los avisos de fin de soporte y de versión mayor nueva.
+
 ## 0.4.1 (2026-10-29)
 
 - **Contexto SNMPv3** (`contexto` en `modulos.snmp.auths`, solo v3) → `context_name` de snmp_exporter. Para

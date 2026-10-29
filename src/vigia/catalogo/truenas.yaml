@@ -1,0 +1,35 @@
+producto: truenas
+nombre: TrueNAS
+fuente: endoflife
+endoflife: truenas
+fecha_aviso: normal
+ultimo_lts: false
+ciclo_regex: ^(\d+\.\d+)
+ejemplos:
+  25.04.2.6: '25.04'
+  24.10.2: '24.10'
+comprobado: '2026-10-29'
+ciclos:
+- ciclo: '25.10'
+  publicado: '2025-10-28'
+  ultima_version: 25.10.7
+  lts: false
+- ciclo: '25.04'
+  publicado: '2025-04-15'
+  ultima_version: 25.04.2.6
+  lts: false
+- ciclo: '24.10'
+  publicado: '2024-10-29'
+  fin_soporte: '2025-08-07'
+  ultima_version: 24.10.2.4
+  lts: false
+- ciclo: '24.04'
+  publicado: '2024-04-23'
+  fin_soporte: '2026-10-29'
+  ultima_version: 24.04.2.5
+  lts: false
+- ciclo: '23.10'
+  publicado: '2023-10-24'
+  fin_soporte: '2026-10-29'
+  ultima_version: 23.10.2
+  lts: false

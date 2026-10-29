@@ -1,0 +1,109 @@
+producto: debian
+nombre: Debian
+fuente: endoflife
+endoflife: debian
+fecha_aviso: normal
+ultimo_lts: false
+ciclo_regex: ^(\d+)
+ejemplos:
+  '12': '12'
+  '13': '13'
+comprobado: '2026-10-29'
+ciclos:
+- ciclo: '13'
+  publicado: '2025-08-09'
+  fin_soporte: '2030-06-30'
+  fin_extendido: '2035-06-30'
+  ultima_version: '13.7'
+  lts: false
+- ciclo: '12'
+  publicado: '2023-06-10'
+  fin_soporte: '2028-06-30'
+  fin_extendido: '2033-06-30'
+  ultima_version: '12.15'
+  lts: false
+- ciclo: '11'
+  publicado: '2021-08-14'
+  fin_soporte: '2026-08-31'
+  fin_extendido: '2031-06-30'
+  ultima_version: '11.11'
+  lts: false
+- ciclo: '10'
+  publicado: '2019-07-06'
+  fin_soporte: '2024-06-30'
+  fin_extendido: '2029-06-30'
+  ultima_version: '10.13'
+  lts: false
+- ciclo: '9'
+  publicado: '2017-06-17'
+  fin_soporte: '2022-07-01'
+  fin_extendido: '2027-06-30'
+  ultima_version: '9.13'
+  lts: false
+- ciclo: '8'
+  publicado: '2015-04-25'
+  fin_soporte: '2020-06-30'
+  fin_extendido: '2025-06-30'
+  ultima_version: '8.11'
+  lts: false
+- ciclo: '7'
+  publicado: '2013-05-04'
+  fin_soporte: '2018-05-31'
+  fin_extendido: '2020-06-30'
+  ultima_version: '7.11'
+  lts: false
+- ciclo: '6'
+  publicado: '2011-02-06'
+  fin_soporte: '2016-02-29'
+  ultima_version: 6.0.10
+  lts: false
+- ciclo: '5'
+  publicado: '2009-02-14'
+  fin_soporte: '2012-02-06'
+  ultima_version: 5.0.10
+  lts: false
+- ciclo: '4'
+  publicado: '2007-04-08'
+  fin_soporte: '2010-02-15'
+  ultima_version: 4.0r9
+  lts: false
+- ciclo: '3.1'
+  publicado: '2005-06-06'
+  fin_soporte: '2008-03-31'
+  ultima_version: 3.1r8
+  lts: false
+- ciclo: '3.0'
+  publicado: '2002-07-19'
+  fin_soporte: '2006-06-30'
+  ultima_version: 3.0r6
+  lts: false
+- ciclo: '2.2'
+  publicado: '2000-08-15'
+  fin_soporte: '2003-06-30'
+  ultima_version: 2.2r7
+  lts: false
+- ciclo: '2.1'
+  publicado: '1999-03-09'
+  fin_soporte: '2000-10-30'
+  ultima_version: 2.1r5
+  lts: false
+- ciclo: '2.0'
+  publicado: '1998-07-24'
+  fin_soporte: '1999-02-15'
+  ultima_version: 2.0r5
+  lts: false
+- ciclo: '1.3'
+  publicado: '1997-07-02'
+  fin_soporte: '1998-12-08'
+  ultima_version: 1.3.1 r.6
+  lts: false
+- ciclo: '1.2'
+  publicado: '1996-12-12'
+  fin_soporte: '1997-10-23'
+  ultima_version: '1.2'
+  lts: false
+- ciclo: '1.1'
+  publicado: '1996-06-17'
+  fin_soporte: '1996-12-12'
+  ultima_version: '1.1'
+  lts: false

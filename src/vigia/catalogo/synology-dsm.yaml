@@ -1,0 +1,47 @@
+producto: synology-dsm
+nombre: Synology DSM
+fuente: manual
+referencia: Synology Software Life Cycle Policy (actualizada 2026-10-13); fin de mantenimiento y de vida
+  extendida (solo LTS) por mes, fin = último día del mes
+fecha_aviso: extendido
+ciclo_regex: ^(\d+\.\d+)
+ejemplos:
+  7.2.2-72806: '7.2'
+  7.4-81000: '7.4'
+comprobado: '2026-10-29'
+ciclos:
+- ciclo: '7.4'
+  publicado: '2026-06-01'
+  fin_soporte: '2028-06-30'
+- ciclo: '7.3'
+  lts: true
+  publicado: '2025-10-01'
+  fin_soporte: '2027-10-31'
+  fin_extendido: '2028-10-31'
+- ciclo: '7.2'
+  publicado: '2023-06-01'
+  fin_soporte: '2025-12-31'
+- ciclo: '7.1'
+  lts: true
+  publicado: '2022-04-01'
+  fin_soporte: '2024-06-30'
+  fin_extendido: '2025-06-30'
+- ciclo: '7.0'
+  publicado: '2021-06-01'
+  fin_soporte: '2023-06-30'
+- ciclo: '6.2'
+  lts: true
+  publicado: '2018-05-01'
+  fin_soporte: '2021-06-30'
+  fin_extendido: '2024-09-30'
+- ciclo: '6.1'
+  publicado: '2017-03-01'
+  fin_soporte: '2019-06-30'
+- ciclo: '6.0'
+  publicado: '2016-03-01'
+  fin_soporte: '2018-06-30'
+- ciclo: '5.2'
+  lts: true
+  publicado: '2015-05-01'
+  fin_soporte: '2017-06-30'
+  fin_extendido: '2019-06-30'

@@ -1,0 +1,22 @@
+producto: openmediavault
+nombre: OpenMediaVault
+fuente: manual
+referencia: https://docs.openmediavault.org/en/stable/releases.html (fechas por mes; fin = último día del mes)
+fecha_aviso: normal
+ciclo_regex: ^(\d+)\.
+ejemplos:
+  7.7.24-7: '7'
+  8.6.0-1: '8'
+comprobado: '2026-10-29'
+ciclos:
+- ciclo: '8'
+  publicado: '2025-12-01'
+- ciclo: '7'
+  publicado: '2024-03-01'
+  fin_soporte: '2026-06-30'
+- ciclo: '6'
+  publicado: '2022-05-01'
+  fin_soporte: '2024-07-31'
+- ciclo: '5'
+  publicado: '2020-03-01'
+  fin_soporte: '2022-06-30'

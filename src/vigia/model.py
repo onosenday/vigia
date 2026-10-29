@@ -30,6 +30,8 @@ from pydantic import (
 )
 
 from vigia import __version__
+from vigia.ciclos import FechaAviso
+from vigia.ciclos import catalogo as catalogo_ciclos
 
 # --- tipos básicos -----------------------------------------------------------------------------------
 
@@ -841,6 +843,13 @@ class Tarea(Base):
     """Horas máximas sin una ejecución correcta antes de avisar."""
 
 
+class Ciclos(Base):
+    """Ajustes del catálogo de ciclos de vida (docs/ciclos.md)."""
+
+    fecha_aviso: dict[Id, FechaAviso] = {}
+    """Por producto: qué fin de soporte cuenta (`normal` o `extendido`) en vez del del catálogo."""
+
+
 class Site(Base):
     vigia: Annotated[str, StringConstraints(pattern=r"^[0-9<>=!~,. ]+$")]
     """Rango de versiones de vigia con el que se probó el sitio; con otra versión, el sitio no carga."""
@@ -863,6 +872,7 @@ class Site(Base):
     """Redes Docker por host (salida de `vigia bridges`), para nombrar las interfaces br-<id>."""
     tareas: list[Tarea] = []
     """Tareas programadas (copias…) vigiladas por el textfile de node_exporter (docs/tareas.md)."""
+    ciclos: Ciclos = Ciclos()
 
     @field_validator("vigia")
     @classmethod
@@ -1053,6 +1063,9 @@ class Site(Base):
                 errors.append(f"tarea {t.nombre}: host desconocido {t.host!r}")
             elif not (th.node_exporter and th.node_exporter.textfile):
                 errors.append(f"tarea {t.nombre}: {t.host} no tiene node_exporter con `textfile: true`")
+        desconocidos = sorted(set(self.ciclos.fecha_aviso) - set(catalogo_ciclos()))
+        if desconocidos:
+            errors.append(f"ciclos.fecha_aviso: productos que no están en el catálogo: {desconocidos}")
 
         if errors:
             raise ValueError("; ".join(errors))
