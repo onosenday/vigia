@@ -1,6 +1,6 @@
 # Cambios
 
-## Sin publicar
+## 0.5.0 (2026-10-29)
 
 Al actualizar un sitio:
 - Todas las alertas ganan las etiquetas `gravedad` y `categoria`: las que estén disparadas se resuelven y

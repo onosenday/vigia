@@ -1,4 +1,4 @@
-# Ciclos de vida (reglas de grabación constantes, docs/ciclos.md) — generado por vigia 0.4.1 para «Oficina de ejemplo».
+# Ciclos de vida (reglas de grabación constantes, docs/ciclos.md) — generado por vigia 0.5.0 para «Oficina de ejemplo».
 # No editar: cambia site.yaml y ejecuta `vigia build`.
 groups:
 - name: vigia-ciclos

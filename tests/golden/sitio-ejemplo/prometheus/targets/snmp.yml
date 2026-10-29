@@ -1,4 +1,4 @@
-# Objetivos de Prometheus — generado por vigia 0.4.1 para «Oficina de ejemplo».
+# Objetivos de Prometheus — generado por vigia 0.5.0 para «Oficina de ejemplo».
 # No editar: cambia site.yaml y ejecuta `vigia build`.
 - targets:
   - 10.99.0.20
