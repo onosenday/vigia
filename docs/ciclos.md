@@ -27,6 +27,11 @@ ciclos:
 - **A mano** (OpenMediaVault, Synology DSM): `referencia` dice de dónde salen las fechas. Las que se publican
   por mes se guardan como el último día del mes.
 - En **Ubuntu** la versión de referencia para «hay una versión mayor nueva» es la última LTS (`ultimo_lts`).
+- **Contenedores** (PostgreSQL, MariaDB, MySQL, MongoDB, Redis, Valkey, Grafana, Prometheus, nginx, Traefik):
+  `imagen_regex` saca la versión de la etiqueta de la imagen que ve cAdvisor (`postgres:16.4-alpine` → 16).
+  Las etiquetas sin versión suficiente (`latest`, `redis:8` cuando los ciclos son `8.x`) no casan y no avisan;
+  `ejemplos_imagen` fija qué casa y qué no. Los productos de ciclos cortos llevan su propio margen
+  (`aviso_dias`: Prometheus 14, Grafana y nginx 30) y no avisan de versión mayor (`aviso_version: false`).
 - `uv run vigia ciclos lista` muestra el ciclo de referencia y la última comprobación de cada producto.
 
 ## En el sitio
@@ -47,13 +52,14 @@ El build genera `prometheus/rules/ciclos.yml` con reglas de grabación constante
 | `vigia_ciclo_fin_soporte_timestamp{producto, ciclo}` | Fin de soporte que cuenta (epoch). Solo si hay fecha |
 | `vigia_ciclo_info{producto, ciclo, ultimo}` | 1 por ciclo conocido; `ultimo` es el ciclo de referencia |
 | `vigia_ciclos_catalogo_timestamp{producto}` | Última comprobación del catálogo de ese producto |
-| `vigia_ciclo_superado{producto, ciclo, ultimo}` | 1 por ciclo anterior al de referencia |
+| `vigia_ciclo_superado{producto, ciclo, ultimo}` | 1 por ciclo anterior al de referencia (si `aviso_version`) |
+| `vigia_ciclo_aviso_dias{producto}` | Margen de aviso: `aviso_dias` del producto o `umbrales.soporte_dias` |
 
 Y, con la versión instalada en cada equipo, en el mismo grupo (en orden, en la misma pasada):
 
 | Serie | Qué es |
 |-------|--------|
-| `vigia_producto_ciclo{nombre, producto, producto_nombre, ciclo, version}` | 1 por equipo y producto. La distribución sale de `node_os_info` (`os_ids` del catálogo: debian, raspbian, ubuntu); OMV, Proxmox VE y DSM, de `vigia_producto_info` del updates-exporter ([actualizaciones.md](actualizaciones.md)) |
+| `vigia_producto_ciclo{nombre, producto, producto_nombre, ciclo, version}` | 1 por equipo y producto. La distribución sale de `node_os_info` (`os_ids` del catálogo: debian, raspbian, ubuntu); OMV, Proxmox VE y DSM, de `vigia_producto_info` del updates-exporter ([actualizaciones.md](actualizaciones.md)); el software de los contenedores, de la imagen en cAdvisor (con la etiqueta `contenedor`) |
 | `vigia_soporte_restante_dias{…}` | Días hasta el fin de soporte; negativo si ya no tiene |
 | `vigia_version_mayor_disponible{…, ultimo}` | 1 si el ciclo instalado es anterior al de referencia |
 
@@ -62,7 +68,7 @@ Y, con la versión instalada en cada equipo, en el mismo grupo (en orden, en la 
 | Regla | Gravedad | Cuándo avisa |
 |-------|----------|--------------|
 | Sistema sin soporte | critical | pasado el fin de soporte |
-| Fin de soporte cercano | warning | quedan menos de `umbrales.soporte_dias` (90) |
+| Fin de soporte cercano | warning | quedan menos de `vigia_ciclo_aviso_dias` (`umbrales.soporte_dias`, 90, o el del producto) |
 | Versión mayor disponible | info | hay un ciclo de referencia más nuevo |
 | Versión fuera del catálogo | info | la versión instalada no está en el catálogo: ¿actualizar vigia? |
 | Catálogo de ciclos antiguo | info | el catálogo de un producto en uso tiene más de `umbrales.catalogo_dias` (180) |

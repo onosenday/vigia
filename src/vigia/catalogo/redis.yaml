@@ -1,0 +1,74 @@
+producto: redis
+nombre: Redis
+fuente: endoflife
+endoflife: redis
+fecha_aviso: normal
+ultimo_lts: false
+os_ids: []
+imagen_regex: ^(?:.*/)?redis:(\d+\.\d+)
+ciclo_regex: ^(\d+\.\d+)
+ejemplos:
+  8.10.3: '8.10'
+ejemplos_imagen:
+  redis:7.4-alpine: '7.4'
+  docker.io/library/redis:8: null
+  redis:latest: null
+aviso_version: true
+comprobado: '2026-10-29'
+ciclos:
+- ciclo: '8.10'
+  publicado: '2026-07-29'
+  ultima_version: 8.10.3
+  lts: false
+- ciclo: '8.8'
+  publicado: '2026-05-25'
+  ultima_version: 8.8.4
+  lts: false
+- ciclo: '8.6'
+  publicado: '2026-02-11'
+  ultima_version: 8.6.8
+  lts: false
+- ciclo: '8.4'
+  publicado: '2025-11-18'
+  ultima_version: 8.4.8
+  lts: false
+- ciclo: '8.2'
+  publicado: '2025-08-04'
+  fin_soporte: '2030-09-01'
+  ultima_version: 8.2.11
+  lts: false
+- ciclo: '8.0'
+  publicado: '2025-05-02'
+  fin_soporte: '2026-12-01'
+  ultima_version: 8.0.6
+  lts: false
+- ciclo: '7.4'
+  publicado: '2024-07-29'
+  fin_soporte: '2029-12-01'
+  ultima_version: 7.4.12
+  lts: false
+- ciclo: '7.2'
+  publicado: '2023-08-15'
+  fin_soporte: '2029-12-01'
+  ultima_version: 7.2.17
+  lts: false
+- ciclo: '7.0'
+  publicado: '2022-04-27'
+  fin_soporte: '2024-07-29'
+  ultima_version: 7.0.15
+  lts: false
+- ciclo: '6.2'
+  publicado: '2021-02-22'
+  fin_soporte: '2027-04-01'
+  ultima_version: 6.2.24
+  lts: false
+- ciclo: '6.0'
+  publicado: '2020-04-30'
+  fin_soporte: '2022-05-31'
+  ultima_version: 6.0.20
+  lts: false
+- ciclo: '5.0'
+  publicado: '2018-10-17'
+  fin_soporte: '2022-04-27'
+  ultima_version: 5.0.14
+  lts: false

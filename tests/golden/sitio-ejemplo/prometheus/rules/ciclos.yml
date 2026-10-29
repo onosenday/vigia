@@ -7,6 +7,10 @@ groups:
     expr: vector(1793232000)
     labels:
       producto: debian
+  - record: vigia_ciclo_aviso_dias
+    expr: vector(90)
+    labels:
+      producto: debian
   - record: vigia_ciclo_info
     expr: vector(1)
     labels:
@@ -310,6 +314,2076 @@ groups:
   - record: vigia_ciclos_catalogo_timestamp
     expr: vector(1793232000)
     labels:
+      producto: grafana
+  - record: vigia_ciclo_aviso_dias
+    expr: vector(30)
+    labels:
+      producto: grafana
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '13.3'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1816041600)
+    labels:
+      producto: grafana
+      ciclo: '13.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '13.2'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1810598400)
+    labels:
+      producto: grafana
+      ciclo: '13.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '13.1'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1805500800)
+    labels:
+      producto: grafana
+      ciclo: '13.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '13.0'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1799452800)
+    labels:
+      producto: grafana
+      ciclo: '13.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '12.4'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1811116800)
+    labels:
+      producto: grafana
+      ciclo: '12.4'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '12.3'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1787097600)
+    labels:
+      producto: grafana
+      ciclo: '12.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '12.2'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1782172800)
+    labels:
+      producto: grafana
+      ciclo: '12.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '12.1'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1776816000)
+    labels:
+      producto: grafana
+      ciclo: '12.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '12.0'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1770249600)
+    labels:
+      producto: grafana
+      ciclo: '12.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '11.6'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1782345600)
+    labels:
+      producto: grafana
+      ciclo: '11.6'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '11.5'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1761609600)
+    labels:
+      producto: grafana
+      ciclo: '11.5'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '11.4'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1757030400)
+    labels:
+      producto: grafana
+      ciclo: '11.4'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '11.3'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1753142400)
+    labels:
+      producto: grafana
+      ciclo: '11.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '11.2'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1748304000)
+    labels:
+      producto: grafana
+      ciclo: '11.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '11.1'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1745366400)
+    labels:
+      producto: grafana
+      ciclo: '11.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '11.0'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1739491200)
+    labels:
+      producto: grafana
+      ciclo: '11.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '10.4'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1749081600)
+    labels:
+      producto: grafana
+      ciclo: '10.4'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '10.3'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1729641600)
+    labels:
+      producto: grafana
+      ciclo: '10.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '10.2'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1721779200)
+    labels:
+      producto: grafana
+      ciclo: '10.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '10.1'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1705968000)
+    labels:
+      producto: grafana
+      ciclo: '10.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '10.0'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1698105600)
+    labels:
+      producto: grafana
+      ciclo: '10.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '9.5'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1715644800)
+    labels:
+      producto: grafana
+      ciclo: '9.5'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '9.4'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1686268800)
+    labels:
+      producto: grafana
+      ciclo: '9.4'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '9.3'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1680739200)
+    labels:
+      producto: grafana
+      ciclo: '9.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '9.2'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1677456000)
+    labels:
+      producto: grafana
+      ciclo: '9.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '9.1'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1669680000)
+    labels:
+      producto: grafana
+      ciclo: '9.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '9.0'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1665446400)
+    labels:
+      producto: grafana
+      ciclo: '9.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '8'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1686268800)
+    labels:
+      producto: grafana
+      ciclo: '8'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '7'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1655164800)
+    labels:
+      producto: grafana
+      ciclo: '7'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: grafana
+      ciclo: '6'
+      ultimo: '13.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1623110400)
+    labels:
+      producto: grafana
+      ciclo: '6'
+  - record: vigia_ciclos_catalogo_timestamp
+    expr: vector(1793232000)
+    labels:
+      producto: mariadb
+  - record: vigia_ciclo_aviso_dias
+    expr: vector(90)
+    labels:
+      producto: mariadb
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '13.0'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1798675200)
+    labels:
+      producto: mariadb
+      ciclo: '13.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '12.3'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1875916800)
+    labels:
+      producto: mariadb
+      ciclo: '12.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '12.2'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1779926400)
+    labels:
+      producto: mariadb
+      ciclo: '12.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '12.1'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1770940800)
+    labels:
+      producto: mariadb
+      ciclo: '12.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '12.0'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1763424000)
+    labels:
+      producto: mariadb
+      ciclo: '12.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '11.8'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1843689600)
+    labels:
+      producto: mariadb
+      ciclo: '11.8'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '11.7'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1747008000)
+    labels:
+      producto: mariadb
+      ciclo: '11.7'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '11.6'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1739404800)
+    labels:
+      producto: mariadb
+      ciclo: '11.6'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '11.5'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1732147200)
+    labels:
+      producto: mariadb
+      ciclo: '11.5'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '11.4'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1874707200)
+    labels:
+      producto: mariadb
+      ciclo: '11.4'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '11.3'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1716940800)
+    labels:
+      producto: mariadb
+      ciclo: '11.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '11.2'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1732147200)
+    labels:
+      producto: mariadb
+      ciclo: '11.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '11.1'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1724198400)
+    labels:
+      producto: mariadb
+      ciclo: '11.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '11.0'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1717632000)
+    labels:
+      producto: mariadb
+      ciclo: '11.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.11'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1834272000)
+    labels:
+      producto: mariadb
+      ciclo: '10.11'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.10'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1700179200)
+    labels:
+      producto: mariadb
+      ciclo: '10.10'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.9'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1692662400)
+    labels:
+      producto: mariadb
+      ciclo: '10.9'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.8'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1684540800)
+    labels:
+      producto: mariadb
+      ciclo: '10.8'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.7'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1675900800)
+    labels:
+      producto: mariadb
+      ciclo: '10.7'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.6'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1783296000)
+    labels:
+      producto: mariadb
+      ciclo: '10.6'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.5'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1750723200)
+    labels:
+      producto: mariadb
+      ciclo: '10.5'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.4'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1718668800)
+    labels:
+      producto: mariadb
+      ciclo: '10.4'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.3'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1684972800)
+    labels:
+      producto: mariadb
+      ciclo: '10.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.2'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1653264000)
+    labels:
+      producto: mariadb
+      ciclo: '10.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.1'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1602892800)
+    labels:
+      producto: mariadb
+      ciclo: '10.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.0'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1553990400)
+    labels:
+      producto: mariadb
+      ciclo: '10.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '5.5'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1586563200)
+    labels:
+      producto: mariadb
+      ciclo: '5.5'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '5.3'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1488326400)
+    labels:
+      producto: mariadb
+      ciclo: '5.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '5.2'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1447113600)
+    labels:
+      producto: mariadb
+      ciclo: '5.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '5.1'
+      ultimo: '13.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1422748800)
+    labels:
+      producto: mariadb
+      ciclo: '5.1'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '12.3'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '12.2'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '12.1'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '12.0'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '11.8'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '11.7'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '11.6'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '11.5'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '11.4'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '11.3'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '11.2'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '11.1'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '11.0'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.11'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.10'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.9'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.8'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.7'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.6'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.5'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.4'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.3'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.2'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.1'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '10.0'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '5.5'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '5.3'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '5.2'
+      ultimo: '13.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mariadb
+      ciclo: '5.1'
+      ultimo: '13.0'
+  - record: vigia_ciclos_catalogo_timestamp
+    expr: vector(1793232000)
+    labels:
+      producto: mongodb
+  - record: vigia_ciclo_aviso_dias
+    expr: vector(90)
+    labels:
+      producto: mongodb
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '9.0'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1951171200)
+    labels:
+      producto: mongodb
+      ciclo: '9.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '8.3'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1888099200)
+    labels:
+      producto: mongodb
+      ciclo: '8.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '8.2'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1785456000)
+    labels:
+      producto: mongodb
+      ciclo: '8.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '8.1'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1759190400)
+    labels:
+      producto: mongodb
+      ciclo: '8.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '8.0'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1888099200)
+    labels:
+      producto: mongodb
+      ciclo: '8.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '7.3'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1727827200)
+    labels:
+      producto: mongodb
+      ciclo: '7.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '7.2'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1711497600)
+    labels:
+      producto: mongodb
+      ciclo: '7.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '7.1'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1705968000)
+    labels:
+      producto: mongodb
+      ciclo: '7.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '7.0'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1819670400)
+    labels:
+      producto: mongodb
+      ciclo: '7.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '6.3'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1693440000)
+    labels:
+      producto: mongodb
+      ciclo: '6.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '6.2'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1682294400)
+    labels:
+      producto: mongodb
+      ciclo: '6.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '6.1'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1675900800)
+    labels:
+      producto: mongodb
+      ciclo: '6.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '6.0'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1753920000)
+    labels:
+      producto: mongodb
+      ciclo: '6.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '5.3'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1658188800)
+    labels:
+      producto: mongodb
+      ciclo: '5.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '5.2'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1647993600)
+    labels:
+      producto: mongodb
+      ciclo: '5.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '5.1'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1642550400)
+    labels:
+      producto: mongodb
+      ciclo: '5.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '5.0'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1730332800)
+    labels:
+      producto: mongodb
+      ciclo: '5.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '4.4'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1709164800)
+    labels:
+      producto: mongodb
+      ciclo: '4.4'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '4.2'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1682812800)
+    labels:
+      producto: mongodb
+      ciclo: '4.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '4.0'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1651276800)
+    labels:
+      producto: mongodb
+      ciclo: '4.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '3.6'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1619740800)
+    labels:
+      producto: mongodb
+      ciclo: '3.6'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '3.4'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1580428800)
+    labels:
+      producto: mongodb
+      ciclo: '3.4'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '3.2'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1538265600)
+    labels:
+      producto: mongodb
+      ciclo: '3.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '3.0'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1519776000)
+    labels:
+      producto: mongodb
+      ciclo: '3.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '2.6'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1477872000)
+    labels:
+      producto: mongodb
+      ciclo: '2.6'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '2.4'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1364688000)
+    labels:
+      producto: mongodb
+      ciclo: '2.4'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '2.2'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1393545600)
+    labels:
+      producto: mongodb
+      ciclo: '2.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '2.0'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1364688000)
+    labels:
+      producto: mongodb
+      ciclo: '2.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '1.8'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1348963200)
+    labels:
+      producto: mongodb
+      ciclo: '1.8'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '1.6'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1330387200)
+    labels:
+      producto: mongodb
+      ciclo: '1.6'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '1.4'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1348963200)
+    labels:
+      producto: mongodb
+      ciclo: '1.4'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '1.2'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1309392000)
+    labels:
+      producto: mongodb
+      ciclo: '1.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '1.0'
+      ultimo: '9.0'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1283212800)
+    labels:
+      producto: mongodb
+      ciclo: '1.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '8.3'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '8.2'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '8.1'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '8.0'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '7.3'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '7.2'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '7.1'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '7.0'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '6.3'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '6.2'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '6.1'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '6.0'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '5.3'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '5.2'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '5.1'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '5.0'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '4.4'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '4.2'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '4.0'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '3.6'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '3.4'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '3.2'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '3.0'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '2.6'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '2.4'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '2.2'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '2.0'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '1.8'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '1.6'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '1.4'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '1.2'
+      ultimo: '9.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mongodb
+      ciclo: '1.0'
+      ultimo: '9.0'
+  - record: vigia_ciclos_catalogo_timestamp
+    expr: vector(1793232000)
+    labels:
+      producto: mysql
+  - record: vigia_ciclo_aviso_dias
+    expr: vector(90)
+    labels:
+      producto: mysql
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '26.10'
+      ultimo: '26.10'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '26.7'
+      ultimo: '26.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1792454400)
+    labels:
+      producto: mysql
+      ciclo: '26.7'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '9.7'
+      ultimo: '26.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(2029968000)
+    labels:
+      producto: mysql
+      ciclo: '9.7'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '9.6'
+      ultimo: '26.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1776729600)
+    labels:
+      producto: mysql
+      ciclo: '9.6'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '9.5'
+      ultimo: '26.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1768867200)
+    labels:
+      producto: mysql
+      ciclo: '9.5'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '9.4'
+      ultimo: '26.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1761004800)
+    labels:
+      producto: mysql
+      ciclo: '9.4'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '9.3'
+      ultimo: '26.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1753142400)
+    labels:
+      producto: mysql
+      ciclo: '9.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '9.2'
+      ultimo: '26.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1744675200)
+    labels:
+      producto: mysql
+      ciclo: '9.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '9.1'
+      ultimo: '26.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1737417600)
+    labels:
+      producto: mysql
+      ciclo: '9.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '9.0'
+      ultimo: '26.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1728950400)
+    labels:
+      producto: mysql
+      ciclo: '9.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '8.4'
+      ultimo: '26.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1966896000)
+    labels:
+      producto: mysql
+      ciclo: '8.4'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '8.3'
+      ultimo: '26.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1714435200)
+    labels:
+      producto: mysql
+      ciclo: '8.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '8.2'
+      ultimo: '26.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1705363200)
+    labels:
+      producto: mysql
+      ciclo: '8.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '8.1'
+      ultimo: '26.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1698192000)
+    labels:
+      producto: mysql
+      ciclo: '8.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '8.0'
+      ultimo: '26.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1777507200)
+    labels:
+      producto: mysql
+      ciclo: '8.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '5.7'
+      ultimo: '26.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1698710400)
+    labels:
+      producto: mysql
+      ciclo: '5.7'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '5.6'
+      ultimo: '26.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1614470400)
+    labels:
+      producto: mysql
+      ciclo: '5.6'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '5.5'
+      ultimo: '26.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1546214400)
+    labels:
+      producto: mysql
+      ciclo: '5.5'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '26.7'
+      ultimo: '26.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '9.7'
+      ultimo: '26.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '9.6'
+      ultimo: '26.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '9.5'
+      ultimo: '26.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '9.4'
+      ultimo: '26.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '9.3'
+      ultimo: '26.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '9.2'
+      ultimo: '26.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '9.1'
+      ultimo: '26.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '9.0'
+      ultimo: '26.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '8.4'
+      ultimo: '26.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '8.3'
+      ultimo: '26.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '8.2'
+      ultimo: '26.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '8.1'
+      ultimo: '26.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '8.0'
+      ultimo: '26.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '5.7'
+      ultimo: '26.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '5.6'
+      ultimo: '26.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '5.5'
+      ultimo: '26.10'
+  - record: vigia_ciclos_catalogo_timestamp
+    expr: vector(1793232000)
+    labels:
+      producto: nginx
+  - record: vigia_ciclo_aviso_dias
+    expr: vector(30)
+    labels:
+      producto: nginx
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.31'
+      ultimo: '1.31'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.30'
+      ultimo: '1.31'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.29'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1778630400)
+    labels:
+      producto: nginx
+      ciclo: '1.29'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.28'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1776124800)
+    labels:
+      producto: nginx
+      ciclo: '1.28'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.27'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1750723200)
+    labels:
+      producto: nginx
+      ciclo: '1.27'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.26'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1745366400)
+    labels:
+      producto: nginx
+      ciclo: '1.26'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.25'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1716940800)
+    labels:
+      producto: nginx
+      ciclo: '1.25'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.24'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1713830400)
+    labels:
+      producto: nginx
+      ciclo: '1.24'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.23'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1684800000)
+    labels:
+      producto: nginx
+      ciclo: '1.23'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.22'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1681171200)
+    labels:
+      producto: nginx
+      ciclo: '1.22'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.21'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1655769600)
+    labels:
+      producto: nginx
+      ciclo: '1.21'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.20'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1653350400)
+    labels:
+      producto: nginx
+      ciclo: '1.20'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.19'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1621900800)
+    labels:
+      producto: nginx
+      ciclo: '1.19'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.18'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1618876800)
+    labels:
+      producto: nginx
+      ciclo: '1.18'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.17'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1590451200)
+    labels:
+      producto: nginx
+      ciclo: '1.17'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.16'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1587340800)
+    labels:
+      producto: nginx
+      ciclo: '1.16'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.15'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1558396800)
+    labels:
+      producto: nginx
+      ciclo: '1.15'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.14'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1555977600)
+    labels:
+      producto: nginx
+      ciclo: '1.14'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.13'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1528156800)
+    labels:
+      producto: nginx
+      ciclo: '1.13'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.12'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1523923200)
+    labels:
+      producto: nginx
+      ciclo: '1.12'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.11'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1493078400)
+    labels:
+      producto: nginx
+      ciclo: '1.11'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.10'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1491955200)
+    labels:
+      producto: nginx
+      ciclo: '1.10'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.9'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1464048000)
+    labels:
+      producto: nginx
+      ciclo: '1.9'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.8'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1461628800)
+    labels:
+      producto: nginx
+      ciclo: '1.8'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.7'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1430179200)
+    labels:
+      producto: nginx
+      ciclo: '1.7'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.6'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1429574400)
+    labels:
+      producto: nginx
+      ciclo: '1.6'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.5'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1398297600)
+    labels:
+      producto: nginx
+      ciclo: '1.5'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.4'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1398297600)
+    labels:
+      producto: nginx
+      ciclo: '1.4'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.3'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1367884800)
+    labels:
+      producto: nginx
+      ciclo: '1.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.2'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1366761600)
+    labels:
+      producto: nginx
+      ciclo: '1.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.1'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1337040000)
+    labels:
+      producto: nginx
+      ciclo: '1.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: nginx
+      ciclo: '1.0'
+      ultimo: '1.31'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1335139200)
+    labels:
+      producto: nginx
+      ciclo: '1.0'
+  - record: vigia_ciclos_catalogo_timestamp
+    expr: vector(1793232000)
+    labels:
+      producto: openmediavault
+  - record: vigia_ciclo_aviso_dias
+    expr: vector(90)
+    labels:
       producto: openmediavault
   - record: vigia_ciclo_info
     expr: vector(1)
@@ -370,6 +2444,909 @@ groups:
       ultimo: '8'
   - record: vigia_ciclos_catalogo_timestamp
     expr: vector(1793232000)
+    labels:
+      producto: postgresql
+  - record: vigia_ciclo_aviso_dias
+    expr: vector(90)
+    labels:
+      producto: postgresql
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '18'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1920844800)
+    labels:
+      producto: postgresql
+      ciclo: '18'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '17'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1888790400)
+    labels:
+      producto: postgresql
+      ciclo: '17'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '16'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1857340800)
+    labels:
+      producto: postgresql
+      ciclo: '16'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '15'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1825891200)
+    labels:
+      producto: postgresql
+      ciclo: '15'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '14'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1794441600)
+    labels:
+      producto: postgresql
+      ciclo: '14'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '13'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1762992000)
+    labels:
+      producto: postgresql
+      ciclo: '13'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '12'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1732147200)
+    labels:
+      producto: postgresql
+      ciclo: '12'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '11'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1699488000)
+    labels:
+      producto: postgresql
+      ciclo: '11'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '10'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1668038400)
+    labels:
+      producto: postgresql
+      ciclo: '10'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '9.6'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1636588800)
+    labels:
+      producto: postgresql
+      ciclo: '9.6'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '9.5'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1613001600)
+    labels:
+      producto: postgresql
+      ciclo: '9.5'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '9.4'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1581552000)
+    labels:
+      producto: postgresql
+      ciclo: '9.4'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '9.3'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1541635200)
+    labels:
+      producto: postgresql
+      ciclo: '9.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '9.2'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1510185600)
+    labels:
+      producto: postgresql
+      ciclo: '9.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '9.1'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1477526400)
+    labels:
+      producto: postgresql
+      ciclo: '9.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '9.0'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1444262400)
+    labels:
+      producto: postgresql
+      ciclo: '9.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '8.4'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1406160000)
+    labels:
+      producto: postgresql
+      ciclo: '8.4'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '8.3'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1360195200)
+    labels:
+      producto: postgresql
+      ciclo: '8.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '8.2'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1323043200)
+    labels:
+      producto: postgresql
+      ciclo: '8.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '8.1'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1289174400)
+    labels:
+      producto: postgresql
+      ciclo: '8.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '8.0'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1285891200)
+    labels:
+      producto: postgresql
+      ciclo: '8.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '7.4'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1285891200)
+    labels:
+      producto: postgresql
+      ciclo: '7.4'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '7.3'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1196121600)
+    labels:
+      producto: postgresql
+      ciclo: '7.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '7.2'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1170547200)
+    labels:
+      producto: postgresql
+      ciclo: '7.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '7.1'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1144886400)
+    labels:
+      producto: postgresql
+      ciclo: '7.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '7.0'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1115510400)
+    labels:
+      producto: postgresql
+      ciclo: '7.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '6.5'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1086739200)
+    labels:
+      producto: postgresql
+      ciclo: '6.5'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '6.4'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1067472000)
+    labels:
+      producto: postgresql
+      ciclo: '6.4'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '6.3'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1046476800)
+    labels:
+      producto: postgresql
+      ciclo: '6.3'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '17'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '16'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '15'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '14'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '13'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '12'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '11'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '10'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '9.6'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '9.5'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '9.4'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '9.3'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '9.2'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '9.1'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '9.0'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '8.4'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '8.3'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '8.2'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '8.1'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '8.0'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '7.4'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '7.3'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '7.2'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '7.1'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '7.0'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '6.5'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '6.4'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '6.3'
+      ultimo: '18'
+  - record: vigia_ciclos_catalogo_timestamp
+    expr: vector(1793232000)
+    labels:
+      producto: prometheus
+  - record: vigia_ciclo_aviso_dias
+    expr: vector(14)
+    labels:
+      producto: prometheus
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.15'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1793923200)
+    labels:
+      producto: prometheus
+      ciclo: '3.15'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.14'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1790726400)
+    labels:
+      producto: prometheus
+      ciclo: '3.14'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.13'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1816992000)
+    labels:
+      producto: prometheus
+      ciclo: '3.13'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.12'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1783555200)
+    labels:
+      producto: prometheus
+      ciclo: '3.12'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.11'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1778716800)
+    labels:
+      producto: prometheus
+      ciclo: '3.11'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.10'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1775606400)
+    labels:
+      producto: prometheus
+      ciclo: '3.10'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.9'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1771286400)
+    labels:
+      producto: prometheus
+      ciclo: '3.9'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.8'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1767916800)
+    labels:
+      producto: prometheus
+      ciclo: '3.8'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.7'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1764115200)
+    labels:
+      producto: prometheus
+      ciclo: '3.7'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.6'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1762041600)
+    labels:
+      producto: prometheus
+      ciclo: '3.6'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.5'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1785456000)
+    labels:
+      producto: prometheus
+      ciclo: '3.5'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.4'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1751068800)
+    labels:
+      producto: prometheus
+      ciclo: '3.4'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.3'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1748304000)
+    labels:
+      producto: prometheus
+      ciclo: '3.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.2'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1743379200)
+    labels:
+      producto: prometheus
+      ciclo: '3.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.1'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1739404800)
+    labels:
+      producto: prometheus
+      ciclo: '3.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.0'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1735171200)
+    labels:
+      producto: prometheus
+      ciclo: '3.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.55'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1733184000)
+    labels:
+      producto: prometheus
+      ciclo: '2.55'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.54'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1726790400)
+    labels:
+      producto: prometheus
+      ciclo: '2.54'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.53'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1753920000)
+    labels:
+      producto: prometheus
+      ciclo: '2.53'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.52'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1718755200)
+    labels:
+      producto: prometheus
+      ciclo: '2.52'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.51'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1714435200)
+    labels:
+      producto: prometheus
+      ciclo: '2.51'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.50'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1712188800)
+    labels:
+      producto: prometheus
+      ciclo: '2.50'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.49'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1708905600)
+    labels:
+      producto: prometheus
+      ciclo: '2.49'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.48'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1703721600)
+    labels:
+      producto: prometheus
+      ciclo: '2.48'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.47'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1697587200)
+    labels:
+      producto: prometheus
+      ciclo: '2.47'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.46'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1693872000)
+    labels:
+      producto: prometheus
+      ciclo: '2.46'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.45'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1722384000)
+    labels:
+      producto: prometheus
+      ciclo: '2.45'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.44'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1691280000)
+    labels:
+      producto: prometheus
+      ciclo: '2.44'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.43'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1682985600)
+    labels:
+      producto: prometheus
+      ciclo: '2.43'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.42'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1678752000)
+    labels:
+      producto: prometheus
+      ciclo: '2.42'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.41'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1675123200)
+    labels:
+      producto: prometheus
+      ciclo: '2.41'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.40'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1671408000)
+    labels:
+      producto: prometheus
+      ciclo: '2.40'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.39'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1668556800)
+    labels:
+      producto: prometheus
+      ciclo: '2.39'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.38'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1664236800)
+    labels:
+      producto: prometheus
+      ciclo: '2.38'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.37'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1690761600)
+    labels:
+      producto: prometheus
+      ciclo: '2.37'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.36'
+      ultimo: '3.15'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1657497600)
+    labels:
+      producto: prometheus
+      ciclo: '2.36'
+  - record: vigia_ciclos_catalogo_timestamp
+    expr: vector(1793232000)
+    labels:
+      producto: proxmox-ve
+  - record: vigia_ciclo_aviso_dias
+    expr: vector(90)
     labels:
       producto: proxmox-ve
   - record: vigia_ciclo_info
@@ -516,6 +3493,196 @@ groups:
       ultimo: '9'
   - record: vigia_ciclos_catalogo_timestamp
     expr: vector(1793232000)
+    labels:
+      producto: redis
+  - record: vigia_ciclo_aviso_dias
+    expr: vector(90)
+    labels:
+      producto: redis
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '8.10'
+      ultimo: '8.10'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '8.8'
+      ultimo: '8.10'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '8.6'
+      ultimo: '8.10'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '8.4'
+      ultimo: '8.10'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '8.2'
+      ultimo: '8.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1914451200)
+    labels:
+      producto: redis
+      ciclo: '8.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '8.0'
+      ultimo: '8.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1796083200)
+    labels:
+      producto: redis
+      ciclo: '8.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '7.4'
+      ultimo: '8.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1890777600)
+    labels:
+      producto: redis
+      ciclo: '7.4'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '7.2'
+      ultimo: '8.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1890777600)
+    labels:
+      producto: redis
+      ciclo: '7.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '7.0'
+      ultimo: '8.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1722211200)
+    labels:
+      producto: redis
+      ciclo: '7.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '6.2'
+      ultimo: '8.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1806537600)
+    labels:
+      producto: redis
+      ciclo: '6.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '6.0'
+      ultimo: '8.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1653955200)
+    labels:
+      producto: redis
+      ciclo: '6.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '5.0'
+      ultimo: '8.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1651017600)
+    labels:
+      producto: redis
+      ciclo: '5.0'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '8.8'
+      ultimo: '8.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '8.6'
+      ultimo: '8.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '8.4'
+      ultimo: '8.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '8.2'
+      ultimo: '8.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '8.0'
+      ultimo: '8.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '7.4'
+      ultimo: '8.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '7.2'
+      ultimo: '8.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '7.0'
+      ultimo: '8.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '6.2'
+      ultimo: '8.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '6.0'
+      ultimo: '8.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: redis
+      ciclo: '5.0'
+      ultimo: '8.10'
+  - record: vigia_ciclos_catalogo_timestamp
+    expr: vector(1793232000)
+    labels:
+      producto: synology-dsm
+  - record: vigia_ciclo_aviso_dias
+    expr: vector(90)
     labels:
       producto: synology-dsm
   - record: vigia_ciclo_info
@@ -668,6 +3835,364 @@ groups:
   - record: vigia_ciclos_catalogo_timestamp
     expr: vector(1793232000)
     labels:
+      producto: traefik
+  - record: vigia_ciclo_aviso_dias
+    expr: vector(90)
+    labels:
+      producto: traefik
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '3.7'
+      ultimo: '3.7'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '3.6'
+      ultimo: '3.7'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1786838400)
+    labels:
+      producto: traefik
+      ciclo: '3.6'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '3.5'
+      ultimo: '3.7'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1762473600)
+    labels:
+      producto: traefik
+      ciclo: '3.5'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '3.4'
+      ultimo: '3.7'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1753228800)
+    labels:
+      producto: traefik
+      ciclo: '3.4'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '3.3'
+      ultimo: '3.7'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1746403200)
+    labels:
+      producto: traefik
+      ciclo: '3.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '3.2'
+      ultimo: '3.7'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1736121600)
+    labels:
+      producto: traefik
+      ciclo: '3.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '3.1'
+      ultimo: '3.7'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1730073600)
+    labels:
+      producto: traefik
+      ciclo: '3.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '3.0'
+      ultimo: '3.7'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1721001600)
+    labels:
+      producto: traefik
+      ciclo: '3.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.11'
+      ultimo: '3.7'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1788739200)
+    labels:
+      producto: traefik
+      ciclo: '2.11'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.10'
+      ultimo: '3.7'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1707696000)
+    labels:
+      producto: traefik
+      ciclo: '2.10'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.9'
+      ultimo: '3.7'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1682294400)
+    labels:
+      producto: traefik
+      ciclo: '2.9'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.8'
+      ultimo: '3.7'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1664755200)
+    labels:
+      producto: traefik
+      ciclo: '2.8'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.7'
+      ultimo: '3.7'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1656460800)
+    labels:
+      producto: traefik
+      ciclo: '2.7'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.6'
+      ultimo: '3.7'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1653350400)
+    labels:
+      producto: traefik
+      ciclo: '2.6'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.5'
+      ultimo: '3.7'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1642982400)
+    labels:
+      producto: traefik
+      ciclo: '2.5'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.4'
+      ultimo: '3.7'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1629158400)
+    labels:
+      producto: traefik
+      ciclo: '2.4'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.3'
+      ultimo: '3.7'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1611014400)
+    labels:
+      producto: traefik
+      ciclo: '2.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.2'
+      ultimo: '3.7'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1600819200)
+    labels:
+      producto: traefik
+      ciclo: '2.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.1'
+      ultimo: '3.7'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1585094400)
+    labels:
+      producto: traefik
+      ciclo: '2.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.0'
+      ultimo: '3.7'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1576022400)
+    labels:
+      producto: traefik
+      ciclo: '2.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '1.7'
+      ultimo: '3.7'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1640908800)
+    labels:
+      producto: traefik
+      ciclo: '1.7'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '3.6'
+      ultimo: '3.7'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '3.5'
+      ultimo: '3.7'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '3.4'
+      ultimo: '3.7'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '3.3'
+      ultimo: '3.7'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '3.2'
+      ultimo: '3.7'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '3.1'
+      ultimo: '3.7'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '3.0'
+      ultimo: '3.7'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.11'
+      ultimo: '3.7'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.10'
+      ultimo: '3.7'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.9'
+      ultimo: '3.7'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.8'
+      ultimo: '3.7'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.7'
+      ultimo: '3.7'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.6'
+      ultimo: '3.7'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.5'
+      ultimo: '3.7'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.4'
+      ultimo: '3.7'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.3'
+      ultimo: '3.7'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.2'
+      ultimo: '3.7'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.1'
+      ultimo: '3.7'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '2.0'
+      ultimo: '3.7'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: traefik
+      ciclo: '1.7'
+      ultimo: '3.7'
+  - record: vigia_ciclos_catalogo_timestamp
+    expr: vector(1793232000)
+    labels:
+      producto: truenas
+  - record: vigia_ciclo_aviso_dias
+    expr: vector(90)
+    labels:
       producto: truenas
   - record: vigia_ciclo_info
     expr: vector(1)
@@ -740,6 +4265,10 @@ groups:
       ultimo: '25.10'
   - record: vigia_ciclos_catalogo_timestamp
     expr: vector(1793232000)
+    labels:
+      producto: ubuntu
+  - record: vigia_ciclo_aviso_dias
+    expr: vector(90)
     labels:
       producto: ubuntu
   - record: vigia_ciclo_info
@@ -1495,6 +5024,93 @@ groups:
       producto: ubuntu
       ciclo: '4.10'
       ultimo: '26.04'
+  - record: vigia_ciclos_catalogo_timestamp
+    expr: vector(1793232000)
+    labels:
+      producto: valkey
+  - record: vigia_ciclo_aviso_dias
+    expr: vector(90)
+    labels:
+      producto: valkey
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: valkey
+      ciclo: '9.1'
+      ultimo: '9.1'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1936915200)
+    labels:
+      producto: valkey
+      ciclo: '9.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: valkey
+      ciclo: '9.0'
+      ultimo: '9.1'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1855699200)
+    labels:
+      producto: valkey
+      ciclo: '9.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: valkey
+      ciclo: '8.1'
+      ultimo: '9.1'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1901145600)
+    labels:
+      producto: valkey
+      ciclo: '8.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: valkey
+      ciclo: '8.0'
+      ultimo: '9.1'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1820966400)
+    labels:
+      producto: valkey
+      ciclo: '8.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: valkey
+      ciclo: '7.2'
+      ultimo: '9.1'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1870992000)
+    labels:
+      producto: valkey
+      ciclo: '7.2'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: valkey
+      ciclo: '9.0'
+      ultimo: '9.1'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: valkey
+      ciclo: '8.1'
+      ultimo: '9.1'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: valkey
+      ciclo: '8.0'
+      ultimo: '9.1'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: valkey
+      ciclo: '7.2'
+      ultimo: '9.1'
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(node_os_info{id=~"debian|raspbian"},
       "producto", "debian", "", ""), "producto_nombre", "Debian", "", ""), "version", "$1", "version_id", "(.*)"), "ciclo",
@@ -1507,20 +5123,91 @@ groups:
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="debian"},
       "producto_nombre", "Debian", "", ""), "ciclo", "$1", "version", "(\\d+).*"))
   - record: vigia_producto_ciclo
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="grafana"},
+      "producto_nombre", "Grafana", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="mariadb"},
+      "producto_nombre", "MariaDB", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="mongodb"},
+      "producto_nombre", "MongoDB", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="mysql"},
+      "producto_nombre", "MySQL", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="nginx"},
+      "producto_nombre", "nginx", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+  - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="openmediavault"},
       "producto_nombre", "OpenMediaVault", "", ""), "ciclo", "$1", "version", "(\\d+)\\..*"))
+  - record: vigia_producto_ciclo
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="postgresql"},
+      "producto_nombre", "PostgreSQL", "", ""), "ciclo", "$1", "version", "(\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="prometheus"},
+      "producto_nombre", "Prometheus", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="proxmox-ve"},
       "producto_nombre", "Proxmox VE", "", ""), "ciclo", "$1", "version", "(\\d+).*"))
   - record: vigia_producto_ciclo
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="redis"},
+      "producto_nombre", "Redis", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+  - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="synology-dsm"},
       "producto_nombre", "Synology DSM", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="traefik"},
+      "producto_nombre", "Traefik", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="truenas"},
       "producto_nombre", "TrueNAS", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="ubuntu"},
       "producto_nombre", "Ubuntu", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="valkey"},
+      "producto_nombre", "Valkey", "", ""), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:.*/)?grafana(?:-oss|-enterprise)?:v?(\\d+\\.\\d+).*",
+      name!=""}, "producto", "grafana", "", ""), "producto_nombre", "Grafana", "", ""), "contenedor", "$1", "name", "(.*)"),
+      "version", "$1", "image", "(?:.*/)?grafana(?:-oss|-enterprise)?:v?(\\d+\\.\\d+).*"), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:.*/)?mariadb:(\\d+\\.\\d+).*",
+      name!=""}, "producto", "mariadb", "", ""), "producto_nombre", "MariaDB", "", ""), "contenedor", "$1", "name", "(.*)"),
+      "version", "$1", "image", "(?:.*/)?mariadb:(\\d+\\.\\d+).*"), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:.*/)?mongo(?:db)?:(\\d+\\.\\d+).*",
+      name!=""}, "producto", "mongodb", "", ""), "producto_nombre", "MongoDB", "", ""), "contenedor", "$1", "name", "(.*)"),
+      "version", "$1", "image", "(?:.*/)?mongo(?:db)?:(\\d+\\.\\d+).*"), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:.*/)?mysql:(\\d+\\.\\d+).*",
+      name!=""}, "producto", "mysql", "", ""), "producto_nombre", "MySQL", "", ""), "contenedor", "$1", "name", "(.*)"), "version",
+      "$1", "image", "(?:.*/)?mysql:(\\d+\\.\\d+).*"), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:.*/)?nginx:(\\d+\\.\\d+).*",
+      name!=""}, "producto", "nginx", "", ""), "producto_nombre", "nginx", "", ""), "contenedor", "$1", "name", "(.*)"), "version",
+      "$1", "image", "(?:.*/)?nginx:(\\d+\\.\\d+).*"), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:.*/)?(?:postgres(?:ql)?:|pgvecto-rs:pg)(\\d+).*",
+      name!=""}, "producto", "postgresql", "", ""), "producto_nombre", "PostgreSQL", "", ""), "contenedor", "$1", "name",
+      "(.*)"), "version", "$1", "image", "(?:.*/)?(?:postgres(?:ql)?:|pgvecto-rs:pg)(\\d+).*"), "ciclo", "$1", "version",
+      "(\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:.*/)?prometheus:v?(\\d+\\.\\d+).*",
+      name!=""}, "producto", "prometheus", "", ""), "producto_nombre", "Prometheus", "", ""), "contenedor", "$1", "name",
+      "(.*)"), "version", "$1", "image", "(?:.*/)?prometheus:v?(\\d+\\.\\d+).*"), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:.*/)?redis:(\\d+\\.\\d+).*",
+      name!=""}, "producto", "redis", "", ""), "producto_nombre", "Redis", "", ""), "contenedor", "$1", "name", "(.*)"), "version",
+      "$1", "image", "(?:.*/)?redis:(\\d+\\.\\d+).*"), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:.*/)?traefik:v?(\\d+\\.\\d+).*",
+      name!=""}, "producto", "traefik", "", ""), "producto_nombre", "Traefik", "", ""), "contenedor", "$1", "name", "(.*)"),
+      "version", "$1", "image", "(?:.*/)?traefik:v?(\\d+\\.\\d+).*"), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
+  - record: vigia_producto_ciclo
+    expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:.*/)?valkey:(\\d+\\.\\d+).*",
+      name!=""}, "producto", "valkey", "", ""), "producto_nombre", "Valkey", "", ""), "contenedor", "$1", "name", "(.*)"),
+      "version", "$1", "image", "(?:.*/)?valkey:(\\d+\\.\\d+).*"), "ciclo", "$1", "version", "(\\d+\\.\\d+).*"))
   - record: vigia_soporte_restante_dias
     expr: (vigia_producto_ciclo * on (producto, ciclo) group_left () vigia_ciclo_fin_soporte_timestamp - time()) / 86400
   - record: vigia_version_mayor_disponible

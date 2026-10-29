@@ -205,8 +205,12 @@ def test_reglas_de_soporte(example_data: dict[str, Any]) -> None:
     example_data["alertas"].setdefault("umbrales", {})["soporte_dias"] = 120
     rules = _rules(_build(example_data))
     caduca = rules["vigia-soporte-caduca"]
-    assert "vigia_soporte_restante_dias >= 0" in caduca["data"][0]["model"]["expr"]
-    assert caduca["data"][1]["model"]["conditions"][0]["evaluator"] == {"type": "lt", "params": [120]}
+    assert "vigia_soporte_restante_dias >= 0 < on (producto)" in caduca["data"][0]["model"]["expr"]
+    # el umbral del sitio va a las reglas de ciclos como aviso de los productos sin uno propio
+    reglas = yaml.safe_load(_build(example_data)["prometheus/rules/ciclos.yml"])["groups"][0]["rules"]
+    avisos = {r["labels"]["producto"]: r["expr"] for r in reglas if r["record"] == "vigia_ciclo_aviso_dias"}
+    assert avisos["debian"] == "vector(120)"
+    assert avisos["prometheus"] == "vector(14)"
     assert rules["vigia-soporte-caducado"]["labels"]["gravedad"] == "critical"
     assert rules["vigia-version-mayor"]["labels"]["gravedad"] == "info"
     assert "ultimo" in rules["vigia-version-mayor"]["data"][0]["model"]["expr"]

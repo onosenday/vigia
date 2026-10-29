@@ -1,0 +1,42 @@
+producto: valkey
+nombre: Valkey
+fuente: endoflife
+endoflife: valkey
+fecha_aviso: normal
+ultimo_lts: false
+os_ids: []
+imagen_regex: ^(?:.*/)?valkey:(\d+\.\d+)
+ciclo_regex: ^(\d+\.\d+)
+ejemplos:
+  9.1.3: '9.1'
+ejemplos_imagen:
+  valkey/valkey:8.1-alpine: '8.1'
+  docker.io/valkey/valkey:8-alpine: null
+aviso_version: true
+comprobado: '2026-10-29'
+ciclos:
+- ciclo: '9.1'
+  publicado: '2026-05-19'
+  fin_soporte: '2031-05-19'
+  ultima_version: 9.1.3
+  lts: false
+- ciclo: '9.0'
+  publicado: '2025-10-21'
+  fin_soporte: '2028-10-21'
+  ultima_version: 9.0.7
+  lts: false
+- ciclo: '8.1'
+  publicado: '2025-03-31'
+  fin_soporte: '2030-03-31'
+  ultima_version: 8.1.11
+  lts: false
+- ciclo: '8.0'
+  publicado: '2024-09-15'
+  fin_soporte: '2027-09-15'
+  ultima_version: 8.0.12
+  lts: false
+- ciclo: '7.2'
+  publicado: '2024-04-16'
+  fin_soporte: '2029-04-16'
+  ultima_version: 7.2.15
+  lts: false

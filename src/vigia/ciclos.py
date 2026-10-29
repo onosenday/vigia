@@ -8,9 +8,11 @@ alertas, paneles y bot usen la misma tabla:
   vigia_ciclo_fin_soporte_timestamp{producto, ciclo}   epoch del fin de soporte que cuenta (ver fecha_aviso)
   vigia_ciclo_info{producto, ciclo, ultimo}             1 por ciclo conocido; `ultimo` = ciclo más reciente
   vigia_ciclos_catalogo_timestamp{producto}             epoch de la última comprobación del producto
-  vigia_ciclo_superado{producto, ciclo, ultimo}         1 por ciclo anterior al de referencia
+  vigia_ciclo_superado{producto, ciclo, ultimo}         1 por ciclo anterior al de referencia (aviso_version)
+  vigia_ciclo_aviso_dias{producto}                      días de aviso antes del fin de soporte
 
-y, con la versión instalada en cada equipo (de node_os_info y de vigia_producto_info), las derivadas:
+y, con la versión instalada en cada equipo (node_os_info, vigia_producto_info del updates-exporter y la
+imagen de cada contenedor en cAdvisor, con la etiqueta `contenedor`), las derivadas:
 
   vigia_producto_ciclo{nombre, producto, producto_nombre, ciclo, version}   1 por equipo y producto
   vigia_soporte_restante_dias{…}            días hasta el fin de soporte (negativo: ya sin soporte)
@@ -42,6 +44,7 @@ SUPERADO = "vigia_ciclo_superado"
 PRODUCTO_CICLO = "vigia_producto_ciclo"
 RESTANTE = "vigia_soporte_restante_dias"
 MAYOR = "vigia_version_mayor_disponible"
+AVISO = "vigia_ciclo_aviso_dias"
 PRODUCTO_INFO = "vigia_producto_info"
 """Lo publica el updates-exporter: producto y versión que informa cada host (docs/actualizaciones.md)."""
 
@@ -52,6 +55,11 @@ FechaAviso = Literal["normal", "extendido"]
 
 class _Base(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
+
+
+def _promql(rx: str) -> str:
+    """Una expresión `^…` del catálogo para PromQL (label_replace y `=~` anclan al principio y al final)."""
+    return rx.removeprefix("^") + ".*"
 
 
 class Ciclo(_Base):
@@ -86,30 +94,42 @@ class Producto(_Base):
     """La versión de referencia es el último ciclo LTS (Ubuntu), no el último publicado."""
     os_ids: list[ProductoId] = []
     """`ID` de os-release con que aparece en node_os_info (debian, raspbian…): de ahí sale su versión."""
+    imagen_regex: str | None = None
+    """Expresión que casa la imagen de un contenedor (`repo/nombre:etiqueta`, de cAdvisor) y extrae la
+    versión de la etiqueta en su primer grupo. Las etiquetas sin versión suficiente (`latest`, `8` cuando los
+    ciclos son `8.x`) no deben casar: así no generan avisos falsos."""
     ciclo_regex: str
-    """Expresión (desde el principio, `^…`) que extrae el ciclo de una versión instalada en su primer
-    grupo, p. ej. `7.7.24-7` → `7`. Sirve en Python y en PromQL (RE2): nada de `(?…)`."""
+    """Expresión que extrae el ciclo de una versión instalada en su primer grupo, p. ej. `7.7.24-7` → `7`."""
     ejemplos: dict[str, CicloId] = Field(min_length=1)
     """Versión instalada → ciclo esperado: los tests comprueban `ciclo_regex` con ellos."""
+    ejemplos_imagen: dict[str, CicloId | None] = {}
+    """Imagen → ciclo esperado (None: no debe casar). Obligatorio con `imagen_regex`."""
+    aviso_dias: int | None = Field(default=None, ge=1, le=730)
+    """Días de aviso antes del fin de soporte para este producto (si no, `umbrales.soporte_dias`). Para
+    productos de ciclos cortos (Prometheus: 6 semanas) que si no estarían siempre en aviso."""
+    aviso_version: bool = True
+    """Avisar de versión mayor nueva. No en productos de versiones frecuentes (las imágenes nuevas las
+    avisa el vigilante de imágenes)."""
     comprobado: date
     ciclos: list[Ciclo] = Field(min_length=1)
     """Del más reciente al más antiguo."""
 
-    @field_validator("ciclo_regex")
+    @field_validator("ciclo_regex", "imagen_regex")
     @classmethod
-    def _regex(cls, v: str) -> str:
+    def _regex(cls, v: str | None) -> str | None:
+        """Desde el principio (`^…`), sin `$`, con un grupo y válida en Python y en RE2 (PromQL)."""
+        if v is None:
+            return v
         try:
             r = re.compile(v)
         except re.error as e:
-            raise ValueError(f"ciclo_regex no compila: {e}") from e
+            raise ValueError(f"la expresión no compila: {e}") from e
         if r.groups < 1:
-            raise ValueError("ciclo_regex necesita un grupo con el ciclo")
-        if '"' in v or "\n" in v or "(?" in v:
-            raise ValueError("ciclo_regex no puede llevar comillas, saltos de línea ni `(?…)`")
+            raise ValueError("la expresión necesita un grupo con el ciclo o la versión")
+        if '"' in v or "\n" in v or re.search(r"\(\?(=|!|<=|<!)|\\[1-9]", v):
+            raise ValueError("la expresión no puede llevar comillas, saltos de línea, lookarounds ni \\1")
         if not v.startswith("^") or v.endswith("$"):
-            raise ValueError(
-                "ciclo_regex empieza por `^` y no acaba en `$` (casa el principio de la versión)"
-            )
+            raise ValueError("la expresión empieza por `^` y no acaba en `$` (casa el principio)")
         return v
 
     @model_validator(mode="after")
@@ -133,6 +153,12 @@ class Producto(_Base):
                 raise ValueError(f"ejemplo {version!r}: el ciclo {ciclo!r} no está en el catálogo")
         if self.ultimo_lts and not any(c.lts for c in self.ciclos):
             raise ValueError("ultimo_lts sin ningún ciclo LTS")
+        if bool(self.imagen_regex) != bool(self.ejemplos_imagen):
+            raise ValueError("`imagen_regex` y `ejemplos_imagen` van juntos")
+        for imagen, esperado in self.ejemplos_imagen.items():
+            da = self.ciclo_de_imagen(imagen)
+            if da != esperado:
+                raise ValueError(f"imagen {imagen!r}: da el ciclo {da!r}, no {esperado!r}")
         return self
 
     @property
@@ -146,10 +172,16 @@ class Producto(_Base):
         m = re.match(self.ciclo_regex, version)
         return m.group(1) if m else None
 
+    def ciclo_de_imagen(self, imagen: str) -> str | None:
+        """Ciclo de la versión de la etiqueta, como lo calcula PromQL (anclado al principio y al final)."""
+        if not self.imagen_regex:
+            return None
+        m = re.fullmatch(_promql(self.imagen_regex), imagen)
+        return self.ciclo_de(m.group(1)) if m else None
+
     @property
     def regex_promql(self) -> str:
-        """La misma expresión para label_replace, que ancla al principio y al final."""
-        return self.ciclo_regex.removeprefix("^") + ".*"
+        return _promql(self.ciclo_regex)
 
     @property
     def superados(self) -> list[Ciclo]:
@@ -212,22 +244,43 @@ def _desde_exporter(p: Producto) -> str:
     return f"max by (nombre, producto, producto_nombre, ciclo, version) ({e})"
 
 
-def reglas(catalogo: Catalogo, fecha_aviso: Mapping[str, FechaAviso] | None = None) -> dict[str, Any]:
-    """Reglas de grabación de Prometheus: la tabla de ciclos (constantes) y lo derivado por equipo."""
+def _desde_contenedor(p: Producto) -> str:
+    """vigia_producto_ciclo de un producto a partir de la imagen de cada contenedor (cAdvisor)."""
+    assert p.imagen_regex
+    rx = _promql(p.imagen_regex)
+    e = f'container_last_seen{{image=~{_q(rx)}, name!=""}}'
+    e = _replace(e, "producto", p.producto)
+    e = _replace(e, "producto_nombre", p.nombre)
+    e = _replace(e, "contenedor", "$1", "name", "(.*)")
+    e = _replace(e, "version", "$1", "image", rx)
+    e = _replace(e, "ciclo", "$1", "version", p.regex_promql)
+    return f"group by (nombre, contenedor, producto, producto_nombre, ciclo, version) ({e})"
+
+
+def reglas(
+    catalogo: Catalogo, fecha_aviso: Mapping[str, FechaAviso] | None = None, soporte_dias: int = 90
+) -> dict[str, Any]:
+    """Reglas de grabación de Prometheus: la tabla de ciclos (constantes) y lo derivado por equipo.
+
+    `soporte_dias`: días de aviso de los productos sin `aviso_dias` propio (umbral del sitio)."""
     fecha_aviso = fecha_aviso or {}
     tabla: list[dict[str, Any]] = []
     for p in catalogo.values():
         aviso = fecha_aviso.get(p.producto, p.fecha_aviso)
         tabla.append(_regla(COMPROBADO, _epoch(p.comprobado), producto=p.producto))
+        tabla.append(_regla(AVISO, p.aviso_dias or soporte_dias, producto=p.producto))
         for c in p.ciclos:
             tabla.append(_regla(INFO, 1, producto=p.producto, ciclo=c.ciclo, ultimo=p.ultimo.ciclo))
             fin = c.fin(aviso)
             if fin:
                 tabla.append(_regla(FIN, _epoch(fin), producto=p.producto, ciclo=c.ciclo))
-        for c in p.superados:
+        for c in p.superados if p.aviso_version else []:
             tabla.append(_regla(SUPERADO, 1, producto=p.producto, ciclo=c.ciclo, ultimo=p.ultimo.ciclo))
     fuentes = [{"record": PRODUCTO_CICLO, "expr": _desde_os(p)} for p in catalogo.values() if p.os_ids]
     fuentes += [{"record": PRODUCTO_CICLO, "expr": _desde_exporter(p)} for p in catalogo.values()]
+    fuentes += [
+        {"record": PRODUCTO_CICLO, "expr": _desde_contenedor(p)} for p in catalogo.values() if p.imagen_regex
+    ]
     derivadas = [
         {
             "record": RESTANTE,

@@ -1,0 +1,106 @@
+producto: mysql
+nombre: MySQL
+fuente: endoflife
+endoflife: mysql
+fecha_aviso: normal
+ultimo_lts: false
+os_ids: []
+imagen_regex: ^(?:.*/)?mysql:(\d+\.\d+)
+ciclo_regex: ^(\d+\.\d+)
+ejemplos:
+  26.10.0: '26.10'
+ejemplos_imagen:
+  mysql:8.4: '8.4'
+  mysql:8: null
+aviso_version: true
+comprobado: '2026-10-29'
+ciclos:
+- ciclo: '26.10'
+  publicado: '2026-10-20'
+  ultima_version: 26.10.0
+  lts: false
+- ciclo: '26.7'
+  publicado: '2026-07-28'
+  fin_soporte: '2026-10-20'
+  ultima_version: 26.7.1
+  lts: false
+- ciclo: '9.7'
+  publicado: '2026-04-21'
+  fin_soporte: '2034-04-30'
+  ultima_version: 9.7.4
+  lts: true
+- ciclo: '9.6'
+  publicado: '2026-01-20'
+  fin_soporte: '2026-04-21'
+  ultima_version: 9.6.1
+  lts: false
+- ciclo: '9.5'
+  publicado: '2025-10-21'
+  fin_soporte: '2026-01-20'
+  ultima_version: 9.5.2
+  lts: false
+- ciclo: '9.4'
+  publicado: '2025-07-22'
+  fin_soporte: '2025-10-21'
+  ultima_version: 9.4.2
+  lts: false
+- ciclo: '9.3'
+  publicado: '2025-04-15'
+  fin_soporte: '2025-07-22'
+  ultima_version: 9.3.2
+  lts: false
+- ciclo: '9.2'
+  publicado: '2025-01-21'
+  fin_soporte: '2025-04-15'
+  ultima_version: 9.2.2
+  lts: false
+- ciclo: '9.1'
+  publicado: '2024-10-15'
+  fin_soporte: '2025-01-21'
+  ultima_version: 9.1.2
+  lts: false
+- ciclo: '9.0'
+  publicado: '2024-07-01'
+  fin_soporte: '2024-10-15'
+  ultima_version: 9.0.1
+  lts: false
+- ciclo: '8.4'
+  publicado: '2024-04-30'
+  fin_soporte: '2032-04-30'
+  ultima_version: 8.4.13
+  lts: true
+- ciclo: '8.3'
+  publicado: '2024-01-16'
+  fin_soporte: '2024-04-30'
+  ultima_version: 8.3.0
+  lts: false
+- ciclo: '8.2'
+  publicado: '2023-10-25'
+  fin_soporte: '2024-01-16'
+  ultima_version: 8.2.0
+  lts: false
+- ciclo: '8.1'
+  publicado: '2023-07-18'
+  fin_soporte: '2023-10-25'
+  ultima_version: 8.1.0
+  lts: false
+- ciclo: '8.0'
+  publicado: '2018-04-19'
+  fin_soporte: '2026-04-30'
+  ultima_version: 8.0.46
+  lts: false
+- ciclo: '5.7'
+  publicado: '2015-10-09'
+  fin_soporte: '2023-10-31'
+  ultima_version: 5.7.44
+  lts: false
+- ciclo: '5.6'
+  publicado: '2013-02-01'
+  fin_soporte: '2021-02-28'
+  ultima_version: 5.6.51
+  lts: false
+- ciclo: '5.5'
+  publicado: '2010-12-03'
+  fin_soporte: '2018-12-31'
+  ultima_version: 5.5.63
+  lts: false

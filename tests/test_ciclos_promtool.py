@@ -1,7 +1,9 @@
 """Las reglas de ciclos y las alertas de soporte evaluadas por Prometheus de verdad (`promtool test rules`).
 
-Se salta si no hay promtool. Con Docker: VIGIA_PROMTOOL='docker run --rm -u {uid} -v {dir}:{dir} -w {dir}
---entrypoint promtool prom/prometheus:latest' uv run pytest tests/test_ciclos_promtool.py
+Lo esperado se calcula con el catálogo a fecha fija (HOY): si `vigia ciclos actualizar` cambia una fecha
+que cruza un umbral, el test lo señala y hay que revisarlo. Se salta si no hay promtool. Con Docker:
+VIGIA_PROMTOOL='docker run --rm -u {uid} -v {dir}:{dir} -w {dir} --entrypoint promtool prom/prometheus:latest'
+uv run pytest tests/test_ciclos_promtool.py
 """
 
 from __future__ import annotations
@@ -47,6 +49,17 @@ def _serie(nombre: str, os_id: str, version: str) -> dict[str, str]:
     }
 
 
+def _contenedor(nombre: str, imagen: str) -> dict[str, str]:
+    return {
+        "series": f'container_last_seen{{nombre="srv-1", name="{nombre}", image="{imagen}", job="cadvisor"}}',
+        "values": "1 1",
+    }
+
+
+def _ultimo(producto: str) -> str:
+    return ciclos.catalogo()[producto].ultimo.ciclo
+
+
 def _muestras(expr: str, esperado: list[dict[str, Any]]) -> dict[str, Any]:
     return {"expr": expr, "eval_time": f"{HORAS}h", "exp_samples": esperado}
 
@@ -55,8 +68,9 @@ def test_reglas_y_alertas_en_prometheus(tmp_path: Path, example_data: dict[str, 
     cmd = _promtool(tmp_path)
     if not cmd:
         pytest.skip("sin promtool (ver VIGIA_PROMTOOL)")
-    (tmp_path / "ciclos.yml").write_text(yaml.safe_dump(ciclos.reglas(ciclos.catalogo())), encoding="utf-8")
     example_data["alertas"].setdefault("umbrales", {})["soporte_dias"] = 700
+    reglas = ciclos.reglas(ciclos.catalogo(), soporte_dias=700)
+    (tmp_path / "ciclos.yml").write_text(yaml.safe_dump(reglas), encoding="utf-8")
     ops = {"gt": ">", "lt": "<"}
     exprs = {}  # cada expresión con el umbral que aplica Grafana: lo que queda es lo que avisa
     for r in alerting.support_rules(Site.model_validate(example_data)):
@@ -79,10 +93,17 @@ def test_reglas_y_alertas_en_prometheus(tmp_path: Path, example_data: dict[str, 
                 {"labels": info("srv-3", "ubuntu", "24.04", "24.04", ultimo="26.04"), "value": 1},
                 # OMV 7 por el updates-exporter: ya existe la 8
                 {"labels": info("nas-omv", "openmediavault", "7", "7.7.24-7", ultimo="8"), "value": 1},
+                # PostgreSQL 14 en un contenedor; Prometheus no avisa de versión (aviso_version: false)
+                {
+                    "labels": info(
+                        "srv-1", "postgresql", "14", "14", contenedor="bd", ultimo=_ultimo("postgresql")
+                    ),
+                    "value": 1,
+                },
             ],
         ),
         _muestras(
-            ciclos.RESTANTE + '{nombre="srv-1"}',
+            ciclos.RESTANTE + '{nombre="srv-1", producto="debian"}',
             [
                 {
                     "labels": "vigia_soporte_restante_dias" + info("srv-1", "debian", "12", "12"),
@@ -102,10 +123,21 @@ def test_reglas_y_alertas_en_prometheus(tmp_path: Path, example_data: dict[str, 
                 },
             ],
         ),
-        # con soporte_dias = 700 solo Debian 12 (610 días); Debian 13 y Ubuntu 24.04 tienen más margen
+        # con soporte_dias = 700, Debian 12 (610 días) y PostgreSQL 14; Prometheus 3.15 con su aviso propio
+        # (14 días); Debian 13 y Ubuntu 24.04 tienen más margen
         _muestras(
             exprs["vigia-soporte-caduca"],
-            [{"labels": info("srv-1", "debian", "12", "12"), "value": _dias("debian", "12")}],
+            [
+                {"labels": info("srv-1", "debian", "12", "12"), "value": _dias("debian", "12")},
+                {
+                    "labels": info("srv-1", "postgresql", "14", "14", contenedor="bd"),
+                    "value": _dias("postgresql", "14"),
+                },
+                {
+                    "labels": info("srv-1", "prometheus", "3.15", "3.15", contenedor="prom"),
+                    "value": _dias("prometheus", "3.15"),
+                },
+            ],
         ),
         # una versión que el catálogo no conoce
         _muestras(
@@ -130,6 +162,9 @@ def test_reglas_y_alertas_en_prometheus(tmp_path: Path, example_data: dict[str, 
                         'producto="openmediavault", version="7.7.24-7", job="actualizaciones"}',
                         "values": "1 1",
                     },
+                    _contenedor("bd", "ghcr.io/immich-app/postgres:14-vectorchord0.3.0-pgvectors0.2.0"),
+                    _contenedor("prom", "prom/prometheus:v3.15.1"),
+                    _contenedor("cache", "redis:8"),  # sin ciclo exacto: no cuenta
                 ],
                 "promql_expr_test": pruebas,
             }

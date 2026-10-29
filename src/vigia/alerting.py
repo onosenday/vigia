@@ -301,8 +301,11 @@ def updates_rules(s: Site) -> list[dict[str, Any]]:
 def support_rules(s: Site) -> list[dict[str, Any]]:
     """Fin de soporte y versión mayor nueva, con las series de ciclos.reglas (docs/ciclos.md)."""
     u = s.alertas.umbrales
-    por = "nombre, producto, producto_nombre, ciclo, version"
-    quien = '{{ index .Labels "nombre" }}: {{ index .Labels "producto_nombre" }} {{ index .Labels "ciclo" }}'
+    por = "nombre, contenedor, producto, producto_nombre, ciclo, version"
+    quien = (
+        '{{ index .Labels "nombre" }}: {{ index .Labels "producto_nombre" }} {{ index .Labels "ciclo" }}'
+        '{{ with index .Labels "contenedor" }} (contenedor {{ . }}){{ end }}'
+    )
     return [
         _rule(
             "vigia-soporte-caducado",
@@ -317,9 +320,11 @@ def support_rules(s: Site) -> list[dict[str, Any]]:
         _rule(
             "vigia-soporte-caduca",
             "Fin de soporte cercano",
-            f"max by ({por}) ({ciclos.RESTANTE} >= 0)",
-            "lt",
-            u.soporte_dias,
+            # dentro del margen de aviso de su producto (vigia_ciclo_aviso_dias: umbrales.soporte_dias o el
+            # `aviso_dias` del catálogo); el umbral de Grafana ya solo deja pasar lo filtrado
+            f"max by ({por}) ({ciclos.RESTANTE} >= 0 < on (producto) group_left () {ciclos.AVISO})",
+            "gt",
+            -1,
             "1h",
             quien + " pierde el soporte pronto{{ with .Values.A }} (en {{ humanize .Value }} días){{ end }}",
         ),

@@ -246,7 +246,7 @@ def test_regex_promql_equivale_a_la_de_python() -> None:
             assert m and m.group(1) == ciclo, (p.producto, version)
 
 
-@pytest.mark.parametrize("rx", [r"(\d+)", r"^(\d+)$", r"^(?P<c>\d+)"])
+@pytest.mark.parametrize("rx", [r"(\d+)", r"^(\d+)$", r"^(?=1)(\d+)", r"^(\d)\1"])
 def test_regex_no_admitida(rx: str) -> None:
     with pytest.raises(ValidationError, match="ciclo_regex"):
         Producto.model_validate(_producto(ciclo_regex=rx))
@@ -274,3 +274,53 @@ def test_sin_os_ids_solo_la_fuente_del_exporter() -> None:
     (grupo,) = ciclos.reglas({p.producto: p})["groups"]
     (fuente,) = [r for r in grupo["rules"] if r["record"] == ciclos.PRODUCTO_CICLO]
     assert "node_os_info" not in fuente["expr"]
+
+
+IMAGEN = r"^(?:.*/)?nasos:(\d+\.\d+)"
+
+
+def test_ciclo_de_imagen_del_catalogo() -> None:
+    cat = ciclos.catalogo()
+    assert cat["postgresql"].ciclo_de_imagen("ghcr.io/immich-app/postgres:14-vectorchord0.3.0") == "14"
+    assert cat["postgresql"].ciclo_de_imagen("postgres:latest") is None
+    assert cat["prometheus"].ciclo_de_imagen("prom/prometheus:v3.15.1") == "3.15"
+    assert cat["redis"].ciclo_de_imagen("redis:8") is None  # etiqueta sin el ciclo exacto: se ignora
+    assert cat["debian"].ciclo_de_imagen("debian:12") is None  # sin imagen_regex
+
+
+@pytest.mark.parametrize(
+    ("cambios", "mensaje"),
+    [
+        ({"imagen_regex": IMAGEN}, "van juntos"),
+        ({"ejemplos_imagen": {"nasos:3.1": "3"}}, "van juntos"),
+        ({"imagen_regex": IMAGEN, "ejemplos_imagen": {"nasos:3.1": "2"}}, "da el ciclo"),
+        ({"imagen_regex": r"^nasos:(?!x)(\d+)", "ejemplos_imagen": {"nasos:3": "3"}}, "lookarounds"),
+    ],
+)
+def test_imagen_invalida(cambios: dict[str, Any], mensaje: str) -> None:
+    with pytest.raises(ValidationError, match=mensaje):
+        Producto.model_validate(_producto(**cambios))
+
+
+def test_aviso_por_producto_y_sin_aviso_de_version() -> None:
+    rapido = Producto.model_validate(_producto(producto="rapido", aviso_dias=14, aviso_version=False))
+    normal = Producto.model_validate(_producto())
+    (grupo,) = ciclos.reglas({"rapido": rapido, "nas-os": normal}, soporte_dias=60)["groups"]
+    avisos = {r["labels"]["producto"]: r["expr"] for r in grupo["rules"] if r["record"] == ciclos.AVISO}
+    assert avisos == {"rapido": "vector(14)", "nas-os": "vector(60)"}
+    superados = {r["labels"]["producto"] for r in grupo["rules"] if r["record"] == ciclos.SUPERADO}
+    assert superados == {"nas-os"}
+
+
+def test_fuente_de_contenedores() -> None:
+    p = Producto.model_validate(
+        _producto(imagen_regex=IMAGEN, ejemplos_imagen={"x/nasos:3.1": "3", "nasos:3": None})
+    )
+    (grupo,) = ciclos.reglas({p.producto: p})["groups"]
+    (fuente,) = [r for r in grupo["rules"] if "container_last_seen" in r["expr"]]
+    assert fuente["record"] == ciclos.PRODUCTO_CICLO
+    assert fuente["expr"].startswith(
+        "group by (nombre, contenedor, producto, producto_nombre, ciclo, version)"
+    )
+    selector = 'container_last_seen{image=~"' + ciclos._promql(IMAGEN).replace("\\", "\\\\") + '", name!=""}'
+    assert selector in fuente["expr"]

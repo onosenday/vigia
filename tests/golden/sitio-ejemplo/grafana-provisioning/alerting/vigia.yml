@@ -310,7 +310,7 @@ groups:
       datasourceUid: prometheus
       model:
         refId: A
-        expr: -max by (nombre, producto, producto_nombre, ciclo, version) (vigia_soporte_restante_dias)
+        expr: -max by (nombre, contenedor, producto, producto_nombre, ciclo, version) (vigia_soporte_restante_dias)
         instant: true
         range: false
     - refId: B
@@ -328,8 +328,9 @@ groups:
     execErrState: Error
     for: 1h
     annotations:
-      summary: '{{ index .Labels "nombre" }}: {{ index .Labels "producto_nombre" }} {{ index .Labels "ciclo" }} ya no tiene
-        soporte{{ with .Values.A }} (desde hace {{ humanize .Value }} días){{ end }}'
+      summary: '{{ index .Labels "nombre" }}: {{ index .Labels "producto_nombre" }} {{ index .Labels "ciclo" }}{{ with index
+        .Labels "contenedor" }} (contenedor {{ . }}){{ end }} ya no tiene soporte{{ with .Values.A }} (desde hace {{ humanize
+        .Value }} días){{ end }}'
     labels:
       vigia: si
       gravedad: critical
@@ -346,7 +347,8 @@ groups:
       datasourceUid: prometheus
       model:
         refId: A
-        expr: max by (nombre, producto, producto_nombre, ciclo, version) (vigia_soporte_restante_dias >= 0)
+        expr: max by (nombre, contenedor, producto, producto_nombre, ciclo, version) (vigia_soporte_restante_dias >= 0 < on
+          (producto) group_left () vigia_ciclo_aviso_dias)
         instant: true
         range: false
     - refId: B
@@ -357,15 +359,16 @@ groups:
         expression: A
         conditions:
         - evaluator:
-            type: lt
+            type: gt
             params:
-            - 90
+            - -1
     noDataState: OK
     execErrState: Error
     for: 1h
     annotations:
-      summary: '{{ index .Labels "nombre" }}: {{ index .Labels "producto_nombre" }} {{ index .Labels "ciclo" }} pierde el
-        soporte pronto{{ with .Values.A }} (en {{ humanize .Value }} días){{ end }}'
+      summary: '{{ index .Labels "nombre" }}: {{ index .Labels "producto_nombre" }} {{ index .Labels "ciclo" }}{{ with index
+        .Labels "contenedor" }} (contenedor {{ . }}){{ end }} pierde el soporte pronto{{ with .Values.A }} (en {{ humanize
+        .Value }} días){{ end }}'
     labels:
       vigia: si
       gravedad: warning
@@ -382,7 +385,7 @@ groups:
       datasourceUid: prometheus
       model:
         refId: A
-        expr: max by (nombre, producto, producto_nombre, ciclo, version, ultimo) (vigia_version_mayor_disponible)
+        expr: max by (nombre, contenedor, producto, producto_nombre, ciclo, version, ultimo) (vigia_version_mayor_disponible)
         instant: true
         range: false
     - refId: B
@@ -400,8 +403,8 @@ groups:
     execErrState: Error
     for: 1h
     annotations:
-      summary: '{{ index .Labels "nombre" }}: {{ index .Labels "producto_nombre" }} {{ index .Labels "ciclo" }}: ya existe
-        la {{ index .Labels "ultimo" }}'
+      summary: '{{ index .Labels "nombre" }}: {{ index .Labels "producto_nombre" }} {{ index .Labels "ciclo" }}{{ with index
+        .Labels "contenedor" }} (contenedor {{ . }}){{ end }}: ya existe la {{ index .Labels "ultimo" }}'
     labels:
       vigia: si
       gravedad: info
@@ -418,8 +421,8 @@ groups:
       datasourceUid: prometheus
       model:
         refId: A
-        expr: max by (nombre, producto, producto_nombre, ciclo, version) (vigia_producto_ciclo unless on (producto, ciclo)
-          vigia_ciclo_info)
+        expr: max by (nombre, contenedor, producto, producto_nombre, ciclo, version) (vigia_producto_ciclo unless on (producto,
+          ciclo) vigia_ciclo_info)
         instant: true
         range: false
     - refId: B

@@ -9,6 +9,9 @@
 - **Avisos de fin de soporte**: sistema sin soporte, fin de soporte cercano (`umbrales.soporte_dias`), versión
   mayor disponible, versión fuera del catálogo y catálogo antiguo (`umbrales.catalogo_dias`), con la versión de
   la distribución de `node_os_info`.
+- **Fin de soporte del software de los contenedores**: PostgreSQL, MariaDB, MySQL, MongoDB, Redis, Valkey,
+  Grafana, Prometheus, nginx y Traefik, por la etiqueta de la imagen (cAdvisor). Margen de aviso por producto
+  (`aviso_dias`) y sin aviso de versión mayor en los de ciclos cortos (`aviso_version`).
 - **updates-exporter con métricas** (`/metrics.txt`, job `actualizaciones`) y **scripts de host v2**, que
   además informan de la versión del sistema y de OMV, Proxmox VE y DSM. Alertas de seguridad pendiente
   (`umbrales.seguridad_durante`), script antiguo y host sin comprobar ([docs/actualizaciones.md](docs/actualizaciones.md)).

@@ -237,7 +237,7 @@ def build_site(s: Site, site_root: Path) -> dict[str, str | bytes]:
         "prometheus/prometheus.yml.j2", s=s, present=h, probes=_probes(s), header=_header(s, "Prometheus")
     )
     out["prometheus/rules/ciclos.yml"] = dump_yaml(
-        ciclos.reglas(ciclos.catalogo(), s.ciclos.fecha_aviso),
+        ciclos.reglas(ciclos.catalogo(), s.ciclos.fecha_aviso, s.alertas.umbrales.soporte_dias),
         _header(s, "Ciclos de vida (reglas de grabación constantes, docs/ciclos.md)"),
     )
     for name, groups in targets(s).items():

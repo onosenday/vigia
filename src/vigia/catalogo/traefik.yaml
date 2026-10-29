@@ -1,0 +1,122 @@
+producto: traefik
+nombre: Traefik
+fuente: endoflife
+endoflife: traefik
+fecha_aviso: normal
+ultimo_lts: false
+os_ids: []
+imagen_regex: ^(?:.*/)?traefik:v?(\d+\.\d+)
+ciclo_regex: ^(\d+\.\d+)
+ejemplos:
+  3.7.16: '3.7'
+ejemplos_imagen:
+  traefik:v3.5: '3.5'
+  traefik:v3: null
+  traefik:latest: null
+aviso_version: true
+comprobado: '2026-10-29'
+ciclos:
+- ciclo: '3.7'
+  publicado: '2026-05-05'
+  ultima_version: 3.7.16
+  lts: false
+- ciclo: '3.6'
+  publicado: '2025-11-07'
+  fin_soporte: '2026-08-16'
+  ultima_version: 3.6.25
+  lts: false
+- ciclo: '3.5'
+  publicado: '2025-07-23'
+  fin_soporte: '2025-11-07'
+  ultima_version: 3.5.6
+  lts: false
+- ciclo: '3.4'
+  publicado: '2025-05-05'
+  fin_soporte: '2025-07-23'
+  ultima_version: 3.4.5
+  lts: false
+- ciclo: '3.3'
+  publicado: '2025-01-06'
+  fin_soporte: '2025-05-05'
+  ultima_version: 3.3.7
+  lts: false
+- ciclo: '3.2'
+  publicado: '2024-10-28'
+  fin_soporte: '2025-01-06'
+  ultima_version: 3.2.5
+  lts: false
+- ciclo: '3.1'
+  publicado: '2024-07-15'
+  fin_soporte: '2024-10-28'
+  ultima_version: 3.1.7
+  lts: false
+- ciclo: '3.0'
+  publicado: '2024-04-29'
+  fin_soporte: '2024-07-15'
+  ultima_version: 3.0.4
+  lts: false
+- ciclo: '2.11'
+  publicado: '2024-02-12'
+  fin_soporte: '2026-09-07'
+  ultima_version: 2.11.60
+  lts: false
+- ciclo: '2.10'
+  publicado: '2023-04-24'
+  fin_soporte: '2024-02-12'
+  ultima_version: 2.10.7
+  lts: false
+- ciclo: '2.9'
+  publicado: '2022-10-03'
+  fin_soporte: '2023-04-24'
+  ultima_version: 2.9.10
+  lts: false
+- ciclo: '2.8'
+  publicado: '2022-06-29'
+  fin_soporte: '2022-10-03'
+  ultima_version: 2.8.8
+  lts: false
+- ciclo: '2.7'
+  publicado: '2022-05-24'
+  fin_soporte: '2022-06-29'
+  ultima_version: 2.7.3
+  lts: false
+- ciclo: '2.6'
+  publicado: '2022-01-24'
+  fin_soporte: '2022-05-24'
+  ultima_version: 2.6.7
+  lts: false
+- ciclo: '2.5'
+  publicado: '2021-08-17'
+  fin_soporte: '2022-01-24'
+  ultima_version: 2.5.7
+  lts: false
+- ciclo: '2.4'
+  publicado: '2021-01-19'
+  fin_soporte: '2021-08-17'
+  ultima_version: 2.4.14
+  lts: false
+- ciclo: '2.3'
+  publicado: '2020-09-23'
+  fin_soporte: '2021-01-19'
+  ultima_version: 2.3.7
+  lts: false
+- ciclo: '2.2'
+  publicado: '2020-03-25'
+  fin_soporte: '2020-09-23'
+  ultima_version: 2.2.11
+  lts: false
+- ciclo: '2.1'
+  publicado: '2019-12-11'
+  fin_soporte: '2020-03-25'
+  ultima_version: 2.1.9
+  lts: false
+- ciclo: '2.0'
+  publicado: '2019-09-16'
+  fin_soporte: '2019-12-11'
+  ultima_version: 2.0.7
+  lts: false
+- ciclo: '1.7'
+  publicado: '2018-09-24'
+  fin_soporte: '2021-12-31'
+  ultima_version: 1.7.34
+  lts: false
