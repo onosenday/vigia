@@ -106,7 +106,8 @@ def test_reglas_y_alertas_en_prometheus(tmp_path: Path, example_data: dict[str, 
             ciclos.RESTANTE + '{nombre="srv-1", producto="debian"}',
             [
                 {
-                    "labels": "vigia_soporte_restante_dias" + info("srv-1", "debian", "12", "12"),
+                    "labels": "vigia_soporte_restante_dias"
+                    + info("srv-1", "debian", "12", "12", fuente="sistema"),
                     "value": _dias("debian", "12"),
                 }
             ],
@@ -172,4 +173,18 @@ def test_reglas_y_alertas_en_prometheus(tmp_path: Path, example_data: dict[str, 
     }
     (tmp_path / "prueba.yml").write_text(yaml.safe_dump(prueba, sort_keys=False), encoding="utf-8")
     res = subprocess.run([*cmd, "test", "rules", "prueba.yml"], cwd=tmp_path, capture_output=True, text=True)  # noqa: S603
+    assert res.returncode == 0, res.stdout + res.stderr
+
+
+def test_configuracion_y_reglas_del_golden(tmp_path: Path) -> None:
+    """`promtool check config` del Prometheus del ejemplo, reglas incluidas (lint: reglas duplicadas)."""
+    cmd = _promtool(tmp_path)
+    if not cmd:
+        pytest.skip("sin promtool (ver VIGIA_PROMTOOL)")
+    golden = Path(__file__).parent / "golden" / "sitio-ejemplo" / "prometheus"
+    shutil.copytree(golden, tmp_path / "prometheus")
+    conf = tmp_path / "prometheus" / "prometheus.yml"
+    # rule_files apunta a /etc/prometheus: aquí, a la copia
+    conf.write_text(conf.read_text(encoding="utf-8").replace("/etc/prometheus/", f"{tmp_path}/prometheus/"))
+    res = subprocess.run([*cmd, "check", "config", str(conf)], cwd=tmp_path, capture_output=True, text=True)  # noqa: S603
     assert res.returncode == 0, res.stdout + res.stderr

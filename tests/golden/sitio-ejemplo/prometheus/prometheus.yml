@@ -50,6 +50,25 @@ scrape_configs:
     file_sd_configs:
       - files: [/etc/prometheus/targets/cadvisor.yml]
 
+  # Imágenes nuevas de los contenedores: What's Up Docker (docs/imagenes.md). De sus ~50 etiquetas por
+  # contenedor solo se quedan las útiles, con nombres propios.
+  - job_name: imagenes
+    scrape_interval: 300s
+    file_sd_configs:
+      - files: [/etc/prometheus/targets/imagenes.yml]
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: wud_containers
+        action: keep
+      - {source_labels: [name], target_label: contenedor}
+      - {source_labels: [image_name], target_label: imagen}
+      - {source_labels: [update_kind_kind], target_label: tipo}
+      - {source_labels: [update_kind_local_value], target_label: local}
+      - {source_labels: [update_kind_remote_value], target_label: remota}
+      - {source_labels: [update_available], target_label: nueva}
+      - regex: '__name__|job|instance|nombre|contenedor|imagen|tipo|local|remota|nueva'
+        action: labelkeep
+
   # Pi-hole: pihole-exporter (todas las instancias; etiqueta hostname)
   - job_name: pihole
     scrape_interval: 60s

@@ -589,6 +589,78 @@ groups:
       gravedad: warning
       categoria: incidencia
     isPaused: false
+  - uid: vigia-imagen-version
+    title: Versión nueva de una imagen
+    condition: B
+    data:
+    - refId: A
+      relativeTimeRange:
+        from: 600
+        to: 0
+      datasourceUid: prometheus
+      model:
+        refId: A
+        expr: max by (nombre, contenedor, imagen, local, remota) (wud_containers{nueva="true", tipo="tag"})
+        instant: true
+        range: false
+    - refId: B
+      datasourceUid: __expr__
+      model:
+        refId: B
+        type: threshold
+        expression: A
+        conditions:
+        - evaluator:
+            type: gt
+            params:
+            - 0
+    noDataState: OK
+    execErrState: Error
+    for: 1h
+    annotations:
+      summary: '{{ index .Labels "nombre" }}: {{ index .Labels "contenedor" }}: {{ index .Labels "local" }} → {{ index .Labels
+        "remota" }}'
+    labels:
+      vigia: si
+      gravedad: info
+      categoria: mantenimiento
+    isPaused: false
+  - uid: vigia-imagen-sin-aplicar
+    title: Imagen nueva sin aplicar
+    condition: B
+    data:
+    - refId: A
+      relativeTimeRange:
+        from: 600
+        to: 0
+      datasourceUid: prometheus
+      model:
+        refId: A
+        expr: max by (nombre, contenedor, imagen) (wud_containers{nueva="true", tipo="digest"})
+        instant: true
+        range: false
+    - refId: B
+      datasourceUid: __expr__
+      model:
+        refId: B
+        type: threshold
+        expression: A
+        conditions:
+        - evaluator:
+            type: gt
+            params:
+            - 0
+    noDataState: OK
+    execErrState: Error
+    for: 168h
+    annotations:
+      summary: '{{ index .Labels "nombre" }}: {{ index .Labels "contenedor" }} ({{ index .Labels "imagen" }}): hay una imagen
+        nueva sin aplicar (¿fuera de watchtower?)'
+    labels:
+      vigia: si
+      gravedad: info
+      categoria: mantenimiento
+    isPaused: false
   - uid: vigia-exporter
     title: Exporter sin respuesta
     condition: B

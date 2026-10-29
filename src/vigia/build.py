@@ -22,6 +22,7 @@ class Present:
     node: bool
     windows: bool
     cadvisor: bool
+    imagenes: bool
     snmp: bool
 
 
@@ -37,6 +38,7 @@ def present(s: Site) -> Present:
         node=any(h.node_exporter for h in s.hosts),
         windows=any(h.windows_exporter for h in s.hosts),
         cadvisor=any(h.cadvisor for h in s.hosts),
+        imagenes=any(h.imagenes for h in s.hosts),
         snmp=s.modulos.snmp.activo and any(h.snmp for h in s.hosts),
     )
 
@@ -75,6 +77,13 @@ def targets(s: Site) -> dict[str, Any]:
             {"targets": [f"{h.ip}:{h.cadvisor.puerto}"], "labels": {"nombre": h.display_name}}
             for h in cad
             if h.cadvisor
+        ]
+    img = [h for h in s.hosts if h.imagenes]
+    if img:
+        out["imagenes.yml"] = [
+            {"targets": [f"{h.ip}:{h.imagenes.puerto}"], "labels": {"nombre": h.display_name}}
+            for h in img
+            if h.imagenes
         ]
     if present(s).snmp:
         groups = []
@@ -331,6 +340,7 @@ def _has_agents(h: Host) -> bool:
     return bool(
         (h.node_exporter and h.node_exporter.gestion == "vigia")
         or (h.cadvisor and h.cadvisor.gestion == "vigia")
+        or (h.imagenes and h.imagenes.gestion == "vigia")
     )
 
 

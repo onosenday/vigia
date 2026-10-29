@@ -50,3 +50,22 @@
       - /dev/disk/:/dev/disk:ro
 {{ watchtower_labels(s) | raw }}
 {%- endmacro %}
+{% macro wud(s, h, prefix) %}
+  # What's Up Docker: ¿hay imagen nueva de cada contenedor? Métricas en :{{ h.imagenes.puerto | raw }}/metrics
+  # (docs/imagenes.md). Solo lee el socket de Docker: sin triggers, no actualiza nada.
+  wud:
+    image: {{ s.monitor.image("wud") }}
+    container_name: {{ prefix ~ "wud" }}
+    restart: unless-stopped
+    environment:
+      - {{ "WUD_WATCHER_LOCAL_CRON=" ~ s.modulos.imagenes.cron }}
+      - WUD_WATCHER_LOCAL_WATCHDIGESTDEFAULT=true
+      - WUD_PROMETHEUS_AUTH=false
+      - WUD_AUTH_ADMIN_USER=vigia
+      - {{ "WUD_AUTH_ADMIN_PASSWORD=${" ~ s.modulos.imagenes.clave ~ "}" }}
+    ports:
+      - {{ h.imagenes.puerto ~ ":3000" }}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+{{ watchtower_labels(s) | raw }}
+{%- endmacro %}

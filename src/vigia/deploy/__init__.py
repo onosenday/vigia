@@ -40,6 +40,7 @@ __all__ = [
 BACKUPS = "/root/vigia-backups"
 MONITOR_DIRS = [
     "prometheus/targets",
+    "prometheus/rules",
     "blackbox",
     "grafana-provisioning",
     "dashboards",
@@ -75,6 +76,12 @@ class Unit:
     """Su node_exporter lee la carpeta de tareas: se crea antes del `up`."""
 
 
+def _wud_secrets(s: Site, h: Host) -> list[str]:
+    """La clave de administrador de What's Up Docker, si vigia lo despliega en `h`."""
+    clave = s.modulos.imagenes.clave
+    return [clave] if clave and h.imagenes and h.imagenes.gestion == "vigia" else []
+
+
 def units(s: Site, build: Mapping[str, bytes]) -> dict[str, Unit]:
     out: dict[str, Unit] = {}
     pre = s.monitor.prefijo_contenedores
@@ -88,6 +95,7 @@ def units(s: Site, build: Mapping[str, bytes]) -> dict[str, Unit]:
             secrets += s.alertas.env_vars
         if s.modulos.bot.activo and s.modulos.bot.grafana_token:
             secrets.append(s.modulos.bot.grafana_token)
+        secrets += _wud_secrets(s, mon)
         out["monitor"] = Unit(
             "monitor",
             mon,
@@ -109,6 +117,7 @@ def units(s: Site, build: Mapping[str, bytes]) -> dict[str, Unit]:
                 f"{h.id}-agentes",
                 f"agentes/{h.id}.yml",
                 textfile=textfile_activo(h),
+                secrets=_wud_secrets(s, h),
             )
     u = s.modulos.updates_exporter
     if u.activo and u.deploy and u.host:
@@ -159,6 +168,8 @@ def secret_names(s: Site) -> set[str]:
     out |= set(s.alertas.secret_vars)
     if s.modulos.bot.grafana_token:
         out.add(s.modulos.bot.grafana_token)
+    if s.modulos.imagenes.clave:
+        out.add(s.modulos.imagenes.clave)
     for h in s.hosts:
         if h.ssh:
             out |= set(h.ssh.sudo_secreto) | ({h.ssh.secreto} if h.ssh.secreto else set())

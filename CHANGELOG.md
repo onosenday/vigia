@@ -12,6 +12,10 @@
 - **Fin de soporte del software de los contenedores**: PostgreSQL, MariaDB, MySQL, MongoDB, Redis, Valkey,
   Grafana, Prometheus, nginx y Traefik, por la etiqueta de la imagen (cAdvisor). Margen de aviso por producto
   (`aviso_dias`) y sin aviso de versión mayor en los de ciclos cortos (`aviso_version`).
+- **Imágenes nuevas de los contenedores** (`imagenes` por host, `modulos.imagenes`): What's Up Docker junto
+  a los agentes y avisos de versión nueva de una imagen y de imagen nueva sin aplicar
+  (`umbrales.imagen_durante`, para lo que queda fuera de watchtower) ([docs/imagenes.md](docs/imagenes.md)).
+- **`vigia deploy` copia `prometheus/rules/`** (las reglas de ciclos).
 - **updates-exporter con métricas** (`/metrics.txt`, job `actualizaciones`) y **scripts de host v2**, que
   además informan de la versión del sistema y de OMV, Proxmox VE y DSM. Alertas de seguridad pendiente
   (`umbrales.seguridad_durante`), script antiguo y host sin comprobar ([docs/actualizaciones.md](docs/actualizaciones.md)).

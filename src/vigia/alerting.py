@@ -54,6 +54,8 @@ CLASIFICACION: dict[str, tuple[Gravedad, Categoria]] = {
     "vigia-seguridad-pendiente": ("warning", "mantenimiento"),
     "vigia-script-anticuado": ("info", "mantenimiento"),
     "vigia-actualizaciones-sin-datos": ("warning", "incidencia"),
+    "vigia-imagen-version": ("info", "mantenimiento"),
+    "vigia-imagen-sin-aplicar": ("info", "mantenimiento"),
 }
 """Gravedad y categoría de cada regla, como etiquetas `gravedad` y `categoria`. `incidencia`: algo falla
 ahora (`/alertas`); `mantenimiento`: algo pide una acción planificada (`/pendientes`). Los avisos `info` se
@@ -158,6 +160,8 @@ def rules(s: Site) -> list[dict[str, Any]]:
         out += support_rules(s)
     if s.modulos.updates_exporter.activo:
         out += updates_rules(s)
+    if any(h.imagenes for h in s.hosts):
+        out += image_rules(s)
     out.append(
         _rule(
             "vigia-exporter",
@@ -357,6 +361,35 @@ def support_rules(s: Site) -> list[dict[str, Any]]:
             "1h",
             'el catálogo de {{ index .Labels "producto" }} se comprobó hace '
             "{{ with .Values.A }}{{ humanize .Value }} {{ end }}días: actualiza vigia",
+        ),
+    ]
+
+
+def image_rules(s: Site) -> list[dict[str, Any]]:
+    """Imágenes nuevas de los contenedores (What's Up Docker, docs/imagenes.md)."""
+    quien = '{{ index .Labels "nombre" }}: {{ index .Labels "contenedor" }}'
+    por = "nombre, contenedor, imagen, local, remota"
+    return [
+        # etiqueta con versión y otra más nueva: watchtower nunca cambia de etiqueta
+        _rule(
+            "vigia-imagen-version",
+            "Versión nueva de una imagen",
+            f'max by ({por}) (wud_containers{{nueva="true", tipo="tag"}})',
+            "gt",
+            0,
+            "1h",
+            quien + ': {{ index .Labels "local" }} → {{ index .Labels "remota" }}',
+        ),
+        # misma etiqueta, otro digest: es cosa de watchtower; si sigue sin aplicarse, está fuera de él
+        _rule(
+            "vigia-imagen-sin-aplicar",
+            "Imagen nueva sin aplicar",
+            'max by (nombre, contenedor, imagen) (wud_containers{nueva="true", tipo="digest"})',
+            "gt",
+            0,
+            s.alertas.umbrales.imagen_durante,
+            quien
+            + ' ({{ index .Labels "imagen" }}): hay una imagen nueva sin aplicar (¿fuera de watchtower?)',
         ),
     ]
 

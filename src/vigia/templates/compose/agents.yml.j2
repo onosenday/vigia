@@ -8,3 +8,7 @@ services:
 
 {{ ag.cadvisor(s, node, prefix) | raw }}
 {% endif %}
+{% if node.imagenes and node.imagenes.gestion == "vigia" %}
+
+{{ ag.wud(s, node, prefix) | raw }}
+{% endif %}

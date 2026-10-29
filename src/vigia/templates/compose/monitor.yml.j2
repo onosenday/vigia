@@ -88,6 +88,10 @@ services:
 
 {{ ag.cadvisor(s, node, prefix) | raw }}
 {% endif %}
+{% if node and node.imagenes and node.imagenes.gestion == "vigia" %}
+
+{{ ag.wud(s, node, prefix) | raw }}
+{% endif %}
 {% if s.modulos.pihole_exporter.activo %}
 
   # Métricas de las Pi-hole (consultas, bloqueos, clientes). Las claves van en el env del stack.

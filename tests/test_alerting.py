@@ -47,6 +47,8 @@ def test_reglas_del_ejemplo(example_data: dict[str, Any]) -> None:
         "vigia-seguridad-pendiente",
         "vigia-script-anticuado",
         "vigia-actualizaciones-sin-datos",
+        "vigia-imagen-version",
+        "vigia-imagen-sin-aplicar",
     }
     assert 'alerta!="no"' in rules["vigia-caido"]["data"][0]["model"]["expr"]
     assert rules["vigia-certificado"]["data"][1]["model"]["conditions"][0]["evaluator"] == {
@@ -63,6 +65,7 @@ def test_sin_web_ni_nodos_no_hay_reglas_de_certificado_ni_disco(example_data: di
         h.pop("node_exporter", None)
         h.pop("windows_exporter", None)
         h.pop("cadvisor", None)
+        h.pop("imagenes", None)
     example_data["hosts"] = [h for h in example_data["hosts"] if h.get("tipo") != "windows"]
     _sin_actualizaciones(example_data)
     rules = _rules(_build(example_data))
@@ -228,7 +231,13 @@ def test_sin_nodos_no_hay_reglas_de_soporte(example_data: dict[str, Any]) -> Non
     example_data["tareas"] = []
     _sin_actualizaciones(example_data)
     rules = _rules(_build(example_data))
-    assert not {u for u in rules if "soporte" in u or "version" in u or "catalogo" in u}
+    soporte = {
+        "vigia-soporte-caducado",
+        "vigia-soporte-caduca",
+        "vigia-version-mayor",
+        "vigia-catalogo-viejo",
+    }
+    assert not soporte & set(rules)
 
 
 def test_reglas_de_actualizaciones(example_data: dict[str, Any]) -> None:
@@ -239,3 +248,13 @@ def test_reglas_de_actualizaciones(example_data: dict[str, Any]) -> None:
     _sin_actualizaciones(example_data)
     rules = _rules(_build(example_data))
     assert not {"vigia-seguridad-pendiente", "vigia-script-anticuado"} & set(rules)
+
+
+def test_reglas_de_imagenes(example_data: dict[str, Any]) -> None:
+    example_data["alertas"].setdefault("umbrales", {})["imagen_durante"] = "72h"
+    rules = _rules(_build(example_data))
+    assert 'tipo="tag"' in rules["vigia-imagen-version"]["data"][0]["model"]["expr"]
+    assert rules["vigia-imagen-sin-aplicar"]["for"] == "72h"
+    for h in example_data["hosts"]:
+        h.pop("imagenes", None)
+    assert not {"vigia-imagen-version", "vigia-imagen-sin-aplicar"} & set(_rules(_build(example_data)))

@@ -324,6 +324,8 @@ class Host(Base):
     node_exporter: NodeExporter | None = None
     windows_exporter: Exporter | None = None
     cadvisor: Exporter | None = None
+    imagenes: Exporter | None = None
+    """What's Up Docker: avisa de imágenes nuevas de sus contenedores (docs/imagenes.md)."""
     snmp: Snmp | None = None
     docker_root: RemotePath = "/var/lib/docker"
     discos_hibernan: bool = False
@@ -358,6 +360,8 @@ class Host(Base):
         p = self.profile
         if self.cadvisor and not p.docker:
             raise ValueError(f"host {self.id}: el tipo {self.tipo} no ejecuta Docker (cAdvisor)")
+        if self.imagenes and not p.docker:
+            raise ValueError(f"host {self.id}: el tipo {self.tipo} no ejecuta Docker (imagenes)")
         if self.windows_exporter and self.tipo is not DeviceType.windows:
             raise ValueError(f"host {self.id}: windows_exporter solo en tipo windows")
         if self.actualizaciones and p.updates == "ninguna":
@@ -655,8 +659,22 @@ class Bot(Base):
     """/metrics del bot, solo en la red interna del stack."""
 
 
+Cron = Annotated[str, StringConstraints(pattern=r"^[0-9*/,-]+( [0-9*/,-]+){4}$")]
+
+
+class Imagenes(Base):
+    """What's Up Docker en los hosts con `imagenes` (docs/imagenes.md)."""
+
+    cron: Cron = "17 */6 * * *"
+    """Cada cuánto consulta los registros (cada 6 h: los límites de Docker Hub sin cuenta son bajos)."""
+    clave: EnvVarName | None = None
+    """Variable con la contraseña del administrador (`vigia`) de su interfaz web: obligatoria desde
+    What's Up Docker 9.6. Las métricas no la piden."""
+
+
 class Modules(Base):
     blackbox: bool = True
+    imagenes: Imagenes = Imagenes()
     netinv: Netinv = Netinv()
     pihole_exporter: PiholeExporter = PiholeExporter()
     updates_exporter: UpdatesExporter = UpdatesExporter()
@@ -696,6 +714,9 @@ class Thresholds(Base):
     """Consumible de impresora (tóner, tinta, tambor…) por debajo de este % → aviso."""
     soporte_dias: int = Field(default=90, ge=1, le=730)
     """Días antes del fin de soporte de un sistema en que se avisa (docs/ciclos.md)."""
+    imagen_durante: Duration = "168h"
+    """Tiempo con una imagen nueva (mismo tag, otro digest) sin aplicar antes de avisar: watchtower la habría
+    aplicado ya; si no, el contenedor está fuera de watchtower."""
     seguridad_durante: Duration = "72h"
     """Tiempo con actualizaciones de seguridad sin aplicar antes de avisar."""
     catalogo_dias: int = Field(default=180, ge=30, le=730)
@@ -753,6 +774,7 @@ DEFAULT_IMAGES: dict[str, str] = {
     "cadvisor": "ghcr.io/google/cadvisor",
     "pihole_exporter": "ekofr/pihole-exporter",
     "snmp_exporter": "prom/snmp-exporter",
+    "wud": "getwud/wud",
 }
 
 
@@ -1071,6 +1093,9 @@ class Site(Base):
                 errors.append(f"tarea {t.nombre}: host desconocido {t.host!r}")
             elif not (th.node_exporter and th.node_exporter.textfile):
                 errors.append(f"tarea {t.nombre}: {t.host} no tiene node_exporter con `textfile: true`")
+        wud = [h.id for h in self.hosts if h.imagenes and h.imagenes.gestion == "vigia"]
+        if wud and not m.imagenes.clave:
+            errors.append(f"hosts con `imagenes` ({', '.join(wud)}) sin `modulos.imagenes.clave`")
         desconocidos = sorted(set(self.ciclos.fecha_aviso) - set(catalogo_ciclos()))
         if desconocidos:
             errors.append(f"ciclos.fecha_aviso: productos que no están en el catálogo: {desconocidos}")

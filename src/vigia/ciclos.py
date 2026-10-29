@@ -276,11 +276,14 @@ def reglas(
                 tabla.append(_regla(FIN, _epoch(fin), producto=p.producto, ciclo=c.ciclo))
         for c in p.superados if p.aviso_version else []:
             tabla.append(_regla(SUPERADO, 1, producto=p.producto, ciclo=c.ciclo, ultimo=p.ultimo.ciclo))
-    fuentes = [{"record": PRODUCTO_CICLO, "expr": _desde_os(p)} for p in catalogo.values() if p.os_ids]
-    fuentes += [{"record": PRODUCTO_CICLO, "expr": _desde_exporter(p)} for p in catalogo.values()]
-    fuentes += [
-        {"record": PRODUCTO_CICLO, "expr": _desde_contenedor(p)} for p in catalogo.values() if p.imagen_regex
-    ]
+
+    # etiquetas fijas por regla: sin ellas, varias reglas que graban la misma serie son «duplicadas»
+    def fuente(p: Producto, origen: str, expr: str) -> dict[str, Any]:
+        return {"record": PRODUCTO_CICLO, "expr": expr, "labels": {"producto": p.producto, "fuente": origen}}
+
+    fuentes = [fuente(p, "sistema", _desde_os(p)) for p in catalogo.values() if p.os_ids]
+    fuentes += [fuente(p, "updates-exporter", _desde_exporter(p)) for p in catalogo.values()]
+    fuentes += [fuente(p, "contenedor", _desde_contenedor(p)) for p in catalogo.values() if p.imagen_regex]
     derivadas = [
         {
             "record": RESTANTE,

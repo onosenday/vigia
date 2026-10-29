@@ -38,6 +38,7 @@ SECRETS = {
     "ALERTAS_SMTP_REMITENTE": "alertas@ejemplo.lan",
     "ALERTAS_CORREO_DESTINO": "sistemas@ejemplo.lan",
     "BOT_GRAFANA_TOKEN": "glsa-sintetico-000",
+    "WUD_ADMIN_CLAVE": "wud-sintetica-321",
 }
 
 
@@ -242,3 +243,12 @@ def test_carpeta_textfile_en_la_unidad_monitor(example_data: dict[str, Any]) -> 
     assert "mkdir -p /var/lib/vigia/textfile" in script
     assert script.index("mkdir -p /var/lib/vigia/textfile") < script.index("up -d")
     subprocess.run(["bash", "-n"], input=script.encode(), check=True)
+
+
+def test_reglas_y_clave_de_imagenes_en_el_monitor(example_data: dict[str, Any]) -> None:
+    s, built = _built(example_data)
+    u = units(s, built)["monitor"]
+    assert "prometheus/rules" in u.dirs  # las reglas de ciclos también se despliegan
+    assert "WUD_ADMIN_CLAVE" in u.secrets  # nodo1 (el monitor) tiene `imagenes`
+    assert "WUD_ADMIN_CLAVE" in secret_names(s)
+    assert check_no_secrets(built, SECRETS, secret_names(s)) == []

@@ -99,6 +99,24 @@ services:
       - /dev/disk/:/dev/disk:ro
 
 
+  # What's Up Docker: ¿hay imagen nueva de cada contenedor? Métricas en :9339/metrics
+  # (docs/imagenes.md). Solo lee el socket de Docker: sin triggers, no actualiza nada.
+  wud:
+    image: "getwud/wud"
+    container_name: "ejm-wud"
+    restart: unless-stopped
+    environment:
+      - "WUD_WATCHER_LOCAL_CRON=17 */6 * * *"
+      - WUD_WATCHER_LOCAL_WATCHDIGESTDEFAULT=true
+      - WUD_PROMETHEUS_AUTH=false
+      - WUD_AUTH_ADMIN_USER=vigia
+      - "WUD_AUTH_ADMIN_PASSWORD=${WUD_ADMIN_CLAVE}"
+    ports:
+      - "9339:3000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+
   # Métricas de las Pi-hole (consultas, bloqueos, clientes). Las claves van en el env del stack.
   pihole-exporter:
     image: "ekofr/pihole-exporter"

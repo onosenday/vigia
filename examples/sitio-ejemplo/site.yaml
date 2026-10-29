@@ -40,6 +40,7 @@ hosts:
     ip: 10.99.0.10
     node_exporter: {puerto: 9100, textfile: true}
     cadvisor: {puerto: 9338}
+    imagenes: {puerto: 9339}
     pihole: {url: "http://10.99.0.10:8081", primaria: true}
     ssh: {usuario: admin}
     actualizaciones: {}
@@ -122,6 +123,7 @@ modulos:
       - {nombre: jetdirect, usuario: SNMP_NAS_USUARIO, clave_auth: SNMP_NAS_AUTH, clave_priv: SNMP_NAS_PRIV,
          protocolo_auth: MD5, protocolo_priv: DES, contexto: Jetdirect}
   bot: {activo: true, grafana_token: BOT_GRAFANA_TOKEN}
+  imagenes: {clave: WUD_ADMIN_CLAVE}    # What's Up Docker en los hosts con `imagenes` (docs/imagenes.md)
 
 # Fuera de la red del sitio: solo sondas salientes desde el monitor.
 externos:
