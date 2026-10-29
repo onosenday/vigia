@@ -7,6 +7,8 @@
 - **Skill `vigia`**: impresoras (contexto, MD5/DES, v1/v2 en solo lectura para los drivers, equipos dormidos),
   falsos positivos del control de fugas de `deploy`, paso de un node_exporter de paquete al stack de agentes y
   diagnóstico de SNMP sin datos por `snmp_scrape_pdus_returned`.
+- **Skill `vigia-actualizar`**: además del riesgo, revisa las novedades contra el sitio (aplicable ya, útil más
+  adelante, no aplica) y deja lo aprovechable anotado en el proyecto del sitio (tareas y su `CLAUDE.md`).
 
 ## 0.4.0 (2026-10-28)
 
