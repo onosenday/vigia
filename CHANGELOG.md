@@ -1,5 +1,13 @@
 # Cambios
 
+## Sin publicar
+
+- **Contexto SNMPv3** (`contexto` en `modulos.snmp.auths`, solo v3) → `context_name` de snmp_exporter. Para
+  equipos que sin él devuelven el walk vacío (impresoras HP con Jetdirect).
+- **Skill `vigia`**: impresoras (contexto, MD5/DES, v1/v2 en solo lectura para los drivers, equipos dormidos),
+  falsos positivos del control de fugas de `deploy`, paso de un node_exporter de paquete al stack de agentes y
+  diagnóstico de SNMP sin datos por `snmp_scrape_pdus_returned`.
+
 ## 0.4.0 (2026-10-28)
 
 - **Tareas programadas** (`tareas`, `node_exporter.textfile`): alertas de tarea retrasada, con error y sin datos,
