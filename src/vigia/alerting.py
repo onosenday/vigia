@@ -156,7 +156,7 @@ def rules(s: Site) -> list[dict[str, Any]]:
         out += printer_rules(s)
     if s.tareas:
         out += task_rules(s)
-    if hay_versiones(s):
+    if ciclos.hay_versiones(s):
         out += support_rules(s)
     if s.modulos.updates_exporter.activo:
         out += updates_rules(s)
@@ -261,11 +261,6 @@ def task_rules(s: Site) -> list[dict[str, Any]]:
             tarea + " no tiene ninguna ejecución correcta registrada (¿script instalado? ¿textfile activo?)",
         ),
     ]
-
-
-def hay_versiones(s: Site) -> bool:
-    """Hay alguna fuente de versiones instaladas (node_os_info o el updates-exporter)."""
-    return any(h.node_exporter for h in s.hosts) or s.modulos.updates_exporter.activo
 
 
 def updates_rules(s: Site) -> list[dict[str, Any]]:

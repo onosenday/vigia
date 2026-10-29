@@ -18,6 +18,16 @@ class HostCfg:
 
 
 @dataclass(frozen=True)
+class Proximo:
+    """Márgenes de /pendientes (`modulos.bot.proximo`)."""
+
+    certificado_dias: int = 45
+    consumible_pct: int = 30
+    disco_pct: int = 80
+    soporte_dias: int = 180
+
+
+@dataclass(frozen=True)
 class Config:
     sitio: str
     chat_id: int
@@ -31,6 +41,9 @@ class Config:
     """En el orden de `hosts:` del site.yaml."""
     telegram_token: str = field(repr=False)
     grafana_token: str = field(repr=False)
+    certificado_dias: int = 15
+    consumible_pct: int = 15
+    proximo: Proximo = Proximo()
 
 
 def load(path: Path, env: Mapping[str, str]) -> Config:
@@ -52,4 +65,9 @@ def load(path: Path, env: Mapping[str, str]) -> Config:
         ),
         telegram_token=token,
         grafana_token=env.get("GRAFANA_TOKEN", ""),
+        certificado_dias=int(d.get("certificado_dias", 15)),
+        consumible_pct=int(d.get("consumible_pct", 15)),
+        proximo=Proximo(
+            **{k: int(v) for k, v in d.get("proximo", {}).items() if k in Proximo.__dataclass_fields__}
+        ),
     )

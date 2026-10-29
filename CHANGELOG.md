@@ -15,6 +15,9 @@
 - **Imágenes nuevas de los contenedores** (`imagenes` por host, `modulos.imagenes`): What's Up Docker junto
   a los agentes y avisos de versión nueva de una imagen y de imagen nueva sin aplicar
   (`umbrales.imagen_durante`, para lo que queda fuera de watchtower) ([docs/imagenes.md](docs/imagenes.md)).
+- **`/pendientes`** en el bot (certificados, consumibles, discos, soporte, versiones mayores,
+  actualizaciones, imágenes nuevas; ⚠ si ya avisa, «próximo» dentro de `modulos.bot.proximo`), **versión y
+  soporte en `/host`** y panel **Mantenimiento** ([docs/bot.md](docs/bot.md)).
 - **`vigia deploy` copia `prometheus/rules/`** (las reglas de ciclos).
 - **updates-exporter con métricas** (`/metrics.txt`, job `actualizaciones`) y **scripts de host v2**, que
   además informan de la versión del sistema y de OMV, Proxmox VE y DSM. Alertas de seguridad pendiente

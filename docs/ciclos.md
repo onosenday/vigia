@@ -76,5 +76,7 @@ Y, con la versión instalada en cada equipo, en el mismo grupo (en orden, en la 
 Todas son de categoría `mantenimiento` y se generan si hay algún node_exporter o el updates-exporter está
 activo. Un host con OMV recibe los avisos de Debian (node_exporter) y los de OMV (updates-exporter, script v2).
 
+El panel **Mantenimiento** y el comando `/pendientes` del bot ([bot.md](bot.md)) muestran lo mismo.
+
 El catálogo viaja con cada versión de vigia: un sitio que no actualiza vigia se queda con las fechas de esa
 versión.

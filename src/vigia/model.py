@@ -647,6 +647,15 @@ Zona = Annotated[
 """Zona horaria IANA (Europe/Madrid, UTC)."""
 
 
+class Proximo(Base):
+    """Márgenes de `/pendientes` para lo que aún no avisa pero está cerca (más amplios que los umbrales)."""
+
+    certificado_dias: int = Field(default=45, ge=1, le=365)
+    consumible_pct: int = Field(default=30, ge=1, le=99)
+    disco_pct: int = Field(default=80, ge=10, le=99)
+    soporte_dias: int = Field(default=180, ge=1, le=1095)
+
+
 class Bot(Base):
     """Bot de consultas por Telegram en el chat de las alertas (solo lectura)."""
 
@@ -657,6 +666,7 @@ class Bot(Base):
     """Zona horaria de las horas que muestra."""
     puerto: Port = 9466
     """/metrics del bot, solo en la red interna del stack."""
+    proximo: Proximo = Proximo()
 
 
 Cron = Annotated[str, StringConstraints(pattern=r"^[0-9*/,-]+( [0-9*/,-]+){4}$")]

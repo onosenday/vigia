@@ -1,0 +1,337 @@
+{
+ "uid": "ejm-mantenimiento",
+ "title": "Ejemplo · Mantenimiento",
+ "tags": [
+  "Ejemplo"
+ ],
+ "timezone": "browser",
+ "schemaVersion": 39,
+ "version": 1,
+ "refresh": "1m",
+ "editable": false,
+ "time": {
+  "from": "now-24h",
+  "to": "now"
+ },
+ "panels": [
+  {
+   "id": 1,
+   "type": "row",
+   "title": "Mantenimiento",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "id": 2,
+   "title": "Versiones y soporte",
+   "type": "table",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 1,
+    "w": 24,
+    "h": 10
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max by (nombre, contenedor, producto_nombre, ciclo, version, ultimo) (vigia_producto_ciclo * on (producto, ciclo) group_left (ultimo) vigia_ciclo_info)",
+     "legendFormat": "{{nombre}}",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max by (nombre, contenedor, producto_nombre, ciclo, version) (vigia_soporte_restante_dias)",
+     "legendFormat": "{{nombre}}",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {},
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Soporte (días)"
+      },
+      "properties": [
+       {
+        "id": "decimals",
+        "value": 0
+       },
+       {
+        "id": "custom.cellOptions",
+        "value": {
+         "type": "color-text"
+        }
+       },
+       {
+        "id": "thresholds",
+        "value": {
+         "mode": "absolute",
+         "steps": [
+          {
+           "color": "red",
+           "value": null
+          },
+          {
+           "color": "orange",
+           "value": 0
+          },
+          {
+           "color": "green",
+           "value": 90
+          }
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "showHeader": true,
+    "cellHeight": "sm",
+    "footer": {
+     "show": false
+    },
+    "sortBy": [
+     {
+      "displayName": "Soporte (días)",
+      "desc": false
+     }
+    ]
+   },
+   "transformations": [
+    {
+     "id": "merge",
+     "options": {}
+    },
+    {
+     "id": "organize",
+     "options": {
+      "excludeByName": {
+       "Time": true,
+       "_": true
+      },
+      "renameByName": {
+       "nombre": "Host",
+       "Value #A": "_",
+       "Value #B": "Soporte (días)",
+       "contenedor": "Contenedor",
+       "producto_nombre": "Producto",
+       "ciclo": "Ciclo",
+       "version": "Versión",
+       "ultimo": "Última"
+      },
+      "indexByName": {
+       "Host": 0,
+       "Contenedor": 1,
+       "Producto": 2,
+       "Ciclo": 3,
+       "Versión": 4,
+       "Última": 5,
+       "Soporte (días)": 6
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "title": "Actualizaciones de los hosts",
+   "type": "table",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 11,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max by (nombre) (vigia_actualizaciones_pendientes)",
+     "legendFormat": "{{nombre}}",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max by (nombre) (vigia_actualizaciones_seguridad)",
+     "legendFormat": "{{nombre}}",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {},
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "De seguridad"
+      },
+      "properties": [
+       {
+        "id": "custom.cellOptions",
+        "value": {
+         "type": "color-text"
+        }
+       },
+       {
+        "id": "thresholds",
+        "value": {
+         "mode": "absolute",
+         "steps": [
+          {
+           "color": "green",
+           "value": null
+          },
+          {
+           "color": "orange",
+           "value": 1
+          }
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "showHeader": true,
+    "cellHeight": "sm",
+    "footer": {
+     "show": false
+    }
+   },
+   "transformations": [
+    {
+     "id": "merge",
+     "options": {}
+    },
+    {
+     "id": "organize",
+     "options": {
+      "excludeByName": {
+       "Time": true
+      },
+      "renameByName": {
+       "nombre": "Host",
+       "Value #A": "Pendientes",
+       "Value #B": "De seguridad"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "title": "Imágenes nuevas",
+   "type": "table",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 11,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max by (nombre, contenedor, imagen, tipo, local, remota) (wud_containers{nueva=\"true\"})",
+     "legendFormat": "{{nombre}}",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {},
+    "overrides": []
+   },
+   "options": {
+    "showHeader": true,
+    "cellHeight": "sm",
+    "footer": {
+     "show": false
+    }
+   },
+   "transformations": [
+    {
+     "id": "merge",
+     "options": {}
+    },
+    {
+     "id": "organize",
+     "options": {
+      "excludeByName": {
+       "Time": true,
+       "_": true
+      },
+      "renameByName": {
+       "nombre": "Host",
+       "Value": "_",
+       "contenedor": "Contenedor",
+       "imagen": "Imagen",
+       "tipo": "Tipo",
+       "local": "Local",
+       "remota": "Nueva"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "links": [
+  {
+   "title": "Inicio · Ejemplo",
+   "type": "link",
+   "icon": "dashboard",
+   "url": "/d/ejm-inicio",
+   "targetBlank": false
+  }
+ ]
+}

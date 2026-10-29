@@ -28,11 +28,14 @@ from collections.abc import Callable, Mapping
 from datetime import UTC, date, datetime, time
 from importlib.resources import files
 from pathlib import Path
-from typing import Annotated, Any, Literal
+from typing import TYPE_CHECKING, Annotated, Any, Literal
 from urllib.request import Request, urlopen
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator, model_validator
+
+if TYPE_CHECKING:
+    from vigia.model import Site
 
 CATALOGO_DIR = Path(str(files("vigia") / "catalogo"))
 ENDOFLIFE_API = "https://endoflife.date/api/{slug}.json"
@@ -206,6 +209,11 @@ def cargar(directorio: Path = CATALOGO_DIR) -> Catalogo:
 def catalogo() -> Catalogo:
     """El catálogo del paquete (se lee una vez por proceso)."""
     return cargar()
+
+
+def hay_versiones(s: Site) -> bool:
+    """El sitio tiene alguna fuente de versiones instaladas (node_os_info, el updates-exporter o cAdvisor)."""
+    return any(h.node_exporter or h.cadvisor for h in s.hosts) or s.modulos.updates_exporter.activo
 
 
 def _epoch(d: date) -> int:

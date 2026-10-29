@@ -34,6 +34,25 @@ TEMP = (
 )
 UPTIME = "max by (nombre) (time() - node_boot_time_seconds)"
 CONTENEDORES = 'count by (nombre) (container_last_seen{job="cadvisor", name!=""})'
+# /pendientes: lo mismo que miran las alertas (sin umbral: el bot marca qué avisa y qué está cerca)
+CERTIFICADOS = (
+    'min by (nombre, instance) ((probe_ssl_earliest_cert_expiry{job=~"web|externo", alerta!="no"} - time())'
+    " / 86400)"
+)
+_PJ = 'job="snmp", tipo="impresora"'
+CONSUMIBLES = (
+    f"min by (nombre, prtMarkerSuppliesDescription) (100 * prtMarkerSuppliesLevel{{{_PJ}, "
+    f'prtMarkerSuppliesType!~"waste.*"}} / (prtMarkerSuppliesMaxCapacity{{{_PJ}}} > 0) >= 0)'
+)
+"""Igual que la regla «Consumible de impresora bajo» de vigia.alerting (un test lo vigila)."""
+_PRODUCTO = "nombre, contenedor, producto, producto_nombre, ciclo, version"
+PRODUCTOS = f"max by ({_PRODUCTO}) (vigia_producto_ciclo)"
+SOPORTE = f"min by ({_PRODUCTO}) (vigia_soporte_restante_dias)"
+AVISO_DIAS = "max by (producto) (vigia_ciclo_aviso_dias)"
+VERSIONES = f"max by ({_PRODUCTO}, ultimo) (vigia_version_mayor_disponible)"
+PENDIENTES = "max by (nombre) (vigia_actualizaciones_pendientes)"
+SEGURIDAD = "max by (nombre) (vigia_actualizaciones_seguridad)"
+IMAGENES = 'max by (nombre, contenedor, tipo, local, remota) (wud_containers{nueva="true"})'
 DISP_INFO = "netinv_device_info"
 DISP_ULTIMA = "netinv_device_last_seen_seconds"
 DISP_PRIMERA = "netinv_device_first_seen_seconds"

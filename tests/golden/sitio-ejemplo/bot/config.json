@@ -7,6 +7,14 @@
  "grafana": "http://grafana:3000",
  "netinv": true,
  "disco_pct": 90,
+ "certificado_dias": 15,
+ "consumible_pct": 15,
+ "proximo": {
+  "certificado_dias": 45,
+  "consumible_pct": 30,
+  "disco_pct": 80,
+  "soporte_dias": 180
+ },
  "hosts": [
   {
    "id": "router",

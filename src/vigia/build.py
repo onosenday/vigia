@@ -367,6 +367,9 @@ def bot_config(s: Site) -> str:
         "grafana": "http://grafana:3000",
         "netinv": s.modulos.netinv.activo,
         "disco_pct": s.alertas.umbrales.disco_pct,
+        "certificado_dias": s.alertas.umbrales.certificado_dias,
+        "consumible_pct": s.alertas.umbrales.consumible_pct,
+        "proximo": b.proximo.model_dump(),
         "hosts": [{"id": h.id, "nombre": h.display_name, "ip": h.ip, "tipo": h.tipo.value} for h in s.hosts],
     }
     return json.dumps(data, ensure_ascii=False, indent=1) + "\n"

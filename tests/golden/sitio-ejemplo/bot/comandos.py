@@ -31,6 +31,8 @@ from .consultas import (
 )
 from .formato import duracion, esc, hora, pct, recortar
 from .fuentes import FuenteError, Grafana, Prometheus
+from .pendientes import pendientes as _pendientes
+from .pendientes import versiones_host
 
 MAX_ARG = 64
 MAX_OPCIONES = 8
@@ -41,6 +43,7 @@ SIN_TIPO = "sin clasificar"
 AYUDA: tuple[tuple[str, str, str], ...] = (
     ("estado", "", "servidores y alertas de un vistazo"),
     ("alertas", "", "alertas activas"),
+    ("pendientes", "", "mantenimiento: soporte, versiones, actualizaciones, certificados, consumibles…"),
     ("host", "<nombre o IP>", "ficha de un servidor"),
     ("dispositivo", "<nombre, IP o MAC>", "¿está conectado?"),
     ("info", "<nombre, IP o MAC>", "ficha de un dispositivo"),
@@ -180,7 +183,12 @@ def _ficha_host(ctx: Contexto, h: HostCfg) -> str:
     cont = por(ctx.prom, av, CONTENEDORES)
     if n in cont:
         lineas.append(f"Contenedores en marcha: {cont[n]:.0f}")
+    lineas += versiones_host(ctx.cfg, ctx.prom, av, n, ctx.ahora())
     return recortar(lineas + av.lineas)
+
+
+def pendientes(ctx: Contexto, arg: str) -> str:
+    return recortar(_pendientes(ctx.cfg, ctx.prom, ctx.ahora()))
 
 
 def _un_dispositivo(ctx: Contexto, arg: str, uso: str) -> Dispositivo | str:
@@ -259,6 +267,7 @@ def lista(ctx: Contexto, arg: str) -> str:
 COMANDOS: dict[str, Comando] = {
     "estado": estado,
     "alertas": alertas,
+    "pendientes": pendientes,
     "host": host,
     "dispositivo": dispositivo,
     "info": info,

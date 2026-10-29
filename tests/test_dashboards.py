@@ -69,3 +69,15 @@ def test_panel_tareas(example_data: dict[str, Any]) -> None:
     renames = table["transformations"][1]["options"]["renameByName"]
     assert renames["nombre"] == "Host" and renames["tarea"] == "Tarea"
     assert table["options"]["sortBy"] == [{"displayName": "Host", "desc": False}]
+
+
+def test_panel_de_mantenimiento(example_data: dict[str, Any]) -> None:
+    d = _gen(example_data)["mantenimiento.json"]
+    titulos = [p["title"] for p in d["panels"]]
+    assert titulos[1:] == ["Versiones y soporte", "Actualizaciones de los hosts", "Imágenes nuevas"]
+    for h in example_data["hosts"]:
+        for k in ("node_exporter", "cadvisor", "imagenes", "actualizaciones"):
+            h.pop(k, None)
+    example_data["modulos"]["updates_exporter"] = {"activo": False}
+    example_data["tareas"] = []
+    assert "mantenimiento.json" not in _gen(example_data)
