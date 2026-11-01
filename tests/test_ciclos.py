@@ -181,8 +181,18 @@ def test_desde_endoflife() -> None:
     assert [c.ciclo for c in nuevo.ciclos] == ["3", "2"]  # del más reciente al más antiguo
     tres, dos = nuevo.ciclos
     assert (tres.fin_soporte, tres.fin_extendido, tres.lts) == (None, date(2032, 1, 31), True)
-    assert (dos.fin_soporte, dos.fin_extendido, dos.ultima_version) == (date(2026, 10, 1), None, "2.9")
+    # terminado sin fecha (true): conserva la que ya tenía el catálogo (31-03), no la del refresco
+    assert (dos.fin_soporte, dos.fin_extendido, dos.ultima_version) == (date(2026, 3, 31), None, "2.9")
     assert nuevo.ciclo_regex == p.ciclo_regex
+
+
+def test_terminado_sin_fecha_y_sin_fecha_previa_cuenta_hoy() -> None:
+    previo = [{"ciclo": "3", "publicado": "2025-05-01"}, {"ciclo": "2", "publicado": "2023-05-01"}]
+    p = Producto.model_validate(
+        _producto(fuente="endoflife", endoflife="nas-os", referencia=None, ciclos=previo)
+    )
+    nuevo = ciclos.desde_endoflife(p, fetch=lambda url: _respuesta(), hoy=date(2026, 10, 1))
+    assert nuevo.ciclos[1].fin_soporte == date(2026, 10, 1)
 
 
 def test_desde_endoflife_respuesta_rara() -> None:

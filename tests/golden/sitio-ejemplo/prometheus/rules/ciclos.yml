@@ -1,10 +1,10 @@
-# Ciclos de vida (reglas de grabación constantes, docs/ciclos.md) — generado por vigia 0.5.0 para «Oficina de ejemplo».
+# Ciclos de vida (reglas de grabación constantes, docs/ciclos.md) — generado por vigia 0.5.1 para «Oficina de ejemplo».
 # No editar: cambia site.yaml y ejecuta `vigia build`.
 groups:
 - name: vigia-ciclos
   rules:
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793232000)
+    expr: vector(1793491200)
     labels:
       producto: debian
   - record: vigia_ciclo_aviso_dias
@@ -312,7 +312,7 @@ groups:
       ciclo: '1.1'
       ultimo: '13'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793232000)
+    expr: vector(1793491200)
     labels:
       producto: grafana
   - record: vigia_ciclo_aviso_dias
@@ -1021,7 +1021,7 @@ groups:
       ciclo: '18.1'
       ultimo: '22.3'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793232000)
+    expr: vector(1793491200)
     labels:
       producto: mariadb
   - record: vigia_ciclo_aviso_dias
@@ -1533,7 +1533,7 @@ groups:
       ciclo: '5.1'
       ultimo: '13.0'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793232000)
+    expr: vector(1793491200)
     labels:
       producto: mongodb
   - record: vigia_ciclo_aviso_dias
@@ -2096,7 +2096,7 @@ groups:
       ciclo: '1.0'
       ultimo: '9.0'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793232000)
+    expr: vector(1793491200)
     labels:
       producto: mysql
   - record: vigia_ciclo_aviso_dias
@@ -2296,6 +2296,61 @@ groups:
     labels:
       producto: mysql
       ciclo: '5.5'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '5.1'
+      ultimo: '26.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1388448000)
+    labels:
+      producto: mysql
+      ciclo: '5.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '5.0'
+      ultimo: '26.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1325289600)
+    labels:
+      producto: mysql
+      ciclo: '5.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '4.1'
+      ultimo: '26.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1262217600)
+    labels:
+      producto: mysql
+      ciclo: '4.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '4.0'
+      ultimo: '26.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1222732800)
+    labels:
+      producto: mysql
+      ciclo: '4.0'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '3.23'
+      ultimo: '26.10'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1167523200)
+    labels:
+      producto: mysql
+      ciclo: '3.23'
   - record: vigia_ciclo_superado
     expr: vector(1)
     labels:
@@ -2398,8 +2453,38 @@ groups:
       producto: mysql
       ciclo: '5.5'
       ultimo: '26.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '5.1'
+      ultimo: '26.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '5.0'
+      ultimo: '26.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '4.1'
+      ultimo: '26.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '4.0'
+      ultimo: '26.10'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: mysql
+      ciclo: '3.23'
+      ultimo: '26.10'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793232000)
+    expr: vector(1793491200)
     labels:
       producto: nginx
   - record: vigia_ciclo_aviso_dias
@@ -2814,7 +2899,7 @@ groups:
       ciclo: '5'
       ultimo: '8'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793232000)
+    expr: vector(1793491200)
     labels:
       producto: postgresql
   - record: vigia_ciclo_aviso_dias
@@ -3140,6 +3225,39 @@ groups:
     labels:
       producto: postgresql
       ciclo: '6.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '6.2'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1793491200)
+    labels:
+      producto: postgresql
+      ciclo: '6.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '6.1'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1793491200)
+    labels:
+      producto: postgresql
+      ciclo: '6.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '6.0'
+      ultimo: '18'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1793491200)
+    labels:
+      producto: postgresql
+      ciclo: '6.0'
   - record: vigia_ciclo_superado
     expr: vector(1)
     labels:
@@ -3308,8 +3426,26 @@ groups:
       producto: postgresql
       ciclo: '6.3'
       ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '6.2'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '6.1'
+      ultimo: '18'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: postgresql
+      ciclo: '6.0'
+      ultimo: '18'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793232000)
+    expr: vector(1793491200)
     labels:
       producto: prometheus
   - record: vigia_ciclo_aviso_dias
@@ -3713,7 +3849,7 @@ groups:
       producto: prometheus
       ciclo: '2.36'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793232000)
+    expr: vector(1793491200)
     labels:
       producto: proxmox-ve
   - record: vigia_ciclo_aviso_dias
@@ -3863,7 +3999,7 @@ groups:
       ciclo: '1'
       ultimo: '9'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793232000)
+    expr: vector(1793491200)
     labels:
       producto: redis
   - record: vigia_ciclo_aviso_dias
@@ -4204,7 +4340,7 @@ groups:
       ciclo: '5.2'
       ultimo: '7.4'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793232000)
+    expr: vector(1793491200)
     labels:
       producto: traefik
   - record: vigia_ciclo_aviso_dias
@@ -4558,7 +4694,7 @@ groups:
       ciclo: '1.7'
       ultimo: '3.7'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793232000)
+    expr: vector(1793491200)
     labels:
       producto: truenas
   - record: vigia_ciclo_aviso_dias
@@ -4635,7 +4771,7 @@ groups:
       ciclo: '23.10'
       ultimo: '25.10'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793232000)
+    expr: vector(1793491200)
     labels:
       producto: ubuntu
   - record: vigia_ciclo_aviso_dias
@@ -5396,7 +5532,7 @@ groups:
       ciclo: '4.10'
       ultimo: '26.04'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793232000)
+    expr: vector(1793491200)
     labels:
       producto: valkey
   - record: vigia_ciclo_aviso_dias

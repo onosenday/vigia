@@ -376,17 +376,27 @@ def desde_endoflife(p: Producto, fetch: Fetch | None = None, hoy: date | None = 
     datos = (fetch or _fetch)(ENDOFLIFE_API.format(slug=p.endoflife))
     if not isinstance(datos, list) or not datos:
         raise ValueError(f"{p.endoflife}: respuesta inesperada de endoflife.date")
-    ciclos = [
-        Ciclo(
-            ciclo=str(r["cycle"]),
-            publicado=date.fromisoformat(r["releaseDate"]),
-            fin_soporte=_fecha(r.get("eol"), hoy),
-            fin_extendido=_fecha(r.get("extendedSupport"), hoy),
-            ultima_version=str(r["latest"]) if r.get("latest") else None,
-            lts=r.get("lts") is True,
+    antes = {c.ciclo: c for c in p.ciclos}
+
+    def fin(r: dict[str, Any], campo: str, anterior: date | None) -> date | None:
+        # «terminado sin fecha» (true): se queda la fecha que ya tenía; si no, cada refresco la movería a hoy
+        if r.get(campo) is True and anterior:
+            return anterior
+        return _fecha(r.get(campo), hoy)
+
+    ciclos = []
+    for r in datos:
+        previo = antes.get(str(r["cycle"]))
+        ciclos.append(
+            Ciclo(
+                ciclo=str(r["cycle"]),
+                publicado=date.fromisoformat(r["releaseDate"]),
+                fin_soporte=fin(r, "eol", previo.fin_soporte if previo else None),
+                fin_extendido=fin(r, "extendedSupport", previo.fin_extendido if previo else None),
+                ultima_version=str(r["latest"]) if r.get("latest") else None,
+                lts=r.get("lts") is True,
+            )
         )
-        for r in datos
-    ]
     ciclos.sort(key=lambda c: c.publicado, reverse=True)
     return Producto.model_validate(
         p.model_dump() | {"ciclos": [c.model_dump() for c in ciclos], "comprobado": hoy}

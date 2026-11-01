@@ -1,6 +1,13 @@
 # Cambios
 
-## Sin publicar
+## 0.5.1 (2026-11-01)
+
+Al actualizar un sitio:
+- El bot, netinv y el updates-exporter se recompilan con bases nuevas fijadas por digest (el updates-exporter,
+  de Alpine 3.20 a 3.24): tras `vigia deploy`, *Build* o *Pull* en sus stacks si no se recompilan solos.
+- Con el bot activo aparece la alerta «Bot sin contacto con Telegram».
+- Nada cambia en `site.yaml`: lo nuevo es opcional (`puertos_cerrados`, `ping: false`, `textfile` en
+  windows_exporter).
 
 - **Puertos que deben estar cerrados** (`externos.objetivos[].puertos_cerrados`): sonda TCP al revés, alerta
   «Puerto expuesto» (crítica) si alguno responde desde internet y tabla propia en el panel «Externos»

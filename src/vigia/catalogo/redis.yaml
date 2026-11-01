@@ -14,7 +14,7 @@ ejemplos_imagen:
   docker.io/library/redis:8: null
   redis:latest: null
 aviso_version: true
-comprobado: '2026-10-29'
+comprobado: '2026-11-01'
 ciclos:
 - ciclo: '8.10'
   publicado: '2026-07-29'

@@ -13,7 +13,7 @@ ejemplos_imagen:
   mysql:8.4: '8.4'
   mysql:8: null
 aviso_version: true
-comprobado: '2026-10-29'
+comprobado: '2026-11-01'
 ciclos:
 - ciclo: '26.10'
   publicado: '2026-10-20'
@@ -103,4 +103,29 @@ ciclos:
   publicado: '2010-12-03'
   fin_soporte: '2018-12-31'
   ultima_version: 5.5.63
+  lts: false
+- ciclo: '5.1'
+  publicado: '2008-12-08'
+  fin_soporte: '2013-12-31'
+  ultima_version: 5.1.73
+  lts: false
+- ciclo: '5.0'
+  publicado: '2005-10-24'
+  fin_soporte: '2011-12-31'
+  ultima_version: 5.0.96
+  lts: false
+- ciclo: '4.1'
+  publicado: '2004-10-23'
+  fin_soporte: '2009-12-31'
+  ultima_version: 4.1.24
+  lts: false
+- ciclo: '4.0'
+  publicado: '2003-03-15'
+  fin_soporte: '2008-09-30'
+  ultima_version: 4.0.30
+  lts: false
+- ciclo: '3.23'
+  publicado: '2001-01-17'
+  fin_soporte: '2006-12-31'
+  ultima_version: 3.23.58
   lts: false

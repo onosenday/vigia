@@ -4,11 +4,14 @@ fuente: endoflife
 endoflife: truenas
 fecha_aviso: normal
 ultimo_lts: false
+os_ids: []
 ciclo_regex: ^(\d+\.\d+)
 ejemplos:
   25.04.2.6: '25.04'
   24.10.2: '24.10'
-comprobado: '2026-10-29'
+ejemplos_imagen: {}
+aviso_version: true
+comprobado: '2026-11-01'
 ciclos:
 - ciclo: '25.10'
   publicado: '2025-10-28'

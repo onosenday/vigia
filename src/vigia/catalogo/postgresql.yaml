@@ -16,7 +16,7 @@ ejemplos_imagen:
   postgres:16.4-alpine: '16'
   postgres:latest: null
 aviso_version: true
-comprobado: '2026-10-29'
+comprobado: '2026-11-01'
 ciclos:
 - ciclo: '18'
   publicado: '2025-09-25'
@@ -162,4 +162,19 @@ ciclos:
   publicado: '1998-03-01'
   fin_soporte: '2003-03-01'
   ultima_version: 6.3.2
+  lts: false
+- ciclo: '6.2'
+  publicado: '1997-10-02'
+  fin_soporte: '2026-11-01'
+  ultima_version: 6.2.1
+  lts: false
+- ciclo: '6.1'
+  publicado: '1997-06-08'
+  fin_soporte: '2026-11-01'
+  ultima_version: 6.1.1
+  lts: false
+- ciclo: '6.0'
+  publicado: '1997-01-29'
+  fin_soporte: '2026-11-01'
+  ultima_version: '6.0'
   lts: false
