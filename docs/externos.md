@@ -10,6 +10,7 @@ externos:
     - {nombre: Web corporativa, url: "https://www.example.org/"}
     - {nombre: Servidor externo, host: servidor.example.net, puertos: [443]}
     - {nombre: SSH del servidor, host: ssh.example.net, puertos: [22], puertos_sensibles: true, alerta: false}
+    - {nombre: Servidor de BBDD, host: bbdd.example.net, ping: false, puertos: [22], puertos_sensibles: true}
     - {nombre: Router de la oficina, host: vpn.example.org, puertos: [1723],
        puertos_cerrados: [443, 8443, 22], puertos_sensibles: true}
 ```
@@ -18,7 +19,7 @@ externos:
 |------|----------|
 | `url` (https) | que responda 2xx (sigue redirecciones), tiempo, código HTTP y **validez y caducidad del certificado**; un certificado inválido es un fallo, nunca se ignora |
 | `url` (http) | que responda 2xx o 3xx (sin seguir redirecciones); aviso de `vigia validate`: mejor la URL https |
-| `host` | ping (ICMP) |
+| `host` | ping (ICMP); con `ping: false` no se hace (equipos que filtran ICMP) y la caída se mide por `puertos`, que pasa a ser obligatorio |
 | `host` + `puertos` | que se pueda abrir una conexión TCP a cada puerto; no se envía nada |
 | `host` + `puertos_cerrados` | lo contrario: que **no** se pueda; si alguno acepta la conexión, alerta «Puerto expuesto» |
 

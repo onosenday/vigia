@@ -5,6 +5,8 @@
 - **Puertos que deben estar cerrados** (`externos.objetivos[].puertos_cerrados`): sonda TCP al revés, alerta
   «Puerto expuesto» (crítica) si alguno responde desde internet y tabla propia en el panel «Externos»
   ([docs/externos.md](docs/externos.md), aviso sobre el NAT loopback). «Caído» no cuenta estos puertos.
+- **Externos sin ping** (`ping: false` en un objetivo `host`): para equipos que filtran ICMP; se vigilan solo por
+  sus `puertos` y «Caído» salta por ellos.
 
 ## 0.5.0 (2026-10-29)
 

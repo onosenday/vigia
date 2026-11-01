@@ -49,6 +49,9 @@ def _with(example_data: dict[str, Any], *objs: dict[str, Any], **cfg: Any) -> di
             {"nombre": "x", "host": "srv.example.net", "puertos_cerrados": list(range(8000, 8021))},
             "como mucho 20",
         ),
+        ({"nombre": "x", "host": "srv.example.net", "ping": False}, "sin ping"),
+        ({"nombre": "x", "host": "srv.example.net", "ping": False, "puertos_cerrados": [8443]}, "sin ping"),
+        ({"nombre": "x", "url": "https://www.example.org/", "ping": False}, "`ping` va con `host`"),
     ],
 )
 def test_destinos_rechazados(example_data: dict[str, Any], obj: dict[str, Any], msg: str) -> None:
@@ -113,6 +116,19 @@ def test_sin_puertos_cerrados_no_hay_regla_ni_tabla(example_data: dict[str, Any]
     rules = yaml.safe_load(out["grafana-provisioning/alerting/vigia.yml"])["groups"][0]["rules"]
     assert "vigia-puerto-expuesto" not in {r["uid"] for r in rules}
     assert "Puertos que deben estar cerrados" not in out["dashboards/externos.json"]
+
+
+def test_sin_ping_solo_tcp(example_data: dict[str, Any]) -> None:
+    obj = {
+        "nombre": "BBDD",
+        "host": "bbdd.example.net",
+        "ping": False,
+        "puertos": [22],
+        "puertos_sensibles": True,
+    }
+    out = build_site(Site.model_validate(_with(example_data, obj)), EXAMPLE)
+    groups = yaml.safe_load(out["prometheus/targets/externos.yml"])
+    assert [(g["labels"]["tipo"], g["targets"]) for g in groups] == [("tcp", ["bbdd.example.net:22"])]
 
 
 def test_generado(example_data: dict[str, Any]) -> None:

@@ -495,6 +495,8 @@ class External(Base):
     """Web: código HTTP, latencia y, en https, validez y caducidad del certificado (verificación estricta)."""
     host: PublicHost | None = None
     """Equipo: ping y, si se indican, conexión TCP a `puertos` (sin enviar datos)."""
+    ping: bool = True
+    """`false` para equipos que filtran ICMP: se vigila solo por `puertos` (la caída, por ellos)."""
     puertos: list[Port] = []
     puertos_cerrados: list[Port] = []
     """Puertos que deben estar cerrados desde internet: «Puerto expuesto» si alguno acepta la conexión."""
@@ -507,10 +509,16 @@ class External(Base):
         if (self.url is None) == (self.host is None):
             raise ValueError(f"externo {self.nombre}: indica `url` o `host` (uno de los dos)")
         if self.url is not None:
+            if not self.ping:
+                raise ValueError(f"externo {self.nombre}: `ping` va con `host`, no con `url`")
             for field in ("puertos", "puertos_cerrados"):
                 if getattr(self, field):
                     raise ValueError(f"externo {self.nombre}: `{field}` va con `host`, no con `url`")
             _public_host(urlsplit(self.url).hostname or "")
+        elif not self.ping and not self.puertos:
+            raise ValueError(
+                f"externo {self.nombre}: sin ping hace falta algún puerto en `puertos` para saber si cae"
+            )
         if len(self.puertos_cerrados) > MAX_CLOSED_PORTS:
             raise ValueError(f"externo {self.nombre}: como mucho {MAX_CLOSED_PORTS} `puertos_cerrados`")
         both = sorted(set(self.puertos) & set(self.puertos_cerrados))

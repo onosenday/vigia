@@ -139,12 +139,13 @@ def externals_targets(s: Site) -> list[dict[str, Any]]:
             groups.append({"targets": [o.url], "labels": _no_alert(labels, o.alerta)})
             continue
         assert o.host
-        groups.append(
-            {
-                "targets": [o.host],
-                "labels": _no_alert({**base, "tipo": "ping", "__param_module": "icmp"}, o.alerta),
-            }
-        )
+        if o.ping:
+            groups.append(
+                {
+                    "targets": [o.host],
+                    "labels": _no_alert({**base, "tipo": "ping", "__param_module": "icmp"}, o.alerta),
+                }
+            )
         for tipo, ports in (("tcp", o.puertos), ("cerrado", o.puertos_cerrados)):
             for p in ports:
                 labels = {**base, "tipo": tipo, "puerto": str(p), "__param_module": "tcp_externo"}
