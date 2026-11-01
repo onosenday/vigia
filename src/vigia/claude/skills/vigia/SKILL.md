@@ -57,7 +57,8 @@ Si se cambió el propio paquete vigia en local: `uv sync --reinstall-package vig
     si el equipo no admite SHA256/AES (DSM y muchos routers solo SHA; muchas impresoras solo MD5/DES). Si el
     equipo usa un contexto SNMP, `contexto:` en la autenticación (solo v3; ver impresoras HP abajo).
   - Tareas programadas (copias…): `node_exporter: {…, textfile: true}` y `tareas: [{nombre, host, max_horas}]`;
-    la tarea escribe su `.prom` (envoltorio en docs/tareas.md).
+    la tarea escribe su `.prom` (envoltorio en docs/tareas.md). En Windows, `windows_exporter: {…, textfile: true}`
+    y el envoltorio de PowerShell (la orden real en un `.cmd`).
   - Con Docker: `cadvisor: {puerto: …}`; si no es el host del monitor, `ssh:` y `deploy:` para sus agentes.
   - Para vigilarlo por ping: añadirlo a `ping:` (`- host: <id>`).
 - **Otra subred alcanzable desde el monitor** (VLAN, ruta, VPN): `red.subredes_extra: [{red: <cidr>, nombre: …}]`.

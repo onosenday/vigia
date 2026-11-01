@@ -1,7 +1,7 @@
 # Tareas programadas
 
 vigia avisa si una tarea programada (una copia de seguridad, un informe…) deja de terminar bien. Cada tarea
-deja su estado en un fichero que lee el colector *textfile* de node_exporter.
+deja su estado en un fichero que lee el colector *textfile* de node_exporter o de windows_exporter.
 
 ## En el sitio
 
@@ -66,6 +66,70 @@ WantedBy=timers.target
 ```
 
 Se activa con `systemctl enable --now copias-postgres.timer`.
+
+## En Windows
+
+El colector *textfile* de windows_exporter viene activo por defecto y lee
+`C:\Program Files\windows_exporter\textfile_inputs`. En el sitio, `textfile: true` en el `windows_exporter`
+del host (se instala aparte, así que `gestion: externo`):
+
+```yaml
+hosts:
+  - {id: dc-1, tipo: windows, ip: 10.99.0.10, windows_exporter: {puerto: 9182, gestion: externo, textfile: true}}
+tareas:
+  - {nombre: copia-ad, host: dc-1, max_horas: 26}
+```
+
+Si el exporter se instaló con otra carpeta (`--collector.textfile.directories`), úsala en la tarea con
+`VIGIA_TEXTFILE_DIR`. El envoltorio, equivalente al de bash (guárdalo, p. ej., en `C:\ProgramData\vigia\`):
+
+```powershell
+# vigia-tarea.ps1. uso: vigia-tarea.ps1 <tarea> <programa o script> [argumentos…]   (como SYSTEM)
+# VIGIA_TEXTFILE_DIR cambia la carpeta (por defecto, la del colector textfile de windows_exporter)
+$tarea, $orden, $resto = $args
+$dir = if ($env:VIGIA_TEXTFILE_DIR) { $env:VIGIA_TEXTFILE_DIR } else { "$env:ProgramFiles\windows_exporter\textfile_inputs" }
+$f = Join-Path $dir "$tarea.prom"
+$exito = 'vigia_tarea_ultimo_exito_timestamp_seconds'
+$global:LASTEXITCODE = 0
+try { & $orden @resto; $bien = $?; $rc = [int]$LASTEXITCODE } catch { Write-Error $_; $bien = $false; $rc = 1 }
+if ($rc -eq 0 -and -not $bien) { $rc = 1 }
+$ok = $null
+$m = Select-String -LiteralPath $f -Pattern "^$exito\{[^}]*\} (\d+)" -ErrorAction SilentlyContinue | Select-Object -First 1
+if ($m) { $ok = $m.Matches[0].Groups[1].Value }
+if ($rc -eq 0) { $ok = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds() }
+$lineas = @()
+if ($ok) { $lineas += "$exito{tarea=`"$tarea`"} $ok" }
+$lineas += "vigia_tarea_ultimo_resultado{tarea=`"$tarea`"} $([int]($rc -ne 0))"
+$tmp = Join-Path $dir ".$tarea.$PID.tmp"   # el colector solo lee *.prom
+# UTF-8 sin BOM y saltos \n, el formato que espera el colector
+[IO.File]::WriteAllText($tmp, ($lineas -join "`n") + "`n", [Text.UTF8Encoding]::new($false))
+Move-Item -LiteralPath $tmp -Destination $f -Force
+exit $rc
+```
+
+PowerShell parte los argumentos con dos puntos (`-backupTarget:E:` llega como `-backupTarget` y `E:`), así que
+la orden real va en su propio `.cmd` o `.ps1`:
+
+```bat
+rem C:\ProgramData\vigia\copia-ad.cmd
+wbadmin start systemstatebackup -backupTarget:E: -quiet
+```
+
+Y la tarea programada, como SYSTEM (PowerShell como administrador):
+
+```powershell
+$accion = New-ScheduledTaskAction -Execute powershell.exe -Argument `
+  '-NoProfile -ExecutionPolicy Bypass -File C:\ProgramData\vigia\vigia-tarea.ps1 copia-ad C:\ProgramData\vigia\copia-ad.cmd'
+Register-ScheduledTask -TaskName 'vigia\copia-ad' -Action $accion -Trigger (New-ScheduledTaskTrigger -Daily -At 02:30) `
+  -User SYSTEM -RunLevel Highest
+```
+
+Los scripts se ejecutan como SYSTEM: si otro usuario pudiera cambiarlos, tendría SYSTEM. `ProgramData` deja
+escribir a los usuarios por herencia, así que la carpeta se deja solo para SYSTEM y Administradores:
+
+```bat
+icacls C:\ProgramData\vigia /inheritance:r /grant:r *S-1-5-18:(OI)(CI)F *S-1-5-32-544:(OI)(CI)F
+```
 
 ## Alertas y panel
 

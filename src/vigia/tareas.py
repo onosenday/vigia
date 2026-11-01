@@ -1,6 +1,7 @@
-"""Tareas programadas vigiladas por el colector textfile de node_exporter (docs/tareas.md).
+"""Tareas programadas vigiladas por el colector textfile de node_exporter o windows_exporter (docs/tareas.md).
 
-Cada tarea escribe en TEXTFILE_DIR/<tarea>.prom (atómico: .prom.tmp + mv):
+Cada tarea escribe en TEXTFILE_DIR/<tarea>.prom (en Windows, en la carpeta de windows_exporter), de forma
+atómica:
   vigia_tarea_ultimo_exito_timestamp_seconds{tarea="…"}  epoch de la última ejecución correcta
   vigia_tarea_ultimo_resultado{tarea="…"}                0 = bien, 1 = error
 Prometheus añade `nombre` (el host). Las expresiones se unen con `or`, un término por tarea declarada y

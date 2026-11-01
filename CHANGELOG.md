@@ -7,6 +7,9 @@
   ([docs/externos.md](docs/externos.md), aviso sobre el NAT loopback). «Caído» no cuenta estos puertos.
 - **Externos sin ping** (`ping: false` en un objetivo `host`): para equipos que filtran ICMP; se vigilan solo por
   sus `puertos` y «Caído» salta por ellos.
+- **Tareas vigiladas en Windows** (`windows_exporter: {textfile: true}`): mismas métricas y alertas que en Linux,
+  leídas por el colector textfile de windows_exporter, con un envoltorio de PowerShell para el Programador de
+  tareas ([docs/tareas.md](docs/tareas.md)).
 
 ## 0.5.0 (2026-10-29)
 

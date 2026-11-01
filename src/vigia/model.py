@@ -240,6 +240,12 @@ class NodeExporter(Exporter):
     administrador ya ha añadido `--collector.textfile.directory` a ese exporter."""
 
 
+class WindowsExporter(Exporter):
+    textfile: bool = False
+    """Lee los `.prom` de su carpeta de textfile (por defecto, `textfile_inputs` junto al exporter); las
+    tareas los escriben con el envoltorio de PowerShell de docs/tareas.md."""
+
+
 class Snmp(Base):
     auth: Id = "por-defecto"
     """Nombre de la autenticación en `snmp.auths` del sitio."""
@@ -322,7 +328,7 @@ class Host(Base):
     ssh_puerto: Port = 22
     ssh: SshAccess | None = None
     node_exporter: NodeExporter | None = None
-    windows_exporter: Exporter | None = None
+    windows_exporter: WindowsExporter | None = None
     cadvisor: Exporter | None = None
     imagenes: Exporter | None = None
     """What's Up Docker: avisa de imágenes nuevas de sus contenedores (docs/imagenes.md)."""
@@ -895,7 +901,7 @@ class Bridge(Base):
 
 
 class Tarea(Base):
-    """Tarea programada que deja su estado en el textfile de node_exporter de su host."""
+    """Tarea programada que deja su estado en el textfile del node_exporter o windows_exporter de su host."""
 
     nombre: Id
     host: Id
@@ -931,7 +937,8 @@ class Site(Base):
     bridges: list[Bridge] = []
     """Redes Docker por host (salida de `vigia bridges`), para nombrar las interfaces br-<id>."""
     tareas: list[Tarea] = []
-    """Tareas programadas (copias…) vigiladas por el textfile de node_exporter (docs/tareas.md)."""
+    """Tareas programadas (copias…) vigiladas por el textfile de node_exporter o windows_exporter
+    (docs/tareas.md)."""
     ciclos: Ciclos = Ciclos()
 
     @field_validator("vigia")
@@ -1127,8 +1134,11 @@ class Site(Base):
             th = hosts_by_id.get(t.host)
             if th is None:
                 errors.append(f"tarea {t.nombre}: host desconocido {t.host!r}")
-            elif not (th.node_exporter and th.node_exporter.textfile):
-                errors.append(f"tarea {t.nombre}: {t.host} no tiene node_exporter con `textfile: true`")
+            elif not any(e and e.textfile for e in (th.node_exporter, th.windows_exporter)):
+                errors.append(
+                    f"tarea {t.nombre}: {t.host} no tiene node_exporter ni windows_exporter "
+                    "con `textfile: true`"
+                )
         wud = [h.id for h in self.hosts if h.imagenes and h.imagenes.gestion == "vigia"]
         if wud and not m.imagenes.clave:
             errors.append(f"hosts con `imagenes` ({', '.join(wud)}) sin `modulos.imagenes.clave`")

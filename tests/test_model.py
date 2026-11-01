@@ -194,11 +194,6 @@ def test_tareas_validas(example_data: dict[str, Any]) -> None:
     assert s.get_host("nodo2").node_exporter.textfile  # type: ignore[union-attr]
 
 
-def test_textfile_solo_en_node_exporter(example_data: dict[str, Any]) -> None:
-    example_data["hosts"][4]["windows_exporter"]["textfile"] = True  # puesto1
-    _assert_invalid(example_data, "Extra inputs are not permitted")
-
-
 def test_textfile_no_vale_en_cadvisor(example_data: dict[str, Any]) -> None:
     example_data["hosts"][1]["cadvisor"]["textfile"] = True  # nodo1
     _assert_invalid(example_data, "Extra inputs are not permitted")
@@ -212,7 +207,17 @@ def test_tarea_host_desconocido(example_data: dict[str, Any]) -> None:
 def test_tarea_host_sin_textfile(example_data: dict[str, Any]) -> None:
     _con_tareas(example_data)["tareas"][0]["host"] = "nodo1"
     example_data["hosts"][1]["node_exporter"]["textfile"] = False
-    _assert_invalid(example_data, "tarea copias-bd: nodo1 no tiene node_exporter con `textfile: true`")
+    _assert_invalid(
+        example_data, "tarea copias-bd: nodo1 no tiene node_exporter ni windows_exporter con `textfile: true`"
+    )
+
+
+def test_tarea_en_windows_con_textfile(example_data: dict[str, Any]) -> None:
+    _con_tareas(example_data)["tareas"][0]["host"] = "puesto1"
+    win = next(h for h in example_data["hosts"] if h["id"] == "puesto1")
+    _assert_invalid(example_data, "tarea copias-bd: puesto1 no tiene node_exporter ni windows_exporter")
+    win["windows_exporter"]["textfile"] = True
+    Site.model_validate(example_data)
 
 
 def test_tareas_repetidas(example_data: dict[str, Any]) -> None:
