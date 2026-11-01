@@ -1,5 +1,16 @@
 # Cambios
 
+## 0.5.2 (2026-11-01)
+
+Al actualizar un sitio: **reinstala `apt-updates-json.sh`** en cada host Debian/OMV/Proxmox (y, si quieres,
+`syno-updates-json.sh` en DSM), como en [docs/actualizaciones.md](docs/actualizaciones.md). Los sudoers no cambian.
+
+- **Arreglo**: `apt-updates-json.sh` llamaba a `sudo apt-get update -qq`, pero la línea de sudoers de la guía solo
+  permite `apt-get update` sin argumentos, así que sudo lo rechazaba (en el journal del host, `command not
+  allowed`) y la lista de paquetes solo se refrescaba con el temporizador diario de apt. Ahora llama exactamente
+  a lo permitido. Los dos scripts usan `sudo -n` (si falta el permiso, fallan en vez de esperar una contraseña) y
+  un test comprueba que cada llamada a sudo casa con su línea de sudoers.
+
 ## 0.5.1 (2026-11-01)
 
 Al actualizar un sitio:
