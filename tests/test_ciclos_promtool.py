@@ -56,6 +56,14 @@ def _contenedor(nombre: str, imagen: str) -> dict[str, str]:
     }
 
 
+def _windows(nombre: str, producto: str, version: str) -> dict[str, str]:
+    return {
+        "series": f'windows_os_info{{nombre="{nombre}", product="{producto}", version="{version}", '
+        f'build_number="{version.rsplit(".", 1)[-1]}", job="windows"}}',
+        "values": "1 1",
+    }
+
+
 def _ultimo(producto: str) -> str:
     return ciclos.catalogo()[producto].ultimo.ciclo
 
@@ -91,6 +99,15 @@ def test_reglas_y_alertas_en_prometheus(tmp_path: Path, example_data: dict[str, 
                 {"labels": info("pi-1", "debian", "11", "11", ultimo="13"), "value": 1},
                 # Ubuntu: la referencia es la última LTS (26.04), no la 26.10
                 {"labels": info("srv-3", "ubuntu", "24.04", "24.04", ultimo="26.04"), "value": 1},
+                # Linux Mint 22.1: la referencia es la última Mint (no una LMDE)
+                {
+                    "labels": info("mint-1", "linuxmint", "22.1", "22.1", ultimo=_ultimo("linuxmint")),
+                    "value": 1,
+                },
+                # Windows Server por el build: 2016, 2019 (el 17763 es también 1809-sac) y 2022
+                {"labels": info("dc-1", "windows-server", "2022", "10.0.20348", ultimo="2025"), "value": 1},
+                {"labels": info("dc-2", "windows-server", "2016", "10.0.14393", ultimo="2025"), "value": 1},
+                {"labels": info("dc-3", "windows-server", "2019", "10.0.17763", ultimo="2025"), "value": 1},
                 # OMV 7 por el updates-exporter: ya existe la 8
                 {"labels": info("nas-omv", "openmediavault", "7", "7.7.24-7", ultimo="8"), "value": 1},
                 # PostgreSQL 14 en un contenedor; Prometheus no avisa de versión (aviso_version: false)
@@ -138,11 +155,21 @@ def test_reglas_y_alertas_en_prometheus(tmp_path: Path, example_data: dict[str, 
                     "labels": info("srv-1", "prometheus", "3.15", "3.15", contenedor="prom"),
                     "value": _dias("prometheus", "3.15"),
                 },
+                # Windows Server 2016: fin el 12-01-2027
+                {
+                    "labels": info("dc-2", "windows-server", "2016", "10.0.14393"),
+                    "value": _dias("windows-server", "2016"),
+                },
             ],
         ),
         # una versión que el catálogo no conoce
         _muestras(
-            exprs["vigia-ciclo-desconocido"], [{"labels": info("raro", "debian", "99", "99"), "value": 1}]
+            exprs["vigia-ciclo-desconocido"],
+            [
+                {"labels": info("raro", "debian", "99", "99"), "value": 1},
+                # un build de Windows Server que no está en el catálogo: el ciclo es la versión
+                {"labels": info("dc-9", "windows-server", "10.0.99999", "10.0.99999"), "value": 1},
+            ],
         ),
     ]
     prueba = {
@@ -157,6 +184,12 @@ def test_reglas_y_alertas_en_prometheus(tmp_path: Path, example_data: dict[str, 
                     _serie("srv-3", "ubuntu", "24.04"),
                     _serie("pi-1", "raspbian", "11"),
                     _serie("raro", "debian", "99"),
+                    _serie("mint-1", "linuxmint", "22.1"),
+                    _windows("dc-1", "Windows Server 2022 Standard", "10.0.20348"),
+                    _windows("dc-2", "Windows Server 2016 Datacenter", "10.0.14393"),
+                    _windows("dc-3", "Windows Server 2019 Standard", "10.0.17763"),
+                    _windows("dc-9", "Windows Server Datacenter", "10.0.99999"),
+                    _windows("pc-1", "Windows 10 Pro", "10.0.19045"),  # puesto: no es Windows Server
                     # OMV 7 que informa el updates-exporter (ya con `nombre` tras el relabel del job)
                     {
                         "series": 'vigia_producto_info{nombre="nas-omv", host="nas-omv", '

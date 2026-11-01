@@ -57,9 +57,13 @@ def test_catalogo_del_paquete_es_valido() -> None:
         ("synology-dsm", "7.2.2-72806", "7.2"),
         ("proxmox-ve", "8.4.1", "8"),
         ("truenas", "25.04.2.6", "25.04"),
+        ("linuxmint", "22.1", "22.1"),
+        ("windows-server", "10.0.20348", "2022"),
+        ("windows-server", "10.0.17763", "2019"),  # también es la de 1809-sac: cuenta el LTSC
+        ("windows-server", "10.0.99999", None),
     ],
 )
-def test_ciclo_de_version(producto: str, version: str, ciclo: str) -> None:
+def test_ciclo_de_version(producto: str, version: str, ciclo: str | None) -> None:
     assert ciclos.catalogo()[producto].ciclo_de(version) == ciclo
 
 
@@ -98,6 +102,10 @@ def test_ubuntu_toma_como_referencia_la_ultima_lts() -> None:
             "repetidos",
         ),
         ({"nombre": "NAS {{ x }}"}, "nombre"),
+        ({"ciclo_regex": None}, "uno de los dos"),
+        ({"windows_producto": "NAS OS"}, "uno de los dos"),
+        ({"ciclo_regex": None, "windows_producto": "NAS OS", "os_ids": ["nasos"]}, "no va con"),
+        ({"ciclo_regex": None, "windows_producto": "NAS {OS}"}, "windows_producto"),
     ],
 )
 def test_producto_invalido(cambios: dict[str, Any], mensaje: str) -> None:
@@ -241,6 +249,8 @@ def test_regex_promql_equivale_a_la_de_python() -> None:
     import re
 
     for p in ciclos.catalogo().values():
+        if p.ciclo_regex is None:  # Windows: por versión exacta, sin expresión
+            continue
         for version, ciclo in p.ejemplos.items():
             m = re.fullmatch(p.regex_promql, version)
             assert m and m.group(1) == ciclo, (p.producto, version)
@@ -263,11 +273,53 @@ def test_superados_y_derivadas() -> None:
     assert sup == [{"producto": "nas-os", "ciclo": "2", "ultimo": "3"}]
     os, exporter = fuentes
     assert 'node_os_info{id=~"nasos", version_id!=""}' in os["expr"]
-    rx = ciclos._q(ciclos._promql(p.ciclo_regex))  # (?:(\d+)\.) seguido de cualquier cosa
+    rx = ciclos._q(p.regex_promql)  # (?:(\d+)\.) seguido de cualquier cosa
     assert f'"ciclo", "$1", "version_id", {rx}' in os["expr"]
     assert 'vigia_producto_info{producto="nas-os"}' in exporter["expr"]
     assert f'"ciclo", "$1", "version", {rx}' in exporter["expr"]
     assert [r["record"] for r in derivadas] == [ciclos.RESTANTE, ciclos.MAYOR]
+
+
+def _windows() -> Producto:
+    return Producto.model_validate(
+        _producto(
+            producto="win-srv",
+            ciclo_regex=None,
+            windows_producto="Windows Server",
+            ejemplos={"10.0.300": "30", "10.0.200": "20"},
+            ciclos=[
+                {"ciclo": "30", "publicado": "2025-05-01", "ultima_version": "10.0.300", "lts": True},
+                {"ciclo": "20", "publicado": "2023-06-01", "ultima_version": "10.0.200", "lts": True},
+                {"ciclo": "20-sac", "publicado": "2023-05-01", "ultima_version": "10.0.200"},
+            ],
+        )
+    )
+
+
+def test_windows_por_version_exacta() -> None:
+    p = _windows()
+    assert p.por_version == {"10.0.300": "30", "10.0.200": "20"}  # el LTS gana al semestral
+    (grupo,) = ciclos.reglas({p.producto: p})["groups"]
+    tabla = [r["labels"] for r in grupo["rules"] if r["record"] == ciclos.VERSION]
+    assert {"producto": "win-srv", "ciclo": "20", "version": "10.0.200"} in tabla and len(tabla) == 2
+    (fuente,) = [r for r in grupo["rules"] if r["record"] == ciclos.PRODUCTO_CICLO]
+    assert fuente["labels"] == {"producto": "win-srv", "fuente": "windows"}  # sin updates-exporter
+    assert 'windows_os_info{product=~"Windows Server' in fuente["expr"]
+    assert 'group_left (producto, ciclo) vigia_ciclo_version{producto="win-srv"}' in fuente["expr"]
+    assert " or on (nombre) " in fuente["expr"]  # la versión desconocida, como ciclo
+
+
+def test_hay_versiones_con_solo_windows(example_data: dict[str, Any]) -> None:
+    for h in example_data["hosts"]:
+        for clave in ("node_exporter", "cadvisor", "imagenes", "actualizaciones"):
+            h.pop(clave, None)
+    example_data.pop("tareas", None)
+    example_data["modulos"]["updates_exporter"] = {"activo": False}
+    s = Site.model_validate(example_data)
+    assert ciclos.hay_versiones(s)
+    assert not ciclos.hay_versiones(
+        s.model_copy(update={"hosts": [h for h in s.hosts if not h.windows_exporter]})
+    )
 
 
 def test_sin_os_ids_solo_la_fuente_del_exporter() -> None:

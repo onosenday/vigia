@@ -76,7 +76,7 @@ def test_panel_de_mantenimiento(example_data: dict[str, Any]) -> None:
     titulos = [p["title"] for p in d["panels"]]
     assert titulos[1:] == ["Versiones y soporte", "Actualizaciones de los hosts", "Imágenes nuevas"]
     for h in example_data["hosts"]:
-        for k in ("node_exporter", "cadvisor", "imagenes", "actualizaciones"):
+        for k in ("node_exporter", "windows_exporter", "cadvisor", "imagenes", "actualizaciones"):
             h.pop(k, None)
     example_data["modulos"]["updates_exporter"] = {"activo": False}
     example_data["tareas"] = []

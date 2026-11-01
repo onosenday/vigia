@@ -10,6 +10,10 @@
 - **Tareas vigiladas en Windows** (`windows_exporter: {textfile: true}`): mismas métricas y alertas que en Linux,
   leídas por el colector textfile de windows_exporter, con un envoltorio de PowerShell para el Programador de
   tareas ([docs/tareas.md](docs/tareas.md)).
+- **Fin de soporte de Linux Mint y Windows Server**: Mint por `node_os_info` (id `linuxmint`); Windows Server por
+  `windows_os_info` de windows_exporter, con el ciclo buscado por la versión exacta (`windows_producto` en el
+  catálogo y la tabla `vigia_ciclo_version`). Mismos avisos, `/host` y panel Mantenimiento que el resto
+  ([docs/ciclos.md](docs/ciclos.md)).
 
 ## 0.5.0 (2026-10-29)
 

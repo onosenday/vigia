@@ -1,0 +1,104 @@
+producto: linuxmint
+nombre: Linux Mint
+fuente: endoflife
+endoflife: linuxmint
+fecha_aviso: normal
+ultimo_lts: true
+os_ids:
+- linuxmint
+ciclo_regex: ^(\d+(?:\.\d+)?)
+ejemplos:
+  '22.2': '22.2'
+  '22': '22'
+  '21.3': '21.3'
+ejemplos_imagen: {}
+aviso_version: true
+comprobado: '2026-11-01'
+ciclos:
+- ciclo: '22.3'
+  publicado: '2026-01-11'
+  fin_soporte: '2029-04-30'
+  lts: true
+- ciclo: lmde7
+  publicado: '2025-10-14'
+  lts: false
+- ciclo: '22.2'
+  publicado: '2025-09-04'
+  fin_soporte: '2029-04-30'
+  lts: true
+- ciclo: '22.1'
+  publicado: '2025-01-16'
+  fin_soporte: '2029-04-30'
+  lts: true
+- ciclo: '22'
+  publicado: '2024-07-25'
+  fin_soporte: '2029-04-30'
+  lts: true
+- ciclo: '21.3'
+  publicado: '2024-01-12'
+  fin_soporte: '2027-04-30'
+  lts: true
+- ciclo: lmde6
+  publicado: '2023-09-27'
+  fin_soporte: '2026-01-01'
+  lts: false
+- ciclo: '21.2'
+  publicado: '2023-07-16'
+  fin_soporte: '2027-04-30'
+  lts: true
+- ciclo: '21.1'
+  publicado: '2022-12-20'
+  fin_soporte: '2027-04-30'
+  lts: true
+- ciclo: '21'
+  publicado: '2022-07-31'
+  fin_soporte: '2027-04-30'
+  lts: true
+- ciclo: lmde5
+  publicado: '2022-03-20'
+  fin_soporte: '2024-07-01'
+  lts: false
+- ciclo: '20.3'
+  publicado: '2022-01-07'
+  fin_soporte: '2025-04-30'
+  lts: true
+- ciclo: '20.2'
+  publicado: '2021-07-08'
+  fin_soporte: '2025-04-30'
+  lts: true
+- ciclo: '20.1'
+  publicado: '2021-01-08'
+  fin_soporte: '2025-04-30'
+  lts: true
+- ciclo: '20'
+  publicado: '2020-06-27'
+  fin_soporte: '2025-04-30'
+  lts: true
+- ciclo: lmde4
+  publicado: '2020-03-20'
+  fin_soporte: '2022-08-01'
+  lts: false
+- ciclo: '19.3'
+  publicado: '2019-12-18'
+  fin_soporte: '2023-04-01'
+  lts: true
+- ciclo: '19.2'
+  publicado: '2019-08-02'
+  fin_soporte: '2023-04-01'
+  lts: true
+- ciclo: '19.1'
+  publicado: '2018-12-19'
+  fin_soporte: '2023-04-01'
+  lts: true
+- ciclo: '19'
+  publicado: '2018-06-29'
+  fin_soporte: '2023-04-01'
+  lts: true
+- ciclo: '18.3'
+  publicado: '2017-11-27'
+  fin_soporte: '2021-05-03'
+  lts: true
+- ciclo: '18.1'
+  publicado: '2017-01-27'
+  fin_soporte: '2021-04-01'
+  lts: false

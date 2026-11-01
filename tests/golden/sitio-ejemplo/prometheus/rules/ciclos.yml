@@ -650,6 +650,377 @@ groups:
       producto: grafana
       ciclo: '6'
   - record: vigia_ciclos_catalogo_timestamp
+    expr: vector(1793491200)
+    labels:
+      producto: linuxmint
+  - record: vigia_ciclo_aviso_dias
+    expr: vector(90)
+    labels:
+      producto: linuxmint
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '22.3'
+      ultimo: '22.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1872201600)
+    labels:
+      producto: linuxmint
+      ciclo: '22.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: lmde7
+      ultimo: '22.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '22.2'
+      ultimo: '22.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1872201600)
+    labels:
+      producto: linuxmint
+      ciclo: '22.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '22.1'
+      ultimo: '22.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1872201600)
+    labels:
+      producto: linuxmint
+      ciclo: '22.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '22'
+      ultimo: '22.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1872201600)
+    labels:
+      producto: linuxmint
+      ciclo: '22'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '21.3'
+      ultimo: '22.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1809043200)
+    labels:
+      producto: linuxmint
+      ciclo: '21.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: lmde6
+      ultimo: '22.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1767225600)
+    labels:
+      producto: linuxmint
+      ciclo: lmde6
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '21.2'
+      ultimo: '22.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1809043200)
+    labels:
+      producto: linuxmint
+      ciclo: '21.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '21.1'
+      ultimo: '22.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1809043200)
+    labels:
+      producto: linuxmint
+      ciclo: '21.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '21'
+      ultimo: '22.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1809043200)
+    labels:
+      producto: linuxmint
+      ciclo: '21'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: lmde5
+      ultimo: '22.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1719792000)
+    labels:
+      producto: linuxmint
+      ciclo: lmde5
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '20.3'
+      ultimo: '22.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1745971200)
+    labels:
+      producto: linuxmint
+      ciclo: '20.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '20.2'
+      ultimo: '22.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1745971200)
+    labels:
+      producto: linuxmint
+      ciclo: '20.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '20.1'
+      ultimo: '22.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1745971200)
+    labels:
+      producto: linuxmint
+      ciclo: '20.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '20'
+      ultimo: '22.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1745971200)
+    labels:
+      producto: linuxmint
+      ciclo: '20'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: lmde4
+      ultimo: '22.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1659312000)
+    labels:
+      producto: linuxmint
+      ciclo: lmde4
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '19.3'
+      ultimo: '22.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1680307200)
+    labels:
+      producto: linuxmint
+      ciclo: '19.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '19.2'
+      ultimo: '22.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1680307200)
+    labels:
+      producto: linuxmint
+      ciclo: '19.2'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '19.1'
+      ultimo: '22.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1680307200)
+    labels:
+      producto: linuxmint
+      ciclo: '19.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '19'
+      ultimo: '22.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1680307200)
+    labels:
+      producto: linuxmint
+      ciclo: '19'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '18.3'
+      ultimo: '22.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1620000000)
+    labels:
+      producto: linuxmint
+      ciclo: '18.3'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '18.1'
+      ultimo: '22.3'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1617235200)
+    labels:
+      producto: linuxmint
+      ciclo: '18.1'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: lmde7
+      ultimo: '22.3'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '22.2'
+      ultimo: '22.3'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '22.1'
+      ultimo: '22.3'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '22'
+      ultimo: '22.3'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '21.3'
+      ultimo: '22.3'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: lmde6
+      ultimo: '22.3'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '21.2'
+      ultimo: '22.3'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '21.1'
+      ultimo: '22.3'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '21'
+      ultimo: '22.3'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: lmde5
+      ultimo: '22.3'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '20.3'
+      ultimo: '22.3'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '20.2'
+      ultimo: '22.3'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '20.1'
+      ultimo: '22.3'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '20'
+      ultimo: '22.3'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: lmde4
+      ultimo: '22.3'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '19.3'
+      ultimo: '22.3'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '19.2'
+      ultimo: '22.3'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '19.1'
+      ultimo: '22.3'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '19'
+      ultimo: '22.3'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '18.3'
+      ultimo: '22.3'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: linuxmint
+      ciclo: '18.1'
+      ultimo: '22.3'
+  - record: vigia_ciclos_catalogo_timestamp
     expr: vector(1793232000)
     labels:
       producto: mariadb
@@ -5111,12 +5482,463 @@ groups:
       producto: valkey
       ciclo: '7.2'
       ultimo: '9.1'
+  - record: vigia_ciclos_catalogo_timestamp
+    expr: vector(1793491200)
+    labels:
+      producto: windows-server
+  - record: vigia_ciclo_aviso_dias
+    expr: vector(90)
+    labels:
+      producto: windows-server
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: '2025'
+      ultimo: '2025'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(2047075200)
+    labels:
+      producto: windows-server
+      ciclo: '2025'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 23h2-ac
+      ultimo: '2025'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1778544000)
+    labels:
+      producto: windows-server
+      ciclo: 23h2-ac
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: '2022'
+      ultimo: '2025'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1949702400)
+    labels:
+      producto: windows-server
+      ciclo: '2022'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 20h2-sac
+      ultimo: '2025'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1660003200)
+    labels:
+      producto: windows-server
+      ciclo: 20h2-sac
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 2004-sac
+      ultimo: '2025'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1639440000)
+    labels:
+      producto: windows-server
+      ciclo: 2004-sac
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 1909-sac
+      ultimo: '2025'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1620691200)
+    labels:
+      producto: windows-server
+      ciclo: 1909-sac
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 1903-sac
+      ultimo: '2025'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1607385600)
+    labels:
+      producto: windows-server
+      ciclo: 1903-sac
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 1809-sac
+      ultimo: '2025'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1604966400)
+    labels:
+      producto: windows-server
+      ciclo: 1809-sac
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: '2019'
+      ultimo: '2025'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1862611200)
+    labels:
+      producto: windows-server
+      ciclo: '2019'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 1803-sac
+      ultimo: '2025'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1573516800)
+    labels:
+      producto: windows-server
+      ciclo: 1803-sac
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 1709-sac
+      ultimo: '2025'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1554768000)
+    labels:
+      producto: windows-server
+      ciclo: 1709-sac
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: '2016'
+      ultimo: '2025'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1799712000)
+    labels:
+      producto: windows-server
+      ciclo: '2016'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 2012-r2
+      ultimo: '2025'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1696896000)
+    labels:
+      producto: windows-server
+      ciclo: 2012-r2
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: '2012'
+      ultimo: '2025'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1696896000)
+    labels:
+      producto: windows-server
+      ciclo: '2012'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 2008-r2-sp1
+      ultimo: '2025'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1578960000)
+    labels:
+      producto: windows-server
+      ciclo: 2008-r2-sp1
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 2008-sp2
+      ultimo: '2025'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1578960000)
+    labels:
+      producto: windows-server
+      ciclo: 2008-sp2
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 2003-sp2
+      ultimo: '2025'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1436832000)
+    labels:
+      producto: windows-server
+      ciclo: 2003-sp2
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 2003-sp1
+      ultimo: '2025'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1239667200)
+    labels:
+      producto: windows-server
+      ciclo: 2003-sp1
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: '2003'
+      ultimo: '2025'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1176163200)
+    labels:
+      producto: windows-server
+      ciclo: '2003'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: '2000'
+      ultimo: '2025'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1278979200)
+    labels:
+      producto: windows-server
+      ciclo: '2000'
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 23h2-ac
+      version: 10.0.25398
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 20h2-sac
+      version: 10.0.19042
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 2004-sac
+      version: 10.0.19041
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 1909-sac
+      version: 10.0.18363
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 1903-sac
+      version: 10.0.18362
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: '2019'
+      version: 10.0.17763
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 1803-sac
+      version: 10.0.17134
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 1709-sac
+      version: 10.0.16299
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: '2003'
+      version: 5.2.3790
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: '2025'
+      version: 10.0.26100
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: '2022'
+      version: 10.0.20348
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: '2016'
+      version: 10.0.14393
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 2012-r2
+      version: 6.3.9600
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: '2012'
+      version: 6.2.9200
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 2008-r2-sp1
+      version: 6.1.7601
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 2008-sp2
+      version: 6.0.6003
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: '2000'
+      version: 5.0.2195
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 23h2-ac
+      ultimo: '2025'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: '2022'
+      ultimo: '2025'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 20h2-sac
+      ultimo: '2025'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 2004-sac
+      ultimo: '2025'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 1909-sac
+      ultimo: '2025'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 1903-sac
+      ultimo: '2025'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 1809-sac
+      ultimo: '2025'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: '2019'
+      ultimo: '2025'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 1803-sac
+      ultimo: '2025'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 1709-sac
+      ultimo: '2025'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: '2016'
+      ultimo: '2025'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 2012-r2
+      ultimo: '2025'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: '2012'
+      ultimo: '2025'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 2008-r2-sp1
+      ultimo: '2025'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 2008-sp2
+      ultimo: '2025'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 2003-sp2
+      ultimo: '2025'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: 2003-sp1
+      ultimo: '2025'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: '2003'
+      ultimo: '2025'
+  - record: vigia_ciclo_superado
+    expr: vector(1)
+    labels:
+      producto: windows-server
+      ciclo: '2000'
+      ultimo: '2025'
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(node_os_info{id=~"debian|raspbian",
       version_id!=""}, "producto", "debian", "", ""), "producto_nombre", "Debian", "", ""), "version", "$1", "version_id",
       "(.*)"), "ciclo", "$1", "version_id", "(?:(\\d+)).*"))
     labels:
       producto: debian
+      fuente: sistema
+  - record: vigia_producto_ciclo
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(node_os_info{id=~"linuxmint",
+      version_id!=""}, "producto", "linuxmint", "", ""), "producto_nombre", "Linux Mint", "", ""), "version", "$1", "version_id",
+      "(.*)"), "ciclo", "$1", "version_id", "(?:(\\d+(?:\\.\\d+)?)).*"))
+    labels:
+      producto: linuxmint
       fuente: sistema
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(node_os_info{id=~"ubuntu",
@@ -5136,6 +5958,12 @@ groups:
       "producto_nombre", "Grafana", "", ""), "ciclo", "$1", "version", "(?:(\\d+\\.\\d+)).*"))
     labels:
       producto: grafana
+      fuente: updates-exporter
+  - record: vigia_producto_ciclo
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="linuxmint"},
+      "producto_nombre", "Linux Mint", "", ""), "ciclo", "$1", "version", "(?:(\\d+(?:\\.\\d+)?)).*"))
+    labels:
+      producto: linuxmint
       fuente: updates-exporter
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(vigia_producto_info{producto="mariadb"},
@@ -5221,6 +6049,15 @@ groups:
     labels:
       producto: valkey
       fuente: updates-exporter
+  - record: vigia_producto_ciclo
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(windows_os_info{product=~"Windows Server.*"},
+      "producto_nombre", "Windows Server", "", "") * on (version) group_left (producto, ciclo) vigia_ciclo_version{producto="windows-server"})
+      or on (nombre) max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(windows_os_info{product=~"Windows
+      Server.*"}, "producto_nombre", "Windows Server", "", ""), "producto", "windows-server", "", ""), "ciclo", "$1", "version",
+      "(.*)"))
+    labels:
+      producto: windows-server
+      fuente: windows
   - record: vigia_producto_ciclo
     expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:(?:.*/)?grafana(?:-oss|-enterprise)?:v?(\\d+\\.\\d+)).*",
       name!=""}, "producto", "grafana", "", ""), "producto_nombre", "Grafana", "", ""), "contenedor", "$1", "name", "(.*)"),

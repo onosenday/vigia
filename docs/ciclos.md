@@ -1,7 +1,7 @@
 # Ciclos de vida
 
-vigia sabe cuándo pierde el soporte cada versión de los sistemas que vigila (Debian, Ubuntu, OpenMediaVault,
-Synology DSM, Proxmox VE, TrueNAS) y lo lleva a Prometheus para avisar antes de que ocurra y cuando hay una
+vigia sabe cuándo pierde el soporte cada versión de los sistemas que vigila (Debian, Ubuntu, Linux Mint,
+Windows Server, OpenMediaVault, Synology DSM, Proxmox VE, TrueNAS) y lo lleva a Prometheus para avisar antes de que ocurra y cuando hay una
 versión mayor nueva.
 
 ## El catálogo
@@ -20,13 +20,22 @@ ciclos:
 - {ciclo: '7', publicado: '2024-03-01', fin_soporte: '2026-06-30'}
 ```
 
-- **Desde endoflife.date** (Debian, Ubuntu, Proxmox VE, TrueNAS): `uv run vigia ciclos actualizar` en el repo
+- **Desde endoflife.date** (Debian, Ubuntu, Linux Mint, Windows Server, Proxmox VE, TrueNAS): `uv run vigia ciclos actualizar` en el repo
   de vigia refresca los ciclos y la fecha de comprobación; se revisa el diff y se commitea con la versión.
   Nunca lo ejecuta el build ni el despliegue. `fin_soporte` es el `eol` de endoflife.date (en Debian incluye
   el LTS) y `fin_extendido` su `extendedSupport`.
 - **A mano** (OpenMediaVault, Synology DSM): `referencia` dice de dónde salen las fechas. Las que se publican
   por mes se guardan como el último día del mes.
 - En **Ubuntu** la versión de referencia para «hay una versión mayor nueva» es la última LTS (`ultimo_lts`).
+- **Linux Mint**: cada versión menor (22.1, 22.2…) es un ciclo, así que «versión mayor disponible» avisa
+  también de la siguiente menor (comparten fin de soporte, el de su Ubuntu base). La referencia es la última
+  Mint (`ultimo_lts`), no una LMDE. LMDE (Debian Edition) informa `ID=linuxmint` con otra numeración y sale
+  como «versión fuera del catálogo».
+- **Windows Server** (`windows_producto`): el build no contiene el nombre del ciclo, así que la versión de
+  `windows_os_info` (`10.0.20348`) se busca tal cual en `ultima_version` de cada ciclo (2022). Si dos ciclos
+  comparten build (2019 y 1809-sac), cuenta el LTSC. `fin_soporte` es el fin del soporte extendido de
+  Microsoft (actualizaciones de seguridad), no el del soporte general. Los puestos (Windows 10/11) no se
+  catalogan: sus ciclos dependen de la edición.
 - **Contenedores** (PostgreSQL, MariaDB, MySQL, MongoDB, Redis, Valkey, Grafana, Prometheus, nginx, Traefik):
   `imagen_regex` saca la versión de la etiqueta de la imagen que ve cAdvisor (`postgres:16.4-alpine` → 16).
   Las etiquetas sin versión suficiente (`latest`, `redis:8` cuando los ciclos son `8.x`) no casan y no avisan;
@@ -56,12 +65,13 @@ El build genera `prometheus/rules/ciclos.yml` con reglas de grabación constante
 | `vigia_ciclos_catalogo_timestamp{producto}` | Última comprobación del catálogo de ese producto |
 | `vigia_ciclo_superado{producto, ciclo, ultimo}` | 1 por ciclo anterior al de referencia (si `aviso_version`) |
 | `vigia_ciclo_aviso_dias{producto}` | Margen de aviso: `aviso_dias` del producto o `umbrales.soporte_dias` |
+| `vigia_ciclo_version{producto, ciclo, version}` | Versión exacta → ciclo, para los productos con `windows_producto` |
 
 Y, con la versión instalada en cada equipo, en el mismo grupo (en orden, en la misma pasada):
 
 | Serie | Qué es |
 |-------|--------|
-| `vigia_producto_ciclo{nombre, producto, producto_nombre, ciclo, version}` | 1 por equipo y producto. La distribución sale de `node_os_info` (`os_ids` del catálogo: debian, raspbian, ubuntu); OMV, Proxmox VE y DSM, de `vigia_producto_info` del updates-exporter ([actualizaciones.md](actualizaciones.md)); el software de los contenedores, de la imagen en cAdvisor (con la etiqueta `contenedor`) |
+| `vigia_producto_ciclo{nombre, producto, producto_nombre, ciclo, version}` | 1 por equipo y producto. La distribución sale de `node_os_info` (`os_ids` del catálogo: debian, raspbian, ubuntu, linuxmint); Windows Server, de `windows_os_info` (windows_exporter); OMV, Proxmox VE y DSM, de `vigia_producto_info` del updates-exporter ([actualizaciones.md](actualizaciones.md)); el software de los contenedores, de la imagen en cAdvisor (con la etiqueta `contenedor`) |
 | `vigia_soporte_restante_dias{…}` | Días hasta el fin de soporte; negativo si ya no tiene |
 | `vigia_version_mayor_disponible{…, ultimo}` | 1 si el ciclo instalado es anterior al de referencia |
 
@@ -75,8 +85,8 @@ Y, con la versión instalada en cada equipo, en el mismo grupo (en orden, en la 
 | Versión fuera del catálogo | info | la versión instalada no está en el catálogo: ¿actualizar vigia? |
 | Catálogo de ciclos antiguo | info | el catálogo de un producto en uso tiene más de `umbrales.catalogo_dias` (180) |
 
-Todas son de categoría `mantenimiento` y se generan si hay algún node_exporter o el updates-exporter está
-activo. Un host con OMV recibe los avisos de Debian (node_exporter) y los de OMV (updates-exporter, script v2).
+Todas son de categoría `mantenimiento` y se generan si hay algún node_exporter, windows_exporter o cAdvisor,
+o el updates-exporter está activo. Un host con OMV recibe los avisos de Debian (node_exporter) y los de OMV (updates-exporter, script v2).
 
 El panel **Mantenimiento** (colores con `umbrales.soporte_dias`; los productos con `aviso_dias` propio
 avisan antes) y el comando `/pendientes` del bot ([bot.md](bot.md)) muestran lo mismo.

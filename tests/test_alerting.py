@@ -229,6 +229,7 @@ def _sin_actualizaciones(data: dict[str, Any]) -> None:
 def test_sin_nodos_no_hay_reglas_de_soporte(example_data: dict[str, Any]) -> None:
     for h in example_data["hosts"]:
         h.pop("node_exporter", None)
+        h.pop("windows_exporter", None)
         h.pop("cadvisor", None)
     example_data["tareas"] = []
     _sin_actualizaciones(example_data)

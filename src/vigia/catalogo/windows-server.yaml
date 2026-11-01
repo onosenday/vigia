@@ -1,0 +1,122 @@
+producto: windows-server
+nombre: Windows Server
+fuente: endoflife
+endoflife: windows-server
+fecha_aviso: normal
+ultimo_lts: true
+os_ids: []
+windows_producto: Windows Server
+ejemplos:
+  10.0.26100: '2025'
+  10.0.20348: '2022'
+  10.0.17763: '2019'
+  10.0.14393: '2016'
+ejemplos_imagen: {}
+aviso_version: true
+comprobado: '2026-11-01'
+ciclos:
+- ciclo: '2025'
+  publicado: '2024-11-01'
+  fin_soporte: '2034-11-14'
+  ultima_version: 10.0.26100
+  lts: true
+- ciclo: 23h2-ac
+  publicado: '2023-10-24'
+  fin_soporte: '2026-05-12'
+  ultima_version: 10.0.25398
+  lts: false
+- ciclo: '2022'
+  publicado: '2021-08-18'
+  fin_soporte: '2031-10-14'
+  ultima_version: 10.0.20348
+  lts: true
+- ciclo: 20h2-sac
+  publicado: '2020-10-20'
+  fin_soporte: '2022-08-09'
+  ultima_version: 10.0.19042
+  lts: false
+- ciclo: 2004-sac
+  publicado: '2020-05-27'
+  fin_soporte: '2021-12-14'
+  ultima_version: 10.0.19041
+  lts: false
+- ciclo: 1909-sac
+  publicado: '2019-11-12'
+  fin_soporte: '2021-05-11'
+  ultima_version: 10.0.18363
+  lts: false
+- ciclo: 1903-sac
+  publicado: '2019-05-21'
+  fin_soporte: '2020-12-08'
+  ultima_version: 10.0.18362
+  lts: false
+- ciclo: 1809-sac
+  publicado: '2018-11-13'
+  fin_soporte: '2020-11-10'
+  ultima_version: 10.0.17763
+  lts: false
+- ciclo: '2019'
+  publicado: '2018-11-13'
+  fin_soporte: '2029-01-09'
+  ultima_version: 10.0.17763
+  lts: true
+- ciclo: 1803-sac
+  publicado: '2018-04-30'
+  fin_soporte: '2019-11-12'
+  ultima_version: 10.0.17134
+  lts: false
+- ciclo: 1709-sac
+  publicado: '2017-10-17'
+  fin_soporte: '2019-04-09'
+  ultima_version: 10.0.16299
+  lts: false
+- ciclo: '2016'
+  publicado: '2016-10-15'
+  fin_soporte: '2027-01-12'
+  fin_extendido: '2030-01-12'
+  ultima_version: 10.0.14393
+  lts: true
+- ciclo: 2012-r2
+  publicado: '2013-11-25'
+  fin_soporte: '2023-10-10'
+  fin_extendido: '2026-10-13'
+  ultima_version: 6.3.9600
+  lts: true
+- ciclo: '2012'
+  publicado: '2012-10-30'
+  fin_soporte: '2023-10-10'
+  fin_extendido: '2026-10-13'
+  ultima_version: 6.2.9200
+  lts: true
+- ciclo: 2008-r2-sp1
+  publicado: '2011-02-22'
+  fin_soporte: '2020-01-14'
+  fin_extendido: '2023-01-10'
+  ultima_version: 6.1.7601
+  lts: true
+- ciclo: 2008-sp2
+  publicado: '2009-04-29'
+  fin_soporte: '2020-01-14'
+  fin_extendido: '2023-01-10'
+  ultima_version: 6.0.6003
+  lts: true
+- ciclo: 2003-sp2
+  publicado: '2007-03-13'
+  fin_soporte: '2015-07-14'
+  ultima_version: 5.2.3790
+  lts: true
+- ciclo: 2003-sp1
+  publicado: '2005-03-30'
+  fin_soporte: '2009-04-14'
+  ultima_version: 5.2.3790
+  lts: false
+- ciclo: '2003'
+  publicado: '2003-04-24'
+  fin_soporte: '2007-04-10'
+  ultima_version: 5.2.3790
+  lts: true
+- ciclo: '2000'
+  publicado: '2000-02-17'
+  fin_soporte: '2010-07-13'
+  ultima_version: 5.0.2195
+  lts: true

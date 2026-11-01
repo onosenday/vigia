@@ -10,9 +10,10 @@ alertas, paneles y bot usen la misma tabla:
   vigia_ciclos_catalogo_timestamp{producto}             epoch de la última comprobación del producto
   vigia_ciclo_superado{producto, ciclo, ultimo}         1 por ciclo anterior al de referencia (aviso_version)
   vigia_ciclo_aviso_dias{producto}                      días de aviso antes del fin de soporte
+  vigia_ciclo_version{producto, ciclo, version}         versión exacta → ciclo (Windows: el build no lo dice)
 
-y, con la versión instalada en cada equipo (node_os_info, vigia_producto_info del updates-exporter y la
-imagen de cada contenedor en cAdvisor, con la etiqueta `contenedor`), las derivadas:
+y, con la versión instalada en cada equipo (node_os_info, windows_os_info, vigia_producto_info del
+updates-exporter y la imagen de cada contenedor en cAdvisor, con la etiqueta `contenedor`), las derivadas:
 
   vigia_producto_ciclo{nombre, producto, producto_nombre, ciclo, version}   1 por equipo y producto
   vigia_soporte_restante_dias{…}            días hasta el fin de soporte (negativo: ya sin soporte)
@@ -48,6 +49,7 @@ PRODUCTO_CICLO = "vigia_producto_ciclo"
 RESTANTE = "vigia_soporte_restante_dias"
 MAYOR = "vigia_version_mayor_disponible"
 AVISO = "vigia_ciclo_aviso_dias"
+VERSION = "vigia_ciclo_version"
 PRODUCTO_INFO = "vigia_producto_info"
 """Lo publica el updates-exporter: producto y versión que informa cada host (docs/actualizaciones.md)."""
 
@@ -97,12 +99,17 @@ class Producto(_Base):
     """La versión de referencia es el último ciclo LTS (Ubuntu), no el último publicado."""
     os_ids: list[ProductoId] = []
     """`ID` de os-release con que aparece en node_os_info (debian, raspbian…): de ahí sale su versión."""
+    windows_producto: Annotated[str, StringConstraints(pattern=r"^[A-Za-z0-9 ]{1,40}$")] | None = None
+    """Principio del `product` de windows_os_info (windows_exporter), p. ej. `Windows Server`. El ciclo sale
+    de la versión exacta (`10.0.20348`), que se compara con `ultima_version` de cada ciclo, no de una
+    expresión: en Windows el build no contiene el nombre del ciclo."""
     imagen_regex: str | None = None
     """Expresión que casa la imagen de un contenedor (`repo/nombre:etiqueta`, de cAdvisor) y extrae la
     versión de la etiqueta en su primer grupo. Las etiquetas sin versión suficiente (`latest`, `8` cuando los
     ciclos son `8.x`) no deben casar: así no generan avisos falsos."""
-    ciclo_regex: str
-    """Expresión que extrae el ciclo de una versión instalada en su primer grupo, p. ej. `7.7.24-7` → `7`."""
+    ciclo_regex: str | None = None
+    """Expresión que extrae el ciclo de una versión instalada en su primer grupo, p. ej. `7.7.24-7` → `7`.
+    Obligatoria salvo con `windows_producto`."""
     ejemplos: dict[str, CicloId] = Field(min_length=1)
     """Versión instalada → ciclo esperado: los tests comprueban `ciclo_regex` con ellos."""
     ejemplos_imagen: dict[str, CicloId | None] = {}
@@ -139,6 +146,10 @@ class Producto(_Base):
     def _check(self) -> Producto:
         if (self.fuente == "endoflife") != (self.endoflife is not None):
             raise ValueError("`endoflife` es obligatorio con fuente endoflife y solo con ella")
+        if (self.ciclo_regex is None) == (self.windows_producto is None):
+            raise ValueError("indica `ciclo_regex` o `windows_producto` (uno de los dos)")
+        if self.windows_producto and (self.os_ids or self.imagen_regex):
+            raise ValueError("`windows_producto` no va con `os_ids` ni con `imagen_regex`")
         if self.fuente == "manual" and not self.referencia:
             raise ValueError("un producto a mano necesita `referencia`")
         nombres = [c.ciclo for c in self.ciclos]
@@ -171,7 +182,19 @@ class Producto(_Base):
             return next(c for c in self.ciclos if c.lts)
         return self.ciclos[0]
 
+    @property
+    def por_version(self) -> dict[str, str]:
+        """Versión exacta (`ultima_version`) → ciclo. Si dos ciclos comparten versión (Windows Server 2019 y
+        1809-sac), cuenta el LTS."""
+        out: dict[str, str] = {}
+        for c in sorted(self.ciclos, key=lambda c: c.lts):  # los LTS al final: pisan a los demás
+            if c.ultima_version:
+                out[c.ultima_version] = c.ciclo
+        return out
+
     def ciclo_de(self, version: str) -> str | None:
+        if self.ciclo_regex is None:
+            return self.por_version.get(version)
         m = re.match(self.ciclo_regex, version)
         return m.group(1) if m else None
 
@@ -184,6 +207,7 @@ class Producto(_Base):
 
     @property
     def regex_promql(self) -> str:
+        assert self.ciclo_regex
         return _promql(self.ciclo_regex)
 
     @property
@@ -212,8 +236,10 @@ def catalogo() -> Catalogo:
 
 
 def hay_versiones(s: Site) -> bool:
-    """El sitio tiene alguna fuente de versiones instaladas (node_os_info, el updates-exporter o cAdvisor)."""
-    return any(h.node_exporter or h.cadvisor for h in s.hosts) or s.modulos.updates_exporter.activo
+    """El sitio tiene alguna fuente de versiones instaladas (node_os_info, windows_os_info, el
+    updates-exporter o cAdvisor)."""
+    exporters = any(h.node_exporter or h.windows_exporter or h.cadvisor for h in s.hosts)
+    return exporters or s.modulos.updates_exporter.activo
 
 
 def _epoch(d: date) -> int:
@@ -252,6 +278,19 @@ def _desde_exporter(p: Producto) -> str:
     return f"max by (nombre, producto, producto_nombre, ciclo, version) ({e})"
 
 
+def _desde_windows(p: Producto) -> str:
+    """vigia_producto_ciclo de un producto a partir de windows_os_info: el ciclo, por la versión exacta en la
+    tabla vigia_ciclo_version; si no está, ciclo = versión (sale como «fuera del catálogo»)."""
+    assert p.windows_producto
+    por = "nombre, producto, producto_nombre, ciclo, version"
+    e = f"windows_os_info{{product=~{_q(p.windows_producto + '.*')}}}"
+    e = _replace(e, "producto_nombre", p.nombre)
+    tabla = f"{VERSION}{{producto={_q(p.producto)}}}"
+    conocido = f"max by ({por}) ({e} * on (version) group_left (producto, ciclo) {tabla})"
+    otro = _replace(_replace(e, "producto", p.producto), "ciclo", "$1", "version", "(.*)")
+    return f"{conocido} or on (nombre) max by ({por}) ({otro})"
+
+
 def _desde_contenedor(p: Producto) -> str:
     """vigia_producto_ciclo de un producto a partir de la imagen de cada contenedor (cAdvisor)."""
     assert p.imagen_regex
@@ -282,6 +321,9 @@ def reglas(
             fin = c.fin(aviso)
             if fin:
                 tabla.append(_regla(FIN, _epoch(fin), producto=p.producto, ciclo=c.ciclo))
+        if p.windows_producto:
+            for version, ciclo in p.por_version.items():
+                tabla.append(_regla(VERSION, 1, producto=p.producto, ciclo=ciclo, version=version))
         for c in p.superados if p.aviso_version else []:
             tabla.append(_regla(SUPERADO, 1, producto=p.producto, ciclo=c.ciclo, ultimo=p.ultimo.ciclo))
 
@@ -290,7 +332,8 @@ def reglas(
         return {"record": PRODUCTO_CICLO, "expr": expr, "labels": {"producto": p.producto, "fuente": origen}}
 
     fuentes = [fuente(p, "sistema", _desde_os(p)) for p in catalogo.values() if p.os_ids]
-    fuentes += [fuente(p, "updates-exporter", _desde_exporter(p)) for p in catalogo.values()]
+    fuentes += [fuente(p, "updates-exporter", _desde_exporter(p)) for p in catalogo.values() if p.ciclo_regex]
+    fuentes += [fuente(p, "windows", _desde_windows(p)) for p in catalogo.values() if p.windows_producto]
     fuentes += [fuente(p, "contenedor", _desde_contenedor(p)) for p in catalogo.values() if p.imagen_regex]
     derivadas = [
         {
