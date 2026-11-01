@@ -18,7 +18,7 @@ groups:
       datasourceUid: prometheus
       model:
         refId: A
-        expr: max by (job, nombre, instance) (1 - probe_success{job=~"web|servicio|ping|dns|externo", alerta!="no"})
+        expr: max by (job, nombre, instance) (1 - probe_success{job=~"web|servicio|ping|dns|externo", alerta!="no", tipo!="cerrado"})
         instant: true
         range: false
     - refId: B
@@ -37,6 +37,41 @@ groups:
     for: 5m
     annotations:
       summary: '{{ index .Labels "nombre" }} no responde ({{ index .Labels "job" }}: {{ index .Labels "instance" }})'
+    labels:
+      vigia: si
+      gravedad: critical
+      categoria: incidencia
+    isPaused: false
+  - uid: vigia-puerto-expuesto
+    title: Puerto expuesto
+    condition: B
+    data:
+    - refId: A
+      relativeTimeRange:
+        from: 600
+        to: 0
+      datasourceUid: prometheus
+      model:
+        refId: A
+        expr: max by (nombre, instance) (probe_success{job="externo", tipo="cerrado", alerta!="no"})
+        instant: true
+        range: false
+    - refId: B
+      datasourceUid: __expr__
+      model:
+        refId: B
+        type: threshold
+        expression: A
+        conditions:
+        - evaluator:
+            type: gt
+            params:
+            - 0
+    noDataState: OK
+    execErrState: Error
+    for: 5m
+    annotations:
+      summary: '{{ index .Labels "nombre" }}: {{ index .Labels "instance" }} responde desde internet y debería estar cerrado'
     labels:
       vigia: si
       gravedad: critical

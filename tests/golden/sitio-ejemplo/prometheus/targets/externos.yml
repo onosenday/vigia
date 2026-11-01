@@ -20,6 +20,13 @@
     puerto: '443'
     __param_module: tcp_externo
 - targets:
+  - servidor.example.net:8443
+  labels:
+    nombre: Servidor externo
+    tipo: cerrado
+    puerto: '8443'
+    __param_module: tcp_externo
+- targets:
   - ssh.example.net
   labels:
     nombre: SSH del servidor externo

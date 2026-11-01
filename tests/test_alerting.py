@@ -31,6 +31,7 @@ def test_reglas_del_ejemplo(example_data: dict[str, Any]) -> None:
     rules = _rules(_build(example_data))
     assert set(rules) == {
         "vigia-caido",
+        "vigia-puerto-expuesto",
         "vigia-certificado",
         "vigia-disco",
         "vigia-exporter",

@@ -38,6 +38,7 @@ Categoria = Literal["incidencia", "mantenimiento"]
 
 CLASIFICACION: dict[str, tuple[Gravedad, Categoria]] = {
     "vigia-caido": ("critical", "incidencia"),
+    "vigia-puerto-expuesto": ("critical", "incidencia"),
     "vigia-exporter": ("warning", "incidencia"),
     "vigia-impresora-error": ("warning", "incidencia"),
     "vigia-tarea-retrasada": ("warning", "incidencia"),
@@ -104,12 +105,27 @@ def rules(s: Site) -> list[dict[str, Any]]:
             _rule(
                 "vigia-caido",
                 "Caído",
-                f'max by (job, nombre, instance) (1 - probe_success{{job=~"{jobs}", alerta!="no"}})',
+                # tipo!="cerrado": los puertos que deben estar cerrados tienen su propia regla
+                "max by (job, nombre, instance) "
+                f'(1 - probe_success{{job=~"{jobs}", alerta!="no", tipo!="cerrado"}})',
                 "gt",
                 0,
                 u.caido,
                 '{{ index .Labels "nombre" }} no responde ({{ index .Labels "job" }}: '
                 '{{ index .Labels "instance" }})',
+            )
+        )
+    if s.modulos.blackbox and any(o.puertos_cerrados for o in s.externos.objetivos):
+        out.append(
+            _rule(
+                "vigia-puerto-expuesto",
+                "Puerto expuesto",
+                'max by (nombre, instance) (probe_success{job="externo", tipo="cerrado", alerta!="no"})',
+                "gt",
+                0,
+                u.caido,
+                '{{ index .Labels "nombre" }}: {{ index .Labels "instance" }} responde desde internet '
+                "y debería estar cerrado",
             )
         )
     if s.modulos.blackbox and (s.web.objetivos or any(o.url for o in s.externos.objetivos)):

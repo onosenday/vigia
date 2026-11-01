@@ -128,7 +128,8 @@ def targets(s: Site) -> dict[str, Any]:
 
 
 def externals_targets(s: Site) -> list[dict[str, Any]]:
-    """Un grupo por sonda: web (http/https), ping y cada puerto TCP de los objetivos externos."""
+    """Un grupo por sonda: web (http/https), ping y cada puerto TCP de los objetivos externos. Los puertos que
+    deben estar cerrados van con `tipo: cerrado` (misma sonda; lo que alerta es que conecte)."""
     groups: list[dict[str, Any]] = []
     for o in s.externos.objetivos:
         base = {"nombre": o.nombre}
@@ -144,10 +145,11 @@ def externals_targets(s: Site) -> list[dict[str, Any]]:
                 "labels": _no_alert({**base, "tipo": "ping", "__param_module": "icmp"}, o.alerta),
             }
         )
-        for p in o.puertos:
-            labels = {**base, "tipo": "tcp", "puerto": str(p), "__param_module": "tcp_externo"}
-            target = f"[{o.host}]:{p}" if ":" in o.host else f"{o.host}:{p}"
-            groups.append({"targets": [target], "labels": _no_alert(labels, o.alerta)})
+        for tipo, ports in (("tcp", o.puertos), ("cerrado", o.puertos_cerrados)):
+            for p in ports:
+                labels = {**base, "tipo": tipo, "puerto": str(p), "__param_module": "tcp_externo"}
+                target = f"[{o.host}]:{p}" if ":" in o.host else f"{o.host}:{p}"
+                groups.append({"targets": [target], "labels": _no_alert(labels, o.alerta)})
     return groups
 
 

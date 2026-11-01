@@ -457,6 +457,7 @@ SENSITIVE_PORTS: dict[int, str] = {
 """Puertos de administración y bases de datos: un sondeo externo solo con `puertos_sensibles: true`."""
 _CGNAT = ipaddress.ip_network("100.64.0.0/10")
 MAX_EXTERNALS = 50
+MAX_CLOSED_PORTS = 20
 
 
 def _public_host(v: str) -> str:
@@ -495,6 +496,8 @@ class External(Base):
     host: PublicHost | None = None
     """Equipo: ping y, si se indican, conexión TCP a `puertos` (sin enviar datos)."""
     puertos: list[Port] = []
+    puertos_cerrados: list[Port] = []
+    """Puertos que deben estar cerrados desde internet: «Puerto expuesto» si alguno acepta la conexión."""
     puertos_sensibles: bool = False
     """Permite sondear puertos de administración o de bases de datos (SSH, RDP, MySQL…) desde fuera."""
     alerta: bool = True
@@ -504,10 +507,16 @@ class External(Base):
         if (self.url is None) == (self.host is None):
             raise ValueError(f"externo {self.nombre}: indica `url` o `host` (uno de los dos)")
         if self.url is not None:
-            if self.puertos:
-                raise ValueError(f"externo {self.nombre}: `puertos` va con `host`, no con `url`")
+            for field in ("puertos", "puertos_cerrados"):
+                if getattr(self, field):
+                    raise ValueError(f"externo {self.nombre}: `{field}` va con `host`, no con `url`")
             _public_host(urlsplit(self.url).hostname or "")
-        sensitive = sorted(p for p in self.puertos if p in SENSITIVE_PORTS)
+        if len(self.puertos_cerrados) > MAX_CLOSED_PORTS:
+            raise ValueError(f"externo {self.nombre}: como mucho {MAX_CLOSED_PORTS} `puertos_cerrados`")
+        both = sorted(set(self.puertos) & set(self.puertos_cerrados))
+        if both:
+            raise ValueError(f"externo {self.nombre}: {both} en los dos, `puertos` y `puertos_cerrados`")
+        sensitive = sorted({p for p in self.puertos + self.puertos_cerrados if p in SENSITIVE_PORTS})
         if sensitive and not self.puertos_sensibles:
             names = ", ".join(f"{p} ({SENSITIVE_PORTS[p]})" for p in sensitive)
             raise ValueError(
@@ -515,7 +524,9 @@ class External(Base):
                 "que comprobarlos desde fuera, `puertos_sensibles: true` "
                 "(mejor que no estén abiertos a internet)"
             )
-        if len(set(self.puertos)) != len(self.puertos):
+        if len(set(self.puertos)) != len(self.puertos) or len(set(self.puertos_cerrados)) != len(
+            self.puertos_cerrados
+        ):
             raise ValueError(f"externo {self.nombre}: puertos repetidos")
         return self
 

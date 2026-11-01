@@ -1,5 +1,11 @@
 # Cambios
 
+## Sin publicar
+
+- **Puertos que deben estar cerrados** (`externos.objetivos[].puertos_cerrados`): sonda TCP al revés, alerta
+  «Puerto expuesto» (crítica) si alguno responde desde internet y tabla propia en el panel «Externos»
+  ([docs/externos.md](docs/externos.md), aviso sobre el NAT loopback). «Caído» no cuenta estos puertos.
+
 ## 0.5.0 (2026-10-29)
 
 Al actualizar un sitio:

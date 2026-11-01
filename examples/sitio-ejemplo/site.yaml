@@ -129,7 +129,7 @@ modulos:
 externos:
   objetivos:
     - {nombre: Web corporativa, url: "https://www.example.org/"}
-    - {nombre: Servidor externo, host: servidor.example.net, puertos: [443]}
+    - {nombre: Servidor externo, host: servidor.example.net, puertos: [443], puertos_cerrados: [8443]}
     - {nombre: SSH del servidor externo, host: ssh.example.net, puertos: [22], puertos_sensibles: true, alerta: false}
 
 alertas:

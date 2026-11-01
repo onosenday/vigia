@@ -48,7 +48,7 @@
       "type": "prometheus",
       "uid": "prometheus"
      },
-     "expr": "max by (nombre, tipo, puerto) (probe_success{job=\"externo\"})",
+     "expr": "max by (nombre, tipo, puerto) (probe_success{job=\"externo\", tipo!=\"cerrado\"})",
      "legendFormat": "{{nombre}}",
      "instant": true,
      "range": false,
@@ -60,7 +60,7 @@
       "type": "prometheus",
       "uid": "prometheus"
      },
-     "expr": "max by (nombre, tipo, puerto) (probe_duration_seconds{job=\"externo\"})",
+     "expr": "max by (nombre, tipo, puerto) (probe_duration_seconds{job=\"externo\", tipo!=\"cerrado\"})",
      "legendFormat": "{{nombre}}",
      "instant": true,
      "range": false,
@@ -72,7 +72,7 @@
       "type": "prometheus",
       "uid": "prometheus"
      },
-     "expr": "max by (nombre, tipo, puerto) (probe_http_status_code{job=\"externo\"})",
+     "expr": "max by (nombre, tipo, puerto) (probe_http_status_code{job=\"externo\", tipo!=\"cerrado\"})",
      "legendFormat": "{{nombre}}",
      "instant": true,
      "range": false,
@@ -84,7 +84,7 @@
       "type": "prometheus",
       "uid": "prometheus"
      },
-     "expr": "min by (nombre, tipo, puerto) ((probe_ssl_earliest_cert_expiry{job=\"externo\"} - time()) / 86400)",
+     "expr": "min by (nombre, tipo, puerto) ((probe_ssl_earliest_cert_expiry{job=\"externo\", tipo!=\"cerrado\"} - time()) / 86400)",
      "legendFormat": "{{nombre}}",
      "instant": true,
      "range": false,
@@ -198,7 +198,7 @@
       "type": "prometheus",
       "uid": "prometheus"
      },
-     "expr": "max by (nombre, tipo) (probe_duration_seconds{job=\"externo\"})",
+     "expr": "max by (nombre, tipo) (probe_duration_seconds{job=\"externo\", tipo!=\"cerrado\"})",
      "legendFormat": "{{nombre}} ({{tipo}})",
      "instant": false,
      "range": true
@@ -211,6 +211,92 @@
     "overrides": []
    },
    "options": {}
+  },
+  {
+   "id": 4,
+   "title": "Puertos que deben estar cerrados",
+   "type": "table",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 18,
+    "w": 24,
+    "h": 6
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "prometheus"
+     },
+     "expr": "max by (nombre, puerto) (probe_success{job=\"externo\", tipo=\"cerrado\"})",
+     "legendFormat": "{{nombre}}",
+     "instant": true,
+     "range": false,
+     "format": "table"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {},
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Estado"
+      },
+      "properties": [
+       {
+        "id": "mappings",
+        "value": [
+         {
+          "type": "value",
+          "options": {
+           "0": {
+            "text": "Cerrado",
+            "color": "green"
+           },
+           "1": {
+            "text": "EXPUESTO",
+            "color": "red"
+           }
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "showHeader": true,
+    "cellHeight": "sm",
+    "footer": {
+     "show": false
+    }
+   },
+   "transformations": [
+    {
+     "id": "merge",
+     "options": {}
+    },
+    {
+     "id": "organize",
+     "options": {
+      "excludeByName": {
+       "Time": true
+      },
+      "renameByName": {
+       "nombre": "Nombre",
+       "Value": "Estado",
+       "puerto": "Puerto"
+      }
+     }
+    }
+   ]
   }
  ],
  "links": [

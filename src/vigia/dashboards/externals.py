@@ -10,7 +10,14 @@ if TYPE_CHECKING:
     from vigia.dashboards import Brand
     from vigia.model import Site
 
-EJ = 'job="externo"'
+EJ = 'job="externo", tipo!="cerrado"'
+CLOSED = 'job="externo", tipo="cerrado"'
+EXPOSED = [
+    {
+        "type": "value",
+        "options": {"0": {"text": "Cerrado", "color": "green"}, "1": {"text": "EXPUESTO", "color": "red"}},
+    }
+]
 
 
 def externals(s: Site, m: Brand) -> dict[str, Any] | None:
@@ -60,4 +67,22 @@ def externals(s: Site, m: Brand) -> dict[str, Any] | None:
         unit="s",
     )
     panels: list[Panel] = [row(1, "Fuera de la red del sitio", 0), table, latency]
+    if any(o.puertos_cerrados for o in s.externos.objetivos):
+        closed = merged_table(
+            4,
+            "Puertos que deben estar cerrados",
+            [(f"max by (nombre, puerto) (probe_success{{{CLOSED}}})", "Estado")],
+            0,
+            18,
+            24,
+            6,
+        )
+        closed["transformations"][1]["options"]["renameByName"]["puerto"] = "Puerto"
+        closed["fieldConfig"]["overrides"] = [
+            {
+                "matcher": {"id": "byName", "options": "Estado"},
+                "properties": [{"id": "mappings", "value": EXPOSED}],
+            }
+        ]
+        panels.append(closed)
     return m.dash("externos", "Externos", panels)

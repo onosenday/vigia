@@ -38,6 +38,17 @@ def _with(example_data: dict[str, Any], *objs: dict[str, Any], **cfg: Any) -> di
         ({"nombre": "x"}, "uno de los dos"),
         ({"nombre": "x", "url": "https://www.example.org/", "puertos": [443]}, "`puertos` va con `host`"),
         ({"nombre": "x", "host": "srv.example.net", "puertos": [443, 443]}, "repetidos"),
+        ({"nombre": "x", "host": "srv.example.net", "puertos_cerrados": [8443, 8443]}, "repetidos"),
+        (
+            {"nombre": "x", "host": "srv.example.net", "puertos": [443], "puertos_cerrados": [443]},
+            "en los dos",
+        ),
+        ({"nombre": "x", "url": "https://www.example.org/", "puertos_cerrados": [8443]}, "va con `host`"),
+        ({"nombre": "x", "host": "srv.example.net", "puertos_cerrados": [22, 8443]}, "puertos_sensibles"),
+        (
+            {"nombre": "x", "host": "srv.example.net", "puertos_cerrados": list(range(8000, 8021))},
+            "como mucho 20",
+        ),
     ],
 )
 def test_destinos_rechazados(example_data: dict[str, Any], obj: dict[str, Any], msg: str) -> None:
@@ -70,6 +81,40 @@ def test_opt_in_de_puerto_sensible_y_aviso_de_http(example_data: dict[str, Any])
     assert any("http sin TLS" in w for w in s.warnings())
 
 
+def test_puertos_cerrados(example_data: dict[str, Any]) -> None:
+    obj = {
+        "nombre": "Router",
+        "host": "vpn.example.org",
+        "puertos": [1723],
+        "puertos_cerrados": [22, 8443],
+        "puertos_sensibles": True,
+    }
+    out = build_site(Site.model_validate(_with(example_data, obj)), EXAMPLE)
+    groups = yaml.safe_load(out["prometheus/targets/externos.yml"])
+    closed = [g for g in groups if g["labels"]["tipo"] == "cerrado"]
+    assert [g["targets"] for g in closed] == [["vpn.example.org:22"], ["vpn.example.org:8443"]]
+    assert all(g["labels"]["__param_module"] == "tcp_externo" for g in closed)
+    rules = {
+        r["uid"]: r
+        for r in yaml.safe_load(out["grafana-provisioning/alerting/vigia.yml"])["groups"][0]["rules"]
+    }
+    exposed = rules["vigia-puerto-expuesto"]
+    assert 'tipo="cerrado"' in exposed["data"][0]["model"]["expr"]
+    assert 'alerta!="no"' in exposed["data"][0]["model"]["expr"]
+    assert exposed["labels"]["gravedad"] == "critical"
+    assert 'tipo!="cerrado"' in rules["vigia-caido"]["data"][0]["model"]["expr"]
+    dash = out["dashboards/externos.json"]
+    assert "Puertos que deben estar cerrados" in dash and "EXPUESTO" in dash
+
+
+def test_sin_puertos_cerrados_no_hay_regla_ni_tabla(example_data: dict[str, Any]) -> None:
+    obj = {"nombre": "Web", "url": "https://www.example.org/"}
+    out = build_site(Site.model_validate(_with(example_data, obj)), EXAMPLE)
+    rules = yaml.safe_load(out["grafana-provisioning/alerting/vigia.yml"])["groups"][0]["rules"]
+    assert "vigia-puerto-expuesto" not in {r["uid"] for r in rules}
+    assert "Puertos que deben estar cerrados" not in out["dashboards/externos.json"]
+
+
 def test_generado(example_data: dict[str, Any]) -> None:
     out = build_site(Site.model_validate(example_data), EXAMPLE)
     groups = yaml.safe_load(out["prometheus/targets/externos.yml"])
@@ -77,6 +122,7 @@ def test_generado(example_data: dict[str, Any]) -> None:
     assert by[("Web corporativa", "web")]["labels"]["__param_module"] == "https_externo"
     assert by[("Servidor externo", "ping")]["targets"] == ["servidor.example.net"]
     assert by[("Servidor externo", "tcp")]["targets"] == ["servidor.example.net:443"]
+    assert by[("Servidor externo", "cerrado")]["targets"] == ["servidor.example.net:8443"]
     assert by[("SSH del servidor externo", "tcp")]["labels"]["alerta"] == "no"
     bb = yaml.safe_load(out["blackbox/blackbox.yml"])["modules"]
     assert bb["https_externo"]["http"]["fail_if_not_ssl"] is True
