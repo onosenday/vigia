@@ -21,6 +21,7 @@ ANTIGUEDAD = 120
 """Al arrancar se ignoran los mensajes de más de 2 min: no se contesta a destiempo."""
 ESPERA_MAX = 60.0
 ERROR_INTERNO = "⚠ Error interno; mira el log del bot"
+AVISO_LIMITE = "⚠ Demasiadas consultas: espera un minuto"
 
 
 def log(*partes: object) -> None:
@@ -28,23 +29,35 @@ def log(*partes: object) -> None:
 
 
 class Salud:
-    RESULTADOS = ("atendido", "descartado", "limitado", "error")
+    RESULTADOS = ("atendido", "descartado", "ignorado", "sin_respuesta", "limitado", "error", "fallo_envio")
+    """atendido: contestado; descartado: de otro chat; ignorado: sin texto o antiguo; sin_respuesta: texto que
+    no es un comando; limitado: callado por el límite; error: un comando falló; fallo_envio: Telegram no
+    aceptó la respuesta."""
 
-    def __init__(self) -> None:
+    def __init__(self, inicio: float) -> None:
         self._n = dict.fromkeys(self.RESULTADOS, 0)
+        self._ultimo_ok = inicio  # al arrancar cuenta como contacto: si nunca conecta, avisa pasado el margen
         self._lock = threading.Lock()
 
     def contar(self, resultado: str) -> None:
         with self._lock:
             self._n[resultado] += 1
 
+    def contacto(self, cuando: float) -> None:
+        """Telegram respondió a getUpdates."""
+        with self._lock:
+            self._ultimo_ok = cuando
+
     def texto(self) -> str:
         with self._lock:
-            n = dict(self._n)
+            n, ultimo = dict(self._n), self._ultimo_ok
         lineas = [
             "# HELP vigia_bot_up El bot está en marcha.",
             "# TYPE vigia_bot_up gauge",
             "vigia_bot_up 1",
+            "# HELP vigia_bot_telegram_ultimo_ok_timestamp_seconds Última respuesta correcta de Telegram.",
+            "# TYPE vigia_bot_telegram_ultimo_ok_timestamp_seconds gauge",
+            f"vigia_bot_telegram_ultimo_ok_timestamp_seconds {ultimo:.0f}",
             "# HELP vigia_bot_mensajes_total Mensajes recibidos por resultado.",
             "# TYPE vigia_bot_mensajes_total counter",
         ]
@@ -87,10 +100,12 @@ class Bucle:
         dormir: Callable[[float], None] = time.sleep,
     ) -> None:
         self.cfg, self.tg, self.ctx, self.salud, self.limitador = cfg, tg, ctx, salud, limitador
-        self.responder, self.dormir = responder, dormir
+        self.responder, self.reloj, self.dormir = responder, reloj, dormir
         self.offset: int | None = None
         self.desde = reloj() - ANTIGUEDAD
         self.espera = 1.0
+        self.limitado = False
+        """Ya se avisó del límite: no se repite hasta que vuelva a contestar."""
 
     def _fallo(self, e: Exception) -> None:
         detalle = e if isinstance(e, FuenteError) else type(e).__name__
@@ -105,6 +120,7 @@ class Bucle:
             self._fallo(e)
             return
         self.espera = 1.0
+        self.salud.contacto(self.reloj())
         for u in updates:
             uid = u.get("update_id")
             if not isinstance(uid, int) or isinstance(uid, bool):
@@ -117,6 +133,8 @@ class Bucle:
                     log("descartado un mensaje del chat", valor)
                 elif tipo == "atender":
                     self._atender(valor)
+                else:
+                    self.salud.contar("ignorado")
             except Exception as e:  # un update raro no puede parar el bot
                 self._fallo(e)
 
@@ -128,16 +146,26 @@ class Bucle:
             self.salud.contar("error")
             respuesta = ERROR_INTERNO
         if respuesta is None:
+            self.salud.contar("sin_respuesta")
             return
         if not self.limitador.permitir():
             self.salud.contar("limitado")
+            if not self.limitado:  # un solo aviso por racha, fuera del límite
+                self.limitado = True
+                self._enviar(AVISO_LIMITE)
             return
+        self.limitado = False
+        if self._enviar(respuesta) and respuesta != ERROR_INTERNO:
+            self.salud.contar("atendido")
+
+    def _enviar(self, texto: str) -> bool:
         try:
-            self.tg.enviar(self.cfg.chat_id, respuesta)
-            if respuesta != ERROR_INTERNO:
-                self.salud.contar("atendido")
+            self.tg.enviar(self.cfg.chat_id, texto)
         except FuenteError as e:
             log("telegram:", e)
+            self.salud.contar("fallo_envio")
+            return False
+        return True
 
 
 def main() -> None:
@@ -145,7 +173,7 @@ def main() -> None:
     tg = Telegram(cfg.telegram_token, http_json)
     prom = Prometheus(cfg.prometheus, http_json)
     ctx = Contexto(cfg, prom, Grafana(cfg.grafana, cfg.grafana_token, http_json))
-    salud = Salud()
+    salud = Salud(time.time())
     servir_salud(salud, cfg.puerto)
     try:
         tg.registrar_comandos(cfg.chat_id, [(c, d) for c, _, d in AYUDA])

@@ -70,5 +70,16 @@ reiniciar.
 
 ## Salud
 
-Prometheus lee `/metrics` del bot (job `bot`): `vigia_bot_up` y `vigia_bot_mensajes_total{resultado}`
-(atendido, descartado, limitado, error). Si el bot cae, avisa la regla «Exporter sin respuesta».
+Prometheus lee `/metrics` del bot (job `bot`):
+
+- `vigia_bot_up`.
+- `vigia_bot_mensajes_total{resultado}`: atendido, descartado (otro chat), ignorado (sin texto o anterior al
+  arranque), sin_respuesta (no es un comando), limitado, error (un comando falló) y fallo_envio (Telegram no
+  aceptó la respuesta).
+- `vigia_bot_telegram_ultimo_ok_timestamp_seconds`: última respuesta correcta de Telegram (al arrancar, la hora
+  de arranque).
+
+Si el bot cae, avisa «Exporter sin respuesta». Si sigue en marcha pero lleva más de 10 minutos sin respuesta de
+Telegram (token revocado, red, API caída), «Bot sin contacto con Telegram»; ese aviso llega por correo si
+Telegram no funciona. Con más de 20 respuestas por minuto el bot calla y avisa una sola vez («Demasiadas
+consultas»).

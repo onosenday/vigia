@@ -14,6 +14,12 @@
   `windows_os_info` de windows_exporter, con el ciclo buscado por la versión exacta (`windows_producto` en el
   catálogo y la tabla `vigia_ciclo_version`). Mismos avisos, `/host` y panel Mantenimiento que el resto
   ([docs/ciclos.md](docs/ciclos.md)).
+- **Bot**: alerta «Bot sin contacto con Telegram» (más de 10 minutos sin respuesta de getUpdates), más resultados
+  en `vigia_bot_mensajes_total` (ignorado, sin_respuesta, fallo_envio) y un aviso único cuando se limita
+  ([docs/bot.md](docs/bot.md)).
+- **Imágenes base fijadas por digest** (`<etiqueta>@sha256:…`): el bot, netinv y el updates-exporter se compilan
+  siempre igual. El updates-exporter pasa de Alpine 3.20 (sin soporte desde 04-2026) a 3.24. Al publicar una
+  versión se refrescan los digests.
 
 ## 0.5.0 (2026-10-29)
 

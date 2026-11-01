@@ -698,6 +698,42 @@ groups:
       gravedad: info
       categoria: mantenimiento
     isPaused: false
+  - uid: vigia-bot-telegram
+    title: Bot sin contacto con Telegram
+    condition: B
+    data:
+    - refId: A
+      relativeTimeRange:
+        from: 600
+        to: 0
+      datasourceUid: prometheus
+      model:
+        refId: A
+        expr: (time() - max(vigia_bot_telegram_ultimo_ok_timestamp_seconds)) / 60
+        instant: true
+        range: false
+    - refId: B
+      datasourceUid: __expr__
+      model:
+        refId: B
+        type: threshold
+        expression: A
+        conditions:
+        - evaluator:
+            type: gt
+            params:
+            - 10
+    noDataState: OK
+    execErrState: Error
+    for: 1m
+    annotations:
+      summary: 'El bot de consultas lleva {{ with .Values.A }}{{ humanize .Value }}{{ end }} minutos sin respuesta de Telegram:
+        mira su log'
+    labels:
+      vigia: si
+      gravedad: warning
+      categoria: incidencia
+    isPaused: false
   - uid: vigia-exporter
     title: Exporter sin respuesta
     condition: B

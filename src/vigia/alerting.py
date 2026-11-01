@@ -29,6 +29,8 @@ yaml.SafeDumper.add_representer(
 )
 
 PROBE_JOBS = ("web", "servicio", "ping", "dns", "externo")
+BOT_SIN_TELEGRAM_MIN = 10
+"""Minutos sin un getUpdates correcto antes de avisar (el long polling responde, como mucho, cada 50 s)."""
 DATASOURCE_UID = "prometheus"
 FS_EXCLUDED = "tmpfs|ramfs|overlay|squashfs|nsfs|devtmpfs|fuse.+"
 
@@ -40,6 +42,7 @@ CLASIFICACION: dict[str, tuple[Gravedad, Categoria]] = {
     "vigia-caido": ("critical", "incidencia"),
     "vigia-puerto-expuesto": ("critical", "incidencia"),
     "vigia-exporter": ("warning", "incidencia"),
+    "vigia-bot-telegram": ("warning", "incidencia"),
     "vigia-impresora-error": ("warning", "incidencia"),
     "vigia-tarea-retrasada": ("warning", "incidencia"),
     "vigia-tarea-error": ("warning", "incidencia"),
@@ -178,6 +181,20 @@ def rules(s: Site) -> list[dict[str, Any]]:
         out += updates_rules(s)
     if any(h.imagenes for h in s.hosts):
         out += image_rules(s)
+    if s.modulos.bot.activo:
+        # el bot sigue «up» aunque no llegue a Telegram (token revocado, red, API caída): su último poll
+        out.append(
+            _rule(
+                "vigia-bot-telegram",
+                "Bot sin contacto con Telegram",
+                "(time() - max(vigia_bot_telegram_ultimo_ok_timestamp_seconds)) / 60",
+                "gt",
+                BOT_SIN_TELEGRAM_MIN,
+                "1m",
+                "El bot de consultas lleva {{ with .Values.A }}{{ humanize .Value }}{{ end }} minutos sin "
+                "respuesta de Telegram: mira su log",
+            )
+        )
     out.append(
         _rule(
             "vigia-exporter",

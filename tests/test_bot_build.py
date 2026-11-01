@@ -18,6 +18,15 @@ def _out(data: dict[str, Any]) -> tuple[Site, dict[str, str | bytes]]:
     return s, build_site(s, EXAMPLE)
 
 
+def test_imagenes_base_fijadas_por_digest() -> None:
+    import re
+    from importlib.resources import files
+
+    for f in sorted(Path(str(files("vigia") / "images")).glob("*/Dockerfile")):
+        froms = [x for x in f.read_text(encoding="utf-8").splitlines() if x.startswith("FROM ")]
+        assert froms and all(re.fullmatch(r"FROM \S+:\S+@sha256:[0-9a-f]{64}", x) for x in froms), f
+
+
 def test_bot_en_el_build(example_data: dict[str, Any]) -> None:
     s, out = _out(example_data)
     assert {"bot/Dockerfile", "bot/__main__.py", "bot/comandos.py", "bot/config.json"} <= set(out)

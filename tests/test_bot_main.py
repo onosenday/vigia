@@ -7,12 +7,13 @@ from typing import Any
 
 import pytest
 
-from vigia.bot.__main__ import ERROR_INTERNO, Bucle, Salud, servir_salud
+from vigia.bot import __main__ as bot_main
+from vigia.bot.__main__ import AVISO_LIMITE, ERROR_INTERNO, Bucle, Salud, servir_salud
 from vigia.bot.comandos import Contexto, responder
-from vigia.bot.fuentes import FuenteError
-from vigia.bot.telegram import Limitador
+from vigia.bot.fuentes import FuenteError, http_json
+from vigia.bot.telegram import Limitador, Telegram
 
-from .bot_fakes import AHORA, CHAT, contexto
+from .bot_fakes import AHORA, CHAT, cfg, contexto
 
 
 class FakeTg:
@@ -37,7 +38,7 @@ def _msg(uid: int, chat: int = CHAT, text: str = "/ayuda") -> dict[str, Any]:
 
 
 def _bucle(tg: FakeTg, dormidas: list[float] | None = None, **kw: Any) -> tuple[Bucle, Salud]:
-    c, salud = contexto(), Salud()
+    c, salud = contexto(), Salud(AHORA)
     sin_espera = Limitador(reloj=itertools.count(0.0, 2.0).__next__)
     destino = dormidas if dormidas is not None else []
     b = Bucle(c.cfg, tg, c, salud, sin_espera, reloj=lambda: AHORA, dormir=destino.append, **kw)
@@ -89,7 +90,7 @@ def test_responder_por_defecto() -> None:
 
 
 def test_metrics_http() -> None:
-    srv = servir_salud(Salud(), 0)
+    srv = servir_salud(Salud(AHORA), 0)
     try:
         url = f"http://127.0.0.1:{srv.server_address[1]}/metrics"
         with urllib.request.urlopen(url, timeout=5) as r:  # noqa: S310
@@ -100,7 +101,7 @@ def test_metrics_http() -> None:
 
 
 def test_ruta_desconocida_404() -> None:
-    srv = servir_salud(Salud(), 0)
+    srv = servir_salud(Salud(AHORA), 0)
     try:
         url = f"http://127.0.0.1:{srv.server_address[1]}/otra"
         with pytest.raises(urllib.error.HTTPError) as e:
@@ -151,14 +152,14 @@ def test_excepcion_inesperada_al_procesar_avanza_offset() -> None:
     assert b.espera == 2.0
 
 
-def test_limitado() -> None:
-    tg = FakeTg([[_msg(1), _msg(2)]])
-    c, salud = contexto(), Salud()
+def test_limitado_avisa_una_vez_por_racha() -> None:
+    tg = FakeTg([[_msg(1), _msg(2), _msg(3)]])
+    c, salud = contexto(), Salud(AHORA)
     lim = Limitador(por_minuto=1, reloj=itertools.count(0.0, 2.0).__next__)
     b = Bucle(c.cfg, tg, c, salud, lim, reloj=lambda: AHORA, dormir=lambda s: None)
     b.paso()
-    assert len(tg.enviados) == 1
-    assert 'vigia_bot_mensajes_total{resultado="limitado"} 1' in salud.texto()
+    assert [txt for _, txt in tg.enviados][1:] == [AVISO_LIMITE]  # la respuesta y un solo aviso
+    assert 'vigia_bot_mensajes_total{resultado="limitado"} 2' in salud.texto()
 
 
 def test_enviar_con_fuenteerror_no_rompe() -> None:
@@ -169,3 +170,90 @@ def test_enviar_con_fuenteerror_no_rompe() -> None:
     b, salud = _bucle(Falla([[_msg(1)]]))
     b.paso()
     assert b.offset == 2
+    assert 'vigia_bot_mensajes_total{resultado="fallo_envio"} 1' in salud.texto()
+    assert 'vigia_bot_mensajes_total{resultado="atendido"} 0' in salud.texto()
+
+
+def test_ultimo_contacto_con_telegram() -> None:
+    tg = FakeTg([FuenteError("HTTP 502"), []])
+    b, salud = _bucle(tg)
+    b.reloj = lambda: AHORA + 300
+    b.paso()  # falla: el último contacto sigue siendo el arranque
+    assert f"vigia_bot_telegram_ultimo_ok_timestamp_seconds {AHORA:.0f}" in salud.texto()
+    b.paso()
+    assert f"vigia_bot_telegram_ultimo_ok_timestamp_seconds {AHORA + 300:.0f}" in salud.texto()
+
+
+def test_cuenta_ignorados_y_sin_respuesta() -> None:
+    sin_texto = {"update_id": 2, "message": {"chat": {"id": CHAT}, "date": AHORA}}
+    tg = FakeTg([[_msg(1, text="hola"), sin_texto]])
+    b, salud = _bucle(tg)
+    b.paso()
+    assert tg.enviados == []
+    assert 'vigia_bot_mensajes_total{resultado="sin_respuesta"} 1' in salud.texto()
+    assert 'vigia_bot_mensajes_total{resultado="ignorado"} 1' in salud.texto()
+
+
+TOKEN = cfg().telegram_token
+
+
+def test_el_token_no_sale_en_errores_de_red() -> None:
+    # nada escucha en el puerto 9: la URL (con el token) no debe aparecer en el error
+    with pytest.raises(FuenteError) as e:
+        http_json(f"http://127.0.0.1:9/bot{TOKEN}/getUpdates", body={}, timeout=2)
+    assert TOKEN not in str(e.value) and TOKEN not in repr(e.value)
+
+
+def test_el_token_no_sale_en_el_log(capsys: pytest.CaptureFixture[str]) -> None:
+    def http(url: str, **kw: Any) -> Any:
+        raise RuntimeError(f"fallo en {url}")  # una excepción que sí lleva la URL
+
+    c = contexto()
+    b = Bucle(c.cfg, Telegram(TOKEN, http), c, Salud(AHORA), Limitador(), dormir=lambda s: None)
+    b.paso()
+    salida = capsys.readouterr().out
+    assert "RuntimeError" in salida and TOKEN not in salida
+
+
+class _Fin(Exception):
+    pass
+
+
+def _main(monkeypatch: pytest.MonkeyPatch, tg: Any) -> list[str]:
+    c = contexto()
+    lineas: list[str] = []
+    monkeypatch.setattr(bot_main, "load", lambda *a: c.cfg)
+    monkeypatch.setattr(bot_main, "Telegram", lambda *a: tg)
+    monkeypatch.setattr(bot_main, "servir_salud", lambda *a: None)
+    monkeypatch.setattr(bot_main, "log", lambda *a: lineas.append(" ".join(map(str, a))))
+
+    def paso(self: Bucle) -> None:
+        raise _Fin
+
+    monkeypatch.setattr(Bucle, "paso", paso)
+    with pytest.raises(_Fin):
+        bot_main.main()
+    return lineas
+
+
+def test_main_registra_comandos_y_arranca(monkeypatch: pytest.MonkeyPatch) -> None:
+    class Tg(FakeTg):
+        registrados: list[str] = []
+
+        def registrar_comandos(self, chat_id: int, comandos: Any) -> None:
+            self.registrados = [c for c, _ in comandos]
+
+    tg = Tg([])
+    lineas = _main(monkeypatch, tg)
+    assert "ayuda" in tg.registrados
+    assert any(x.startswith("bot en marcha: Ejemplo") for x in lineas)
+
+
+def test_main_sigue_si_falla_registrar_comandos(monkeypatch: pytest.MonkeyPatch) -> None:
+    class Tg(FakeTg):
+        def registrar_comandos(self, chat_id: int, comandos: Any) -> None:
+            raise FuenteError("setMyCommands rechazado")
+
+    lineas = _main(monkeypatch, Tg([]))
+    assert lineas[0] == "setMyCommands: setMyCommands rechazado"
+    assert any(x.startswith("bot en marcha") for x in lineas)

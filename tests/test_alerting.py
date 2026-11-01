@@ -32,6 +32,7 @@ def test_reglas_del_ejemplo(example_data: dict[str, Any]) -> None:
     assert set(rules) == {
         "vigia-caido",
         "vigia-puerto-expuesto",
+        "vigia-bot-telegram",
         "vigia-certificado",
         "vigia-disco",
         "vigia-exporter",
@@ -70,7 +71,13 @@ def test_sin_web_ni_nodos_no_hay_reglas_de_certificado_ni_disco(example_data: di
     example_data["hosts"] = [h for h in example_data["hosts"] if h.get("tipo") != "windows"]
     _sin_actualizaciones(example_data)
     rules = _rules(_build(example_data))
-    assert set(rules) == {"vigia-caido", "vigia-exporter", "vigia-consumible", "vigia-impresora-error"}
+    assert set(rules) == {
+        "vigia-caido",
+        "vigia-exporter",
+        "vigia-consumible",
+        "vigia-impresora-error",
+        "vigia-bot-telegram",
+    }
 
 
 def test_inactivo_no_genera_nada(example_data: dict[str, Any]) -> None:
@@ -251,6 +258,16 @@ def test_reglas_de_actualizaciones(example_data: dict[str, Any]) -> None:
     _sin_actualizaciones(example_data)
     rules = _rules(_build(example_data))
     assert not {"vigia-seguridad-pendiente", "vigia-script-anticuado"} & set(rules)
+
+
+def test_regla_del_bot(example_data: dict[str, Any]) -> None:
+    example_data["modulos"]["bot"] = {"activo": True, "grafana_token": "BOT_GRAFANA_TOKEN"}
+    regla = _rules(_build(example_data))["vigia-bot-telegram"]
+    assert "vigia_bot_telegram_ultimo_ok_timestamp_seconds" in regla["data"][0]["model"]["expr"]
+    assert regla["data"][1]["model"]["conditions"][0]["evaluator"] == {"type": "gt", "params": [10]}
+    assert regla["labels"]["categoria"] == "incidencia"
+    example_data["modulos"]["bot"]["activo"] = False
+    assert "vigia-bot-telegram" not in _rules(_build(example_data))
 
 
 def test_reglas_de_imagenes(example_data: dict[str, Any]) -> None:
