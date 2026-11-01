@@ -5,7 +5,7 @@
 # la versión del sistema (os-release) y la de los productos que lleva encima (OMV, Proxmox VE).
 # Requiere en el host:  updexp ALL=(root) NOPASSWD: /usr/bin/apt-get update
 set -u
-sudo /usr/bin/apt-get update -qq >/dev/null 2>&1 || true
+sudo -n /usr/bin/apt-get update >/dev/null 2>&1 || true   # exactamente lo que permite sudoers: ni un argumento más
 sim="$(apt-get -s -o Debug::NoLocking=true upgrade 2>/dev/null)"
 total="$(printf '%s\n' "$sim"   | grep -c '^Inst')"
 security="$(printf '%s\n' "$sim" | grep '^Inst' | grep -ciE 'security')"

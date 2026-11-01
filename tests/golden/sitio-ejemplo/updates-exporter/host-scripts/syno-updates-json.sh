@@ -19,7 +19,7 @@ ver="DSM ${prod:-?}-${build:-?}"
 num="$(printf '%s-%s' "$prod" "$build" | tr -cd 'A-Za-z0-9._-')"
 
 # --- ¿hay actualización pendiente? -----------------------------------------
-chk="$(sudo /usr/syno/bin/synoupgrade --check 2>/dev/null || sudo synoupgrade --check 2>/dev/null)"
+chk="$(sudo -n /usr/syno/bin/synoupgrade --check 2>/dev/null || sudo -n synoupgrade --check 2>/dev/null)"
 if printf '%s\n' "$chk" | grep -qi 'available update:'; then avail=1; else avail=0; fi
 
 ver="$(printf '%s' "$ver" | sed 's/\\/\\\\/g; s/"/\\"/g')"   # escapar para JSON
