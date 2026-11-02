@@ -76,3 +76,11 @@ def test_prometheus_caido(sitio: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     _prom(monkeypatch, caido=True)
     r = CliRunner().invoke(cli.app, ["decisiones", "-s", str(sitio)])
     assert r.exit_code == 1 and "no responde" in r.output
+
+
+def test_decisiones_rotas_sin_traceback(sitio: Path) -> None:
+    (sitio.parent / "decisiones.yaml").write_text("- {seccion: discos}\n", encoding="utf-8")
+    for orden in (["build", "-s", str(sitio), "-o", str(sitio.parent / "b")], ["validate", "-s", str(sitio)]):
+        r = CliRunner().invoke(cli.app, orden)
+        assert r.exit_code == 1, r.output  # mensaje limpio, sin traceback
+        assert "decisiones.yaml" in r.output

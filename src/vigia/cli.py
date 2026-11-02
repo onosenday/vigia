@@ -5,6 +5,7 @@ from __future__ import annotations
 import dataclasses
 import difflib
 import json
+import os
 import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Annotated
@@ -18,7 +19,7 @@ from vigia.bot.decisiones import VIGENTE
 from vigia.bot.fuentes import FuenteError, Prometheus, http_json
 from vigia.bot.pendientes import estado_decisiones
 from vigia.build import bot_config, build_site, write_build
-from vigia.decisiones import load_decisiones, quitar_entradas
+from vigia.decisiones import Decision, load_decisiones, quitar_entradas
 from vigia.model import Site, load_site
 
 if TYPE_CHECKING:
@@ -46,8 +47,9 @@ def version() -> None:
 
 
 def _load(site: Path) -> Site:
+    """Lee y valida el site.yaml y, si lo declara, su decisiones.yaml (va en lo generado)."""
     try:
-        return load_site(site)
+        s = load_site(site)
     except ValidationError as e:
         typer.echo(f"{site}: no es válido", err=True)
         for err in e.errors():
@@ -57,6 +59,19 @@ def _load(site: Path) -> Site:
     except (OSError, ValueError) as e:
         typer.echo(f"{site}: {e}", err=True)
         raise typer.Exit(1) from None
+    _decisiones_del_sitio(s, site)
+    return s
+
+
+def _decisiones_del_sitio(s: Site, site: Path) -> list[Decision]:
+    rel = s.modulos.bot.decisiones
+    if not rel:
+        return []
+    try:
+        return load_decisiones(site.parent / rel, [h.display_name for h in s.hosts])
+    except (OSError, ValueError) as e:
+        typer.echo(f"{rel}: {e}", err=True)
+        raise typer.Exit(1) from None
 
 
 @app.command()
@@ -65,15 +80,7 @@ def validate(site: SiteOpt = Path("site.yaml")) -> None:
     s = _load(site)
     for warning in s.warnings():
         typer.echo(f"aviso: {warning}", err=True)
-    rel = s.modulos.bot.decisiones
-    extra = ""
-    if rel:
-        try:
-            n_dec = len(load_decisiones(site.parent / rel, [h.display_name for h in s.hosts]))
-        except (OSError, ValueError) as e:
-            typer.echo(f"{rel}: {e}", err=True)
-            raise typer.Exit(1) from None
-        extra = f", {n_dec} decisiones"
+    extra = f", {len(_decisiones_del_sitio(s, site))} decisiones" if s.modulos.bot.decisiones else ""
     typer.echo(
         f"«{s.sitio.nombre}»: válido ({len(s.hosts)} hosts, {len(s.servicios)} servicios, "
         f"{len(s.web.objetivos)} webs, {len(s.ping)} pings{extra})"
@@ -93,11 +100,7 @@ def decisiones_cmd(
         typer.echo("el sitio no declara `modulos.bot.decisiones`", err=True)
         raise typer.Exit(1)
     path = site.parent / rel
-    try:
-        lista = load_decisiones(path, [h.display_name for h in s.hosts])
-    except (OSError, ValueError) as e:
-        typer.echo(f"{rel}: {e}", err=True)
-        raise typer.Exit(1) from None
+    lista = _decisiones_del_sitio(s, site)
     url = f"http://{s.monitor_host.ip}:{s.monitor.puertos.prometheus}"
     cfg = bot_cfg.desde_dict(json.loads(bot_config(s, lista)), {}, sin_telegram=True)
     cfg = dataclasses.replace(cfg, prometheus=url)
@@ -126,7 +129,9 @@ def decisiones_cmd(
     diff_txt = difflib.unified_diff(antes.splitlines(True), despues.splitlines(True), str(rel), str(rel))
     typer.echo("".join(diff_txt))
     if yes:
-        path.write_text(despues, encoding="utf-8")
+        tmp = path.with_name(path.name + ".tmp")
+        tmp.write_text(despues, encoding="utf-8")
+        os.replace(tmp, path)  # atómico: una interrupción no deja el fichero a medias
         typer.echo(f"{rel}: {len(quitar)} decisiones quitadas")
     else:
         typer.echo("(solo diff: añade --yes para escribir)")
