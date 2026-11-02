@@ -17,7 +17,8 @@ que hacer algo o no.
 
 ## Fichero `decisiones.yaml`
 
-Es opcional y va en la carpeta del sitio, junto a `site.yaml`, igual que `devices.yaml`. Es una lista:
+Es opcional y va en la carpeta del sitio. Se declara en `site.yaml` igual que `netinv.dispositivos`:
+`modulos.bot.decisiones: decisiones.yaml` (ruta relativa al sitio). Es una lista:
 
 ```yaml
 - seccion: imagenes            # soporte | versiones | imagenes | digest
@@ -58,7 +59,7 @@ Una línea de `/pendientes` queda cubierta por una decisión si se cumplen todas
 ## Salida del bot
 
 - Las líneas cubiertas salen de su sección y van a un bloque final, `✔ Decidido (no hace falta hacer nada)`, con la
-  línea original, `: <motivo>` y ` (<ref>)` si lo hay. Las que llevan `revisar` añaden `; revisar el dd-mm-aaaa`.
+  línea original, ` — <motivo>` (las líneas de soporte ya llevan `:`) y ` (<ref>)` si lo hay. Las que llevan `revisar` añaden `; revisar el dd-mm-aaaa`.
 - **Una decisión nunca oculta un aviso.** Si la línea ya pasa el umbral de su alerta (⚠), se queda en su sección y
   se le añade ` (decidido: <motivo>)`.
 - Si una sección se queda sin líneas, desaparece, como ahora.
