@@ -27,11 +27,13 @@ from .consultas import (
     por,
     serie,
 )
+from .decisiones import VIGENTE, Decision, Juez
 from .formato import esc
-from .fuentes import Prometheus
+from .fuentes import FuenteError, Prometheus
 
 AVISA = " ⚠"
 PROXIMO = " · próximo"
+DECIDIDO = "✔ Decidido (no hace falta hacer nada)"
 MAX_DIGEST = 6
 """Contenedores con imagen nueva (mismo tag) que se nombran por host; del resto, solo cuántos."""
 
@@ -74,9 +76,18 @@ def _seccion(titulo: str, lineas: Iterable[str]) -> list[str]:
     return [f"<b>{titulo}</b>", *ls] if ls else []
 
 
-def pendientes(cfg: Config, prom: Prometheus, ahora: float) -> list[str]:
-    """Líneas de /pendientes (sin recortar). `prom` es la fuente de Prometheus del bot."""
+def _motivo(d: Decision) -> str:
+    txt = f" — {esc(d.motivo)}"
+    if d.revisar:
+        txt += f"; revisar el {d.revisar.strftime('%d-%m-%Y')}"
+    return txt + (f" ({esc(d.ref)})" if d.ref else "")
+
+
+def _calcular(cfg: Config, prom: Prometheus, ahora: float) -> tuple[list[str], list[str], Juez, Avisos]:
+    """Secciones pendientes, líneas decididas (en el orden de las secciones), el juez y los avisos."""
     av = Avisos()
+    juez = Juez(cfg.decisiones, datetime.fromtimestamp(ahora, ZoneInfo(cfg.zona)).date())
+    decididas: list[str] = []
     orden = _orden(cfg)
 
     def q(expr: str) -> Serie:
@@ -129,20 +140,28 @@ def pendientes(cfg: Config, prom: Prometheus, ahora: float) -> list[str]:
     filas = []
     for m, v in q(SOPORTE):
         txt = soporte(m, v, aviso.get(m.get("producto", ""), 0), cfg, ahora)
-        if txt:
-            filas.append(
-                (orden(m.get("nombre", "")), v, f"{esc(m.get('nombre', ''))} · {esc(_producto(m))}: {txt}")
-            )
+        if not txt:
+            continue
+        linea = f"{esc(m.get('nombre', ''))} · {esc(_producto(m))}: {txt}"
+        d = juez.busca("soporte", m, m.get("ciclo"))
+        if d and AVISA in txt:
+            linea += f" (decidido: {esc(d.motivo)})"  # una decisión nunca oculta un aviso
+        elif d:
+            decididas.append(linea + _motivo(d))
+            continue
+        filas.append((orden(m.get("nombre", "")), v, linea))
     out += _seccion("🧭 Soporte", (t for *_, t in sorted(filas)))
 
     versiones = sorted(q(VERSIONES), key=lambda x: (orden(x[0].get("nombre", "")), _producto(x[0])))
-    out += _seccion(
-        "⬆ Versiones mayores",
-        (
-            f"{esc(m.get('nombre', ''))} · {esc(_producto(m))} → {esc(m.get('ultimo', ''))}"
-            for m, _ in versiones
-        ),
-    )
+    mayores = []
+    for m, _ in versiones:
+        linea = f"{esc(m.get('nombre', ''))} · {esc(_producto(m))} → {esc(m.get('ultimo', ''))}"
+        d = juez.busca("versiones", m, m.get("ultimo"))
+        if d:
+            decididas.append(linea + _motivo(d))
+        else:
+            mayores.append(linea)
+    out += _seccion("⬆ Versiones mayores", mayores)
 
     seg = por(prom, av, SEGURIDAD)
     pend = sorted(((n, v) for n, v in por(prom, av, PENDIENTES).items() if v > 0), key=lambda x: orden(x[0]))
@@ -159,24 +178,57 @@ def pendientes(cfg: Config, prom: Prometheus, ahora: float) -> list[str]:
         (m for m, _ in imgs if m.get("tipo") == "tag"),
         key=lambda m: (orden(m.get("nombre", "")), m.get("contenedor", "")),
     )
+    lineas = []
+    for m in tags:
+        linea = (
+            f"{esc(m.get('nombre', ''))} · {esc(m.get('contenedor', ''))} {esc(m.get('local', ''))} → "
+            f"{esc(m.get('remota', ''))}"
+        )
+        d = juez.busca("imagenes", m, m.get("remota"))
+        if d:
+            decididas.append(linea + _motivo(d))
+        else:
+            lineas.append(linea)
     digest: dict[str, list[str]] = {}
     for m, _ in imgs:
         if m.get("tipo") == "digest":
-            digest.setdefault(m.get("nombre", ""), []).append(m.get("contenedor", ""))
-    lineas = [
-        f"{esc(m.get('nombre', ''))} · {esc(m.get('contenedor', ''))} {esc(m.get('local', ''))} → "
-        f"{esc(m.get('remota', ''))}"
-        for m in tags
-    ]
+            d = juez.busca("digest", m)
+            if d:
+                decididas.append(
+                    f"{esc(m.get('nombre', ''))} · {esc(m.get('contenedor', ''))}: "
+                    f"imagen nueva sin cambiar de etiqueta{_motivo(d)}"
+                )
+            else:
+                digest.setdefault(m.get("nombre", ""), []).append(m.get("contenedor", ""))
     for n in sorted(digest, key=orden):
         cs = sorted(digest[n])
         lista = ", ".join(esc(c) for c in cs[:MAX_DIGEST]) + (" …" if len(cs) > MAX_DIGEST else "")
         lineas.append(f"{esc(n)}: {len(cs)} con imagen nueva sin cambiar de etiqueta ({lista})")
     out += _seccion("🐳 Imágenes", lineas)
 
-    if not out and av.lineas:
+    return out, decididas, juez, av
+
+
+def pendientes(cfg: Config, prom: Prometheus, ahora: float) -> list[str]:
+    """Líneas de /pendientes (sin recortar). `prom` es la fuente de Prometheus del bot."""
+    out, decididas, juez, av = _calcular(cfg, prom, ahora)
+    if not out and not decididas and av.lineas:
         return av.lineas  # sin datos no se puede decir que no haya nada pendiente
-    return (out or ["Nada pendiente ✅"]) + av.lineas
+    lineas = (out or ["Nada pendiente ✅"]) + _seccion(DECIDIDO, decididas)
+    n = sum(1 for _, e in juez.estado() if e != VIGENTE)
+    if n:
+        que = "decisión obsoleta o vencida" if n == 1 else "decisiones obsoletas o vencidas"
+        lineas.append(f"{n} {que}: vigia decisiones --limpiar")
+    return lineas + av.lineas
+
+
+def estado_decisiones(cfg: Config, prom: Prometheus, ahora: float) -> list[tuple[Decision, str]]:
+    """Cada decisión con su estado (`vigia decisiones`). Si falta algún dato, FuenteError: sin datos, una
+    decisión parecería obsoleta sin serlo."""
+    _, _, juez, av = _calcular(cfg, prom, ahora)
+    if av.lineas:
+        raise FuenteError("; ".join(av.lineas))
+    return juez.estado()
 
 
 def versiones_host(cfg: Config, prom: Prometheus, av: Avisos, nombre: str, ahora: float) -> list[str]:

@@ -2,9 +2,16 @@
 
 from __future__ import annotations
 
+from datetime import date
+
+import pytest
+
 from vigia.alerting import printer_rules
 from vigia.bot import consultas as c
 from vigia.bot.comandos import responder
+from vigia.bot.decisiones import OBSOLETA, VIGENTE, Decision
+from vigia.bot.fuentes import FuenteError
+from vigia.bot.pendientes import estado_decisiones
 from vigia.model import Site
 
 from .bot_fakes import Serie, cfg, contexto
@@ -141,3 +148,51 @@ def test_host_sin_soporte_y_version_mayor() -> None:
 def test_consumibles_igual_que_la_alerta(example_data: dict[str, object]) -> None:
     (consumible, _) = printer_rules(Site.model_validate(example_data))
     assert consumible["data"][0]["model"]["expr"] == c.CONSUMIBLES
+
+
+DEC = (
+    Decision("imagenes", "Nodo 1", "grafana", "esperamos a la 13.4", ofrecido="13.3.0", ref="T-1"),
+    Decision("soporte", "NAS", "debian", "se retira el NAS", revisar=date(2026, 12, 1)),
+    Decision("soporte", "Nodo 2", "debian", "lo sabemos", ofrecido="11"),  # con ⚠: no se oculta
+    Decision("digest", "Nodo 1", "pihole", "la actualiza watchtower", revisar=date(2027, 1, 1)),
+    Decision("imagenes", "Nodo 1", "grafana", "oferta vieja", ofrecido="13.2.0"),  # obsoleta
+)
+
+
+def test_pendientes_con_decisiones() -> None:
+    lineas = (responder("/pendientes", contexto(PROM, decisiones=DEC)) or "").splitlines()
+    assert "NAS · Debian 12: soporte hasta 25-02-2027 · próximo" not in lineas
+    assert "Nodo 2 · Debian 11: sin soporte desde hace 59 días ⚠ (decidido: lo sabemos)" in lineas
+    assert "Nodo 1: 1 con imagen nueva sin cambiar de etiqueta (homepage)" in lineas
+    i = lineas.index("<b>✔ Decidido (no hace falta hacer nada)</b>")
+    assert lineas[i + 1 :] == [
+        "NAS · Debian 12: soporte hasta 25-02-2027 · próximo — se retira el NAS; revisar el 01-12-2026",
+        "Nodo 1 · grafana 13.0.2 → 13.3.0 — esperamos a la 13.4 (T-1)",
+        "Nodo 1 · pihole: imagen nueva sin cambiar de etiqueta — la actualiza watchtower; "
+        "revisar el 01-01-2027",
+        "1 decisión obsoleta o vencida: vigia decisiones --limpiar",
+    ]
+    assert not any(x.startswith("Nodo 1 · grafana") for x in lineas[:i])
+
+
+def test_todo_decidido() -> None:
+    prom = {c.IMAGENES: PROM[c.IMAGENES][:1]}
+    texto = responder("/pendientes", contexto(prom, decisiones=DEC[:1])) or ""
+    assert texto.splitlines() == [
+        "Nada pendiente ✅",
+        "<b>✔ Decidido (no hace falta hacer nada)</b>",
+        "Nodo 1 · grafana 13.0.2 → 13.3.0 — esperamos a la 13.4 (T-1)",
+    ]
+
+
+def test_estado_decisiones() -> None:
+    ctx = contexto(PROM, decisiones=DEC)
+    assert [e for _, e in estado_decisiones(ctx.cfg, ctx.prom, ctx.ahora())] == [
+        VIGENTE, VIGENTE, VIGENTE, VIGENTE, OBSOLETA
+    ]
+
+
+def test_estado_decisiones_sin_prometheus() -> None:
+    ctx = contexto(prom_caido=True, decisiones=DEC)
+    with pytest.raises(FuenteError):
+        estado_decisiones(ctx.cfg, ctx.prom, ctx.ahora())
