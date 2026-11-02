@@ -54,8 +54,10 @@ def fake_http(
     alertas: list[dict[str, Any]] | None = None,
     prom_caido: bool = False,
     grafana_caida: bool = False,
+    consulta_caida: str | None = None,
 ) -> Http:
-    """Prometheus responde `prom[expresión]`; Grafana, `alertas`. `*_caido` simula la fuente sin respuesta."""
+    """Prometheus responde `prom[expresión]`; Grafana, `alertas`. `*_caido` simula la fuente sin respuesta;
+    `consulta_caida` hace fallar solo esa expresión."""
 
     def http(
         url: str, *, headers: Mapping[str, str] | None = None, body: Any = None, timeout: float = 10.0
@@ -64,6 +66,8 @@ def fake_http(
             if prom_caido:
                 raise FuenteError("URLError")
             expr = parse_qs(urlsplit(url).query)["query"][0]
+            if expr == consulta_caida:
+                raise FuenteError("URLError")
             result = [{"metric": m, "value": [AHORA, str(v)]} for m, v in (prom or {}).get(expr, [])]
             return {"status": "success", "data": {"resultType": "vector", "result": result}}
         if url.startswith("http://grafana:3000/"):
@@ -80,9 +84,10 @@ def contexto(
     alertas: list[dict[str, Any]] | None = None,
     prom_caido: bool = False,
     grafana_caida: bool = False,
+    consulta_caida: str | None = None,
     **cambios: Any,
 ) -> Contexto:
     c = cfg(**cambios)
-    h = fake_http(prom, alertas, prom_caido, grafana_caida)
+    h = fake_http(prom, alertas, prom_caido, grafana_caida, consulta_caida)
     prom_, grafana = Prometheus(c.prometheus, h), Grafana(c.grafana, c.grafana_token, h)
     return Contexto(c, prom_, grafana, ahora=lambda: AHORA)

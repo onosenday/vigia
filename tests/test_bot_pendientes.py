@@ -196,3 +196,65 @@ def test_estado_decisiones_sin_prometheus() -> None:
     ctx = contexto(prom_caido=True, decisiones=DEC)
     with pytest.raises(FuenteError):
         estado_decisiones(ctx.cfg, ctx.prom, ctx.ahora())
+
+
+def _soporte(nombre: str, restante: float) -> tuple[dict[str, str], float]:
+    return _nodo(nombre, producto="debian", producto_nombre="Debian", ciclo="12", version="12"), restante
+
+
+def test_decididas_en_orden_de_secciones() -> None:
+    prom = {
+        c.SOPORTE: [_soporte("NAS", 120.0), _soporte("Nodo 1", 100.0)],
+        c.IMAGENES: PROM[c.IMAGENES],
+    }
+    dec = (
+        Decision("soporte", "NAS", "debian", "a"),
+        Decision("soporte", "Nodo 1", "debian", "b"),
+        Decision("digest", "Nodo 1", "pihole", "c"),
+        Decision("digest", "Nodo 1", "homepage", "d"),
+    )
+    lineas = (responder("/pendientes", contexto(prom, decisiones=dec)) or "").splitlines()
+    assert lineas[lineas.index("<b>✔ Decidido (no hace falta hacer nada)</b>") + 1 :] == [
+        "Nodo 1 · Debian 12: soporte hasta 05-02-2027 · próximo — b",
+        "NAS · Debian 12: soporte hasta 25-02-2027 · próximo — a",
+        "Nodo 1 · homepage: imagen nueva sin cambiar de etiqueta — d",
+        "Nodo 1 · pihole: imagen nueva sin cambiar de etiqueta — c",
+    ]
+
+
+def test_datos_parciales_no_dicen_nada_pendiente() -> None:
+    prom = {c.SOPORTE: [_soporte("NAS", 120.0)]}
+    dec = (
+        Decision("soporte", "NAS", "debian", "se retira"),
+        Decision("imagenes", "Nodo 1", "grafana", "no se cuenta", ofrecido="13.3.0"),
+    )
+    ctx = contexto(prom, decisiones=dec, consulta_caida=c.IMAGENES)
+    lineas = (responder("/pendientes", ctx) or "").splitlines()
+    assert lineas == [
+        "⚠ Prometheus no responde",
+        "<b>✔ Decidido (no hace falta hacer nada)</b>",
+        "NAS · Debian 12: soporte hasta 25-02-2027 · próximo — se retira",
+    ]
+
+
+def test_datos_parciales_con_pendientes_ponen_avisos_antes_de_lo_decidido() -> None:
+    prom = {c.CERTIFICADOS: PROM[c.CERTIFICADOS], c.SOPORTE: [_soporte("NAS", 120.0)]}
+    dec = (Decision("soporte", "NAS", "debian", "se retira"), Decision("digest", "Nodo 1", "x", "y"))
+    ctx = contexto(prom, decisiones=dec, consulta_caida=c.IMAGENES)
+    lineas = (responder("/pendientes", ctx) or "").splitlines()
+    assert lineas[-3:] == [
+        "⚠ Prometheus no responde",
+        "<b>✔ Decidido (no hace falta hacer nada)</b>",
+        "NAS · Debian 12: soporte hasta 25-02-2027 · próximo — se retira",
+    ]
+
+
+def test_decision_vencida() -> None:
+    prom = {c.SOPORTE: [_soporte("NAS", 120.0)]}
+    dec = (Decision("soporte", "NAS", "debian", "caducada", revisar=date(2026, 10, 28)),)
+    lineas = (responder("/pendientes", contexto(prom, decisiones=dec)) or "").splitlines()
+    assert lineas == [
+        "<b>🧭 Soporte</b>",
+        "NAS · Debian 12: soporte hasta 25-02-2027 · próximo",
+        "1 decisión obsoleta o vencida: vigia decisiones --limpiar",
+    ]

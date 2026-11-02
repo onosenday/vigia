@@ -66,6 +66,9 @@ Una línea de `/pendientes` queda cubierta por una decisión si se cumplen todas
 - Si solo queda lo decidido: `Nada pendiente ✅` y, debajo, el bloque «Decidido».
 - Decisiones **obsoletas** (las que no cubren ninguna línea) o **vencidas** (con `revisar` pasado): no salen en el
   bloque. Al final se añade una línea: `N decisiones obsoletas o vencidas: vigia decisiones --limpiar`.
+- Con avisos de datos (Prometheus no responde, o falla alguna consulta) no se dice `Nada pendiente ✅`, y en la
+  línea final solo se cuentan las **vencidas**: una decisión puede parecer obsoleta solo porque su consulta falló.
+- El orden es: pendientes, avisos, bloque «Decidido» y, al final, la línea de obsoletas o vencidas.
 - El bloque «Decidido» cuenta para el límite de líneas de `/pendientes` y va después de las demás secciones, así
   que, si hay que recortar, se recorta lo decidido antes que lo pendiente.
 
