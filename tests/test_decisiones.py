@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from vigia.decisiones import a_json, load_decisiones
+from vigia.decisiones import a_json, load_decisiones, quitar_entradas
 
 HOSTS = ["Nodo 1", "NAS"]
 
@@ -52,3 +52,32 @@ def test_fichero_vacio(tmp_path: Path) -> None:
 def test_errores(tmp_path: Path, texto: str, error: str) -> None:
     with pytest.raises(ValueError, match=error):
         load_decisiones(_f(tmp_path, texto), HOSTS)
+
+
+TEXTO = (
+    "# Cabecera: se conserva\n"
+    "- {seccion: imagenes, host: Nodo 1, objeto: a, ofrecido: v2, motivo: uno}\n"
+    "# comentario de primer nivel: se conserva\n"
+    "- seccion: imagenes\n"
+    "  host: Nodo 1\n"
+    "  objeto: b   # comentario de la entrada: se va con ella\n"
+    "  ofrecido: v2\n"
+    "  motivo: dos\n"
+    "- {seccion: imagenes, host: Nodo 1, objeto: c, ofrecido: v2, motivo: tres}\n"
+)
+
+
+def test_quitar_entradas() -> None:
+    assert quitar_entradas(TEXTO, {1}) == (
+        "# Cabecera: se conserva\n"
+        "- {seccion: imagenes, host: Nodo 1, objeto: a, ofrecido: v2, motivo: uno}\n"
+        "# comentario de primer nivel: se conserva\n"
+        "- {seccion: imagenes, host: Nodo 1, objeto: c, ofrecido: v2, motivo: tres}\n"
+    )
+    assert quitar_entradas(TEXTO, {0, 2}).count("- ") == 1
+    assert quitar_entradas(TEXTO, set()) == TEXTO
+
+
+def test_quitar_entradas_formato_raro() -> None:
+    with pytest.raises(ValueError, match="a mano"):
+        quitar_entradas("[{seccion: imagenes}]\n", {0})

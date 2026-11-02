@@ -63,3 +63,27 @@ def load_decisiones(path: Path, hosts: Iterable[str]) -> list[Decision]:
 def a_json(decisiones: Sequence[Decision]) -> list[dict[str, Any]]:
     """Para el config.json del bot (sin los campos vacíos)."""
     return [d.model_dump(mode="json", exclude_none=True) for d in decisiones]
+
+
+def quitar_entradas(texto: str, indices: set[int]) -> str:
+    """Quita las entradas `indices` (posición en la lista) sin tocar el resto del texto.
+
+    Cada entrada es su línea `- ` de la columna 0 más las líneas sangradas que la siguen. Los comentarios y
+    líneas en blanco de primer nivel se conservan. Si el fichero no tiene esa forma, no se toca.
+    """
+    lineas = texto.splitlines(keepends=True)
+    inicios = [i for i, linea in enumerate(lineas) if linea.startswith("- ")]
+    data = yaml.safe_load(texto)
+    if not isinstance(data, list) or len(data) != len(inicios):
+        raise ValueError(
+            "formato que --limpiar no sabe editar (una entrada por `- ` en la columna 0): hazlo a mano"
+        )
+    fuera: set[int] = set()
+    for k, ini in enumerate(inicios):
+        if k not in indices:
+            continue
+        fin = ini + 1
+        while fin < len(lineas) and lineas[fin].startswith((" ", "\t")):
+            fin += 1
+        fuera.update(range(ini, fin))
+    return "".join(linea for i, linea in enumerate(lineas) if i not in fuera)
