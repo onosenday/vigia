@@ -118,3 +118,8 @@ def test_quitar_entradas_indice_fuera_de_rango() -> None:
 def test_quitar_entradas_yaml_roto() -> None:
     with pytest.raises(ValueError, match="a mano"):
         quitar_entradas("- seccion: [\n", {0})
+
+
+def test_quitar_todas_las_entradas() -> None:
+    assert quitar_entradas("# c\n- {a: 1}\n", {0}) == "# c\n"
+    assert quitar_entradas("- {a: 1}\n", {0}) == ""

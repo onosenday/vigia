@@ -111,7 +111,7 @@ def quitar_entradas(texto: str, indices: set[int]) -> str:
     if not nuevo.endswith("\n") and nuevo:
         nuevo += "\n"
     try:
-        ok = yaml.safe_load(nuevo) == [e for k, e in enumerate(data) if k not in indices]
+        ok = (yaml.safe_load(nuevo) or []) == [e for k, e in enumerate(data) if k not in indices]
     except (yaml.YAMLError, ValueError):
         ok = False
     if not ok:
