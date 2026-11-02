@@ -69,3 +69,24 @@ def test_sin_bot(example_data: dict[str, Any]) -> None:
     assert not any(k.startswith("bot/") for k in out)
     assert "vigia-bot" not in str(out["ejemplo_monitor.yml"])
     assert "job_name: bot" not in str(out["prometheus/prometheus.yml"])
+
+
+def test_decisiones_en_el_config_del_bot(example_data: dict[str, Any]) -> None:
+    _, out = _out(example_data)
+    cfg = json.loads(out["bot/config.json"])
+    assert cfg["decisiones"] == [
+        {
+            "seccion": "imagenes",
+            "host": "Nodo 1",
+            "objeto": "prometheus",
+            "motivo": "seguimos en la LTS 3.13",
+            "ofrecido": "v3.15.1",
+            "ref": "EJ-1",
+        }
+    ]
+
+
+def test_sin_decisiones(example_data: dict[str, Any]) -> None:
+    del example_data["modulos"]["bot"]["decisiones"]
+    _, out = _out(example_data)
+    assert json.loads(out["bot/config.json"])["decisiones"] == []

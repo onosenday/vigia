@@ -10,6 +10,7 @@ from pydantic import ValidationError
 
 from vigia import __version__
 from vigia.build import build_site, write_build
+from vigia.decisiones import load_decisiones
 from vigia.model import Site, load_site
 
 if TYPE_CHECKING:
@@ -56,9 +57,18 @@ def validate(site: SiteOpt = Path("site.yaml")) -> None:
     s = _load(site)
     for warning in s.warnings():
         typer.echo(f"aviso: {warning}", err=True)
+    rel = s.modulos.bot.decisiones
+    extra = ""
+    if rel:
+        try:
+            n_dec = len(load_decisiones(site.parent / rel, [h.display_name for h in s.hosts]))
+        except (OSError, ValueError) as e:
+            typer.echo(f"{rel}: {e}", err=True)
+            raise typer.Exit(1) from None
+        extra = f", {n_dec} decisiones"
     typer.echo(
         f"«{s.sitio.nombre}»: válido ({len(s.hosts)} hosts, {len(s.servicios)} servicios, "
-        f"{len(s.web.objetivos)} webs, {len(s.ping)} pings)"
+        f"{len(s.web.objetivos)} webs, {len(s.ping)} pings{extra})"
     )
 
 

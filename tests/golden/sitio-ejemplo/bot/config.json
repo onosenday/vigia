@@ -52,5 +52,15 @@
    "ip": "10.99.0.40",
    "tipo": "impresora"
   }
+ ],
+ "decisiones": [
+  {
+   "seccion": "imagenes",
+   "host": "Nodo 1",
+   "objeto": "prometheus",
+   "motivo": "seguimos en la LTS 3.13",
+   "ofrecido": "v3.15.1",
+   "ref": "EJ-1"
+  }
  ]
 }

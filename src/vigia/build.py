@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 import shutil
+from collections.abc import Sequence
 from dataclasses import dataclass
 from importlib.resources import as_file, files
 from pathlib import Path
@@ -13,6 +14,7 @@ from urllib.parse import urlsplit
 
 from vigia import __version__, ciclos
 from vigia.alerting import alerting, smtp_env
+from vigia.decisiones import Decision, a_json, load_decisiones
 from vigia.model import Host, Site
 from vigia.render import Raw, dump_yaml, render_template
 
@@ -291,7 +293,7 @@ def build_site(s: Site, site_root: Path) -> dict[str, str | bytes]:
             out["netinv/devices.yaml"] = (site_root / s.modulos.netinv.dispositivos).read_bytes()
 
     if s.modulos.bot.activo:
-        out.update(_bot(s))
+        out.update(_bot(s, site_root))
 
     out[f"{s.monitor.proyecto}.yml"] = render_template(
         "compose/monitor.yml.j2",
@@ -357,7 +359,7 @@ def _bundled_image(name: str, dest: str) -> dict[str, str | bytes]:
     return out
 
 
-def bot_config(s: Site) -> str:
+def bot_config(s: Site, decisiones: Sequence[Decision] = ()) -> str:
     """config.json del bot: sin secretos (los tokens llegan por el entorno del contenedor)."""
     assert s.alertas.telegram  # lo garantiza la validación del modelo
     b = s.modulos.bot
@@ -374,17 +376,23 @@ def bot_config(s: Site) -> str:
         "consumible_pct": s.alertas.umbrales.consumible_pct,
         "proximo": b.proximo.model_dump(),
         "hosts": [{"id": h.id, "nombre": h.display_name, "ip": h.ip, "tipo": h.tipo.value} for h in s.hosts],
+        "decisiones": a_json(decisiones),
     }
     return json.dumps(data, ensure_ascii=False, indent=1) + "\n"
 
 
-def _bot(s: Site) -> dict[str, str | bytes]:
+def _decisiones(s: Site, site_root: Path) -> list[Decision]:
+    rel = s.modulos.bot.decisiones
+    return load_decisiones(site_root / rel, [h.display_name for h in s.hosts]) if rel else []
+
+
+def _bot(s: Site, site_root: Path) -> dict[str, str | bytes]:
     """Dockerfile, código de `vigia.bot` (será el paquete `vigia_bot` del contenedor) y config.json."""
     out = _bundled_image("bot", "bot")
     with as_file(files("vigia").joinpath("bot")) as path:
         for f in sorted(Path(path).glob("*.py")):
             out[f"bot/{f.name}"] = f.read_bytes()
-    out["bot/config.json"] = bot_config(s)
+    out["bot/config.json"] = bot_config(s, _decisiones(s, site_root))
     return out
 
 

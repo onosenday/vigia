@@ -692,6 +692,8 @@ class Bot(Base):
     puerto: Port = 9466
     """/metrics del bot, solo en la red interna del stack."""
     proximo: Proximo = Proximo()
+    decisiones: SitePath | None = None
+    """decisiones.yaml del sitio: lo ya decidido sobre /pendientes (vigia.decisiones, docs/bot.md)."""
 
 
 Cron = Annotated[str, StringConstraints(pattern=r"^[0-9*/,-]+( [0-9*/,-]+){4}$")]

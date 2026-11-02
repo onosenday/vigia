@@ -1,0 +1,3 @@
+# Lo ya decidido sobre /pendientes (docs/bot.md): sale al final, en «Decidido», con el motivo.
+# Toda decisión caduca: cuando cambia lo ofrecido (`ofrecido`) o en la fecha `revisar`.
+- {seccion: imagenes, host: Nodo 1, objeto: prometheus, ofrecido: v3.15.1, motivo: "seguimos en la LTS 3.13", ref: EJ-1}
