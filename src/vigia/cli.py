@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+import dataclasses
+import difflib
+import json
+import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Annotated
 
@@ -9,8 +13,12 @@ import typer
 from pydantic import ValidationError
 
 from vigia import __version__
-from vigia.build import build_site, write_build
-from vigia.decisiones import load_decisiones
+from vigia.bot import config as bot_cfg
+from vigia.bot.decisiones import VIGENTE
+from vigia.bot.fuentes import FuenteError, Prometheus, http_json
+from vigia.bot.pendientes import estado_decisiones
+from vigia.build import bot_config, build_site, write_build
+from vigia.decisiones import load_decisiones, quitar_entradas
 from vigia.model import Site, load_site
 
 if TYPE_CHECKING:
@@ -70,6 +78,58 @@ def validate(site: SiteOpt = Path("site.yaml")) -> None:
         f"«{s.sitio.nombre}»: válido ({len(s.hosts)} hosts, {len(s.servicios)} servicios, "
         f"{len(s.web.objetivos)} webs, {len(s.ping)} pings{extra})"
     )
+
+
+@app.command("decisiones")
+def decisiones_cmd(
+    site: SiteOpt = Path("site.yaml"),
+    limpiar: Annotated[bool, typer.Option("--limpiar", help="quita las obsoletas y vencidas (diff)")] = False,
+    yes: Annotated[bool, typer.Option("--yes", help="con --limpiar, escribe el fichero")] = False,
+) -> None:
+    """Estado de las decisiones de /pendientes contra el Prometheus del sitio."""
+    s = _load(site)
+    rel = s.modulos.bot.decisiones
+    if not rel:
+        typer.echo("el sitio no declara `modulos.bot.decisiones`", err=True)
+        raise typer.Exit(1)
+    path = site.parent / rel
+    try:
+        lista = load_decisiones(path, [h.display_name for h in s.hosts])
+    except (OSError, ValueError) as e:
+        typer.echo(f"{rel}: {e}", err=True)
+        raise typer.Exit(1) from None
+    url = f"http://{s.monitor_host.ip}:{s.monitor.puertos.prometheus}"
+    cfg = bot_cfg.desde_dict(json.loads(bot_config(s, lista)), {}, sin_telegram=True)
+    cfg = dataclasses.replace(cfg, prometheus=url)
+    try:
+        estados = estado_decisiones(cfg, Prometheus(url, http_json), time.time())
+    except FuenteError as e:
+        typer.echo(f"Prometheus ({url}) no responde o le faltan datos: {e}", err=True)
+        raise typer.Exit(1) from None
+    for d, est in estados:
+        extra = (f" {d.ofrecido}" if d.ofrecido else "") + (
+            f" (revisar {d.revisar:%d-%m-%Y})" if d.revisar else ""
+        )
+        typer.echo(f"[{est}] {d.seccion} · {d.host} · {d.objeto}{extra}")
+    if not limpiar:
+        return
+    quitar = {i for i, (_, est) in enumerate(estados) if est != VIGENTE}
+    if not quitar:
+        typer.echo("nada que limpiar")
+        return
+    antes = path.read_text(encoding="utf-8")
+    try:
+        despues = quitar_entradas(antes, quitar)
+    except ValueError as e:
+        typer.echo(str(e), err=True)
+        raise typer.Exit(1) from None
+    diff_txt = difflib.unified_diff(antes.splitlines(True), despues.splitlines(True), str(rel), str(rel))
+    typer.echo("".join(diff_txt))
+    if yes:
+        path.write_text(despues, encoding="utf-8")
+        typer.echo(f"{rel}: {len(quitar)} decisiones quitadas")
+    else:
+        typer.echo("(solo diff: añade --yes para escribir)")
 
 
 @app.command()
