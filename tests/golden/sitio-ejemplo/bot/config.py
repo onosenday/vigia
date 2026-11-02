@@ -6,6 +6,9 @@ import json
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
+
+from .decisiones import Decision, desde_json
 
 
 @dataclass(frozen=True)
@@ -44,12 +47,17 @@ class Config:
     certificado_dias: int = 15
     consumible_pct: int = 15
     proximo: Proximo = Proximo()
+    decisiones: tuple[Decision, ...] = ()
 
 
 def load(path: Path, env: Mapping[str, str]) -> Config:
-    d = json.loads(path.read_text(encoding="utf-8"))
+    return desde_dict(json.loads(path.read_text(encoding="utf-8")), env)
+
+
+def desde_dict(d: Mapping[str, Any], env: Mapping[str, str], *, sin_telegram: bool = False) -> Config:
+    """`sin_telegram`: para la CLI (`vigia decisiones`), que solo consulta Prometheus."""
     token = env.get("TELEGRAM_TOKEN", "")
-    if not token:
+    if not token and not sin_telegram:
         raise ValueError("falta TELEGRAM_TOKEN en el entorno del contenedor")
     return Config(
         sitio=str(d["sitio"]),
@@ -70,4 +78,5 @@ def load(path: Path, env: Mapping[str, str]) -> Config:
         proximo=Proximo(
             **{k: int(v) for k, v in d.get("proximo", {}).items() if k in Proximo.__dataclass_fields__}
         ),
+        decisiones=desde_json(d.get("decisiones", [])),
     )
