@@ -44,6 +44,97 @@ modulos:
 Las versiones mayores, las actualizaciones y las imágenes nuevas salen todas (también las que watchtower
 aplicará: los avisos de imágenes son solo para lo que queda fuera de él, ver [imagenes.md](imagenes.md)).
 
+## Decisiones en /pendientes
+
+Cuando el sitio ya ha decidido no hacer algo (quedarse en una LTS, una etiqueta más concreta de la misma
+versión, un fin de soporte lejano), esa línea no pide acción. Se declara en un fichero y `/pendientes` la pasa a un
+bloque «Decidido» con el motivo: arriba queda solo lo que pide acción y nada desaparece sin verse.
+
+El fichero es opcional, va en la carpeta del sitio y se declara con la ruta relativa a `site.yaml`:
+
+```yaml
+modulos:
+  bot: {activo: true, grafana_token: BOT_GRAFANA_TOKEN, decisiones: decisiones.yaml}
+```
+
+`decisiones.yaml` es una lista:
+
+```yaml
+- seccion: imagenes            # soporte | versiones | imagenes | digest
+  host: host1
+  objeto: prometheus           # contenedor (imagenes, digest) o producto (soporte, versiones)
+  ofrecido: v3.15.1            # lo descartado; si lo ofrecido cambia, la decisión deja de aplicar
+  motivo: "LTS 3.13; la rama 3.15 pierde soporte antes"
+  ref: TICKET-1                # opcional: issue o nota donde se tomó
+- seccion: soporte
+  host: host1
+  objeto: grafana
+  revisar: 2026-12-15          # sin `ofrecido`: vuelve a pendiente en esa fecha
+  motivo: "soporte hasta 01-2027; subir cuando haya versión nueva"
+```
+
+- Obligatorios: `seccion`, `host`, `objeto` y `motivo`, y al menos uno de `ofrecido` o `revisar`.
+- `host` es un host de `site.yaml`, por su nombre visible (el de las líneas del bot).
+- `ofrecido` va entre comillas si parece un número (`"18"`): YAML convertiría `3.10` en `3.1`; sin comillas
+  no valida.
+- Solo admiten decisiones `soporte`, `versiones`, `imagenes` y `digest`. Las actualizaciones de sistema, los
+  certificados, los discos y los consumibles siempre piden acción.
+- En `digest` no hay versión ofrecida: solo `revisar`.
+
+Una línea queda cubierta si coincide la sección, el `host` (con `nombre`), el `objeto` y, si lo lleva, `ofrecido`:
+
+| Sección | `objeto` se compara con | `ofrecido` se compara con |
+|---------|-------------------------|---------------------------|
+| `soporte` | `producto` o `contenedor` | `ciclo` |
+| `versiones` | `producto` o `contenedor` | `ultimo` |
+| `imagenes` | `contenedor` (tipo `tag`) | `remota` |
+| `digest` | `contenedor` (tipo `digest`) | no aplica |
+
+Basta con que coincida el contenedor **o** el producto: una decisión sobre `grafana` cubre el producto del host y
+el contenedor con ese nombre.
+
+**Una decisión nunca oculta un aviso ni silencia una alerta.** Si la línea ya pasa el umbral de su alerta (⚠), se
+queda en su sección con ` (decidido: <motivo>)`. Para silenciar una alerta están los silencios de Grafana.
+
+### Caducidad
+
+Toda decisión caduca, así que el fichero solo guarda lo vigente:
+
+- `ofrecido`: deja de aplicar cuando lo ofrecido cambia (sale otra versión).
+- `revisar`: vuelve a pendiente en esa fecha; el propio día ya cuenta como vencida.
+
+### Salida
+
+Orden: pendientes, avisos de datos, bloque «Decidido» y, al final, la línea de obsoletas o vencidas.
+
+```
+🧭 Soporte            srv-1 · PostgreSQL 14 (bd): pierde el soporte en 14 días ⚠
+✔ Decidido (no hace falta hacer nada)
+  host1 · prometheus 3.13.1 → v3.15.1 — LTS 3.13; la rama 3.15 pierde soporte antes (TICKET-1)
+1 decisión obsoleta o vencida: vigia decisiones --limpiar
+```
+
+- Cada línea decidida lleva ` — <motivo>` y ` (<ref>)` si hay; con `revisar` añade `; revisar el dd-mm-aaaa`.
+- Si solo queda lo decidido: `Nada pendiente ✅` y debajo el bloque. Con avisos de datos (Prometheus no
+  responde o falla una consulta) no se dice «Nada pendiente».
+- Una decisión **obsoleta** (no cubre ninguna línea) o **vencida** no sale en el bloque; se cuenta en la
+  última línea. Con datos parciales solo se cuentan las vencidas: una decisión puede parecer obsoleta solo porque
+  su consulta falló.
+- El bloque «Decidido» cuenta para el límite de líneas y va el último: si hay que recortar, se recorta antes
+  lo decidido que lo pendiente.
+
+### Comandos
+
+- `uv run vigia validate`: comprueba el formato y los hosts de `decisiones.yaml` (no consulta Prometheus).
+- `uv run vigia decisiones`: consulta el Prometheus del sitio y lista cada decisión como `[vigente]`,
+  `[obsoleta]` o `[vencida]`.
+- `uv run vigia decisiones --limpiar`: muestra el diff del fichero sin las obsoletas ni las vencidas; con `--yes` lo
+  escribe. Conserva los comentarios de primer nivel (columna 0), también uno justo encima de una entrada quitada;
+  si el fichero no tiene una entrada por `- ` en la columna 0, lo rechaza y se limpia a mano.
+
+El `config.json` del bot lleva la lista ya validada (sin secretos): un cambio en `decisiones.yaml` aparece como
+diferencia en `vigia deploy monitor` y se recoge al reiniciar el bot.
+
 ## Activarlo
 
 1. Alertas por Telegram configuradas (ver [alertas.md](alertas.md)). En @BotFather, el bot con *Group

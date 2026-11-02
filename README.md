@@ -23,7 +23,7 @@ uv run vigia rollback monitor --yes
 
 Otros comandos: `diff` (contra una carpeta), `bridges` (redes Docker de los hosts), `descubrir` (propuesta
 de hosts a partir de la red, con autorización), `grafana-brand`
-(nombre de la organización de Grafana), `skill` (instala o actualiza la skill de Claude Code en el sitio).
+(nombre de la organización de Grafana), `decisiones` (estado de las decisiones de `/pendientes`, [docs/bot.md](docs/bot.md)), `skill` (instala o actualiza la skill de Claude Code en el sitio).
 
 ## Qué sabe vigilar
 

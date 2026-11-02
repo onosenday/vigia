@@ -88,6 +88,10 @@ Si se cambió el propio paquete vigia en local: `uv sync --reinstall-package vig
 - **Alertas**: bloque `alertas` (Telegram y correo; solo nombres de variables, también las direcciones de
   correo). Guía en `docs/alertas.md` del paquete. En OMV, las variables nuevas las añade el usuario al
   *Environment* del stack en la UI antes del deploy. Probar con *Contact points ▸ vigia ▸ Test*.
+- **Decisiones de `/pendientes`**: si el usuario decide no actuar sobre algo que sale en `/pendientes`, apuntarlo en el
+  `decisiones.yaml` del sitio (`seccion`, `host`, `objeto`, `ofrecido` o `revisar`, `motivo`, `ref`; declarado en
+  `modulos.bot.decisiones`) y desplegar el monitor. `uv run vigia decisiones` dice cuáles siguen vigentes y `--limpiar`
+  quita las obsoletas (`docs/bot.md` del paquete).
 - **Redes Docker nuevas** en un host: `uv run vigia bridges` (relee y reescribe `bridges.yaml`).
 
 ## Lo aprendido sobre las plataformas
