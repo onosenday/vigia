@@ -916,6 +916,8 @@ class Ciclos(Base):
 
     fecha_aviso: dict[Id, FechaAviso] = {}
     """Por producto: qué fin de soporte cuenta (`normal` o `extendido`) en vez del del catálogo."""
+    politica: dict[Id, Literal["todas"]] = {}
+    """Por producto: `todas` ofrece todas las ramas aunque el catálogo siga solo la LTS."""
 
 
 class Site(Base):
@@ -1147,6 +1149,10 @@ class Site(Base):
         desconocidos = sorted(set(self.ciclos.fecha_aviso) - set(catalogo_ciclos()))
         if desconocidos:
             errors.append(f"ciclos.fecha_aviso: productos que no están en el catálogo: {desconocidos}")
+        cat = catalogo_ciclos()
+        sin = sorted(p for p in self.ciclos.politica if p not in cat or cat[p].politica is None)
+        if sin:
+            errors.append(f"ciclos.politica: productos sin política de rama en el catálogo: {sin}")
 
         if errors:
             raise ValueError("; ".join(errors))

@@ -431,3 +431,15 @@ def test_actualizar_conserva_la_politica() -> None:
     p = Producto.model_validate(_con_politica(fuente="endoflife", endoflife="nas-os", referencia=None))
     nuevo = ciclos.desde_endoflife(p, fetch=lambda _url: _respuesta(), hoy=date(2026, 10, 1))
     assert nuevo.politica == p.politica
+
+
+def test_sitio_desactiva_la_politica(example_data: dict[str, Any]) -> None:
+    example_data["ciclos"] = {"politica": {"prometheus": "todas"}}
+    assert Site.model_validate(example_data).ciclos.politica == {"prometheus": "todas"}
+
+
+@pytest.mark.parametrize("producto", ["no-existe", "debian"])  # debian no tiene política
+def test_sitio_politica_sin_politica_en_el_catalogo(example_data: dict[str, Any], producto: str) -> None:
+    example_data["ciclos"] = {"politica": {producto: "todas"}}
+    with pytest.raises(ValidationError, match="sin política de rama"):
+        Site.model_validate(example_data)
