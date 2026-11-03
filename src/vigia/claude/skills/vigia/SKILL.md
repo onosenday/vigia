@@ -130,6 +130,10 @@ Si se cambió el propio paquete vigia en local: `uv sync --reinstall-package vig
   dejó al cambiar de autenticación. Solución: valores aleatorios (también los usuarios SNMP) y quitar las
   variables sobrantes. Si la lista de ficheros que da no cambia al cambiar un valor, el culpable es otra
   variable.
+- **What's Up Docker y etiquetas variante**: con una etiqueta flotante (`9-alpine`) puede avisar de «Versión
+  nueva» hacia la misma con más detalle (`9-alpine3.24`), que es la misma imagen: compara los *digests* en el
+  registro antes de actualizar. Arreglo en el contenedor del sitio, no en vigia: etiqueta
+  `wud.tag.include=^\d+-alpine$$` (`$$` por la interpolación de Compose), así solo avisa de `10-alpine`.
 
 ## Diagnóstico rápido
 
