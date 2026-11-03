@@ -96,6 +96,10 @@ el contenedor con ese nombre.
 **Una decisión nunca oculta un aviso ni silencia una alerta.** Si la línea ya pasa el umbral de su alerta (⚠), se
 queda en su sección con ` (decidido: <motivo>)`. Para silenciar una alerta están los silencios de Grafana.
 
+Lo que descarta la política de rama del catálogo ([ciclos.md](ciclos.md)) sale también en «Decidido» como
+`Host · contenedor local → remota — motivo (vigia)`; no hace falta escribirlo en `decisiones.yaml`. Si el sitio
+tiene su propia decisión para la misma línea, se muestra la suya.
+
 ### Caducidad
 
 Toda decisión caduca, así que el fichero solo guarda lo vigente:

@@ -34,7 +34,7 @@ alertas:
 
 | Regla | Cuándo avisa |
 |-------|--------------|
-| Versión nueva de una imagen | la etiqueta es una versión y en el registro hay otra más nueva (`grafana:13.0.2` → `13.3.0`). watchtower nunca cambia de etiqueta: hay que hacerlo a mano |
+| Versión nueva de una imagen | la etiqueta es una versión y en el registro hay otra más nueva (`grafana:13.0.2` → `13.3.0`). watchtower nunca cambia de etiqueta: hay que hacerlo a mano, salvo las que descarta la política de rama del catálogo ([ciclos.md](ciclos.md)) |
 | Imagen nueva sin aplicar | misma etiqueta con otro *digest* (un `latest` nuevo) durante `imagen_durante` (7 días). watchtower lo habría aplicado ya: si no, ese contenedor está fuera de watchtower |
 
 Los dos son informativos (`info`, categoría `mantenimiento`) y se repiten cada `alertas.repetir_info`.

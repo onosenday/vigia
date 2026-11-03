@@ -54,6 +54,30 @@ ciclos:
   fecha_aviso: {debian: extendido}
 ```
 
+## Política de rama
+
+Un producto del catálogo puede declarar qué ramas ofrece vigia:
+
+```yaml
+politica: {rama: lts, motivo: "vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas"}
+```
+
+Con `rama: lts` (el producto necesita un ciclo LTS e `imagen_regex`), si un contenedor está en un ciclo LTS y
+What's Up Docker ofrece una etiqueta de un ciclo conocido que no lo es (`v3.13.5` → `v3.15.1`), no salta «Versión
+nueva de una imagen», no aparece en el panel «Imágenes nuevas» y `/pendientes` la pone en «Decidido» con el
+motivo y `(vigia)`. Una versión nueva de la misma LTS (`v3.13.6`) o una LTS nueva sí se ofrecen. Si el contenedor
+ya está fuera de la LTS, o la etiqueta no lleva versión (`latest`) o es de un ciclo fuera del catálogo, no se
+descarta nada.
+
+Para que un sitio siga todas las ramas:
+
+```yaml
+ciclos:
+  politica: {prometheus: todas}
+```
+
+Es un error indicar un producto que no tiene política en el catálogo.
+
 ## En Prometheus
 
 El build genera `prometheus/rules/ciclos.yml` con reglas de grabación constantes:
@@ -66,6 +90,8 @@ El build genera `prometheus/rules/ciclos.yml` con reglas de grabación constante
 | `vigia_ciclo_superado{producto, ciclo, ultimo}` | 1 por ciclo anterior al de referencia (si `aviso_version`) |
 | `vigia_ciclo_aviso_dias{producto}` | Margen de aviso: `aviso_dias` del producto o `umbrales.soporte_dias` |
 | `vigia_ciclo_version{producto, ciclo, version}` | Versión exacta → ciclo, para los productos con `windows_producto` |
+| `vigia_politica_ciclo{producto, ciclo, lts, motivo}` | Política de rama vigente de un producto (ver arriba) |
+| `vigia_imagen_descartada{nombre, contenedor, local, remota, producto, motivo}` | 1 por imagen cuya versión nueva descarta la política de rama |
 
 Y, con la versión instalada en cada equipo, en el mismo grupo (en orden, en la misma pasada):
 

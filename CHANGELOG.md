@@ -1,5 +1,13 @@
 # Cambios
 
+## Sin publicar
+
+- **Nuevo**: política de rama en el catálogo. Prometheus sigue su LTS: ya no se ofrece la 3.15 a quien está en
+  la 3.13 (ni alerta, ni panel, ni `/pendientes`, donde sale en «Decidido»). Un sitio puede seguir todas las
+  ramas con `ciclos.politica: {prometheus: todas}`. Si tenías una decisión en `decisiones.yaml` para eso, sobra:
+  `vigia decisiones --limpiar`.
+- **Arreglo**: la plantilla de sitio fija Prometheus en la LTS 3.13.5 (la 3.15 pierde el soporte el 06-11-2026).
+
 ## 0.5.2 (2026-11-01)
 
 Al actualizar un sitio: **reinstala `apt-updates-json.sh`** en cada host Debian/OMV/Proxmox (y, si quieres,
