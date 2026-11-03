@@ -84,6 +84,18 @@ class Ciclo(_Base):
         return self.fin_soporte
 
 
+Texto = Annotated[str, StringConstraints(min_length=1, max_length=120, pattern=r"^[^\x00-\x1f`$\\{}<>\"]*$")]
+"""Texto que va en etiquetas de Prometheus y en el bot: sin comillas, llaves, `$` ni `<>`."""
+
+
+class Politica(_Base):
+    """Qué ramas de un producto ofrece vigia (docs/ciclos.md, «Política de rama»)."""
+
+    rama: Literal["lts"]
+    """`lts`: no se ofrecen etiquetas de ciclos no LTS a quien ya está en una LTS."""
+    motivo: Texto
+
+
 class Producto(_Base):
     producto: ProductoId
     nombre: Annotated[
@@ -120,6 +132,8 @@ class Producto(_Base):
     aviso_version: bool = True
     """Avisar de versión mayor nueva. No en productos de versiones frecuentes (las imágenes nuevas las
     avisa el vigilante de imágenes)."""
+    politica: Politica | None = None
+    """Política de rama de las imágenes de este producto; sin ella se ofrecen todas las ramas."""
     comprobado: date
     ciclos: list[Ciclo] = Field(min_length=1)
     """Del más reciente al más antiguo."""
@@ -173,6 +187,10 @@ class Producto(_Base):
             da = self.ciclo_de_imagen(imagen)
             if da != esperado:
                 raise ValueError(f"imagen {imagen!r}: da el ciclo {da!r}, no {esperado!r}")
+        if self.politica and not any(c.lts for c in self.ciclos):
+            raise ValueError("`politica` con rama lts sin ningún ciclo LTS")
+        if self.politica and not self.imagen_regex:
+            raise ValueError("`politica` solo se aplica a imágenes: falta `imagen_regex`")
         return self
 
     @property

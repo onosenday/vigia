@@ -14,6 +14,9 @@ ejemplos_imagen:
   prom/prometheus: null
 aviso_dias: 14
 aviso_version: false
+politica:
+  rama: lts
+  motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
 comprobado: '2026-11-01'
 ciclos:
 - ciclo: '3.15'

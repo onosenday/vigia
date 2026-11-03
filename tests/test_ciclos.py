@@ -394,3 +394,40 @@ def test_promql_agrupa_las_alternativas() -> None:
 
     rx = ciclos._promql(r"^(\d+)|v(\d+)")
     assert rx.startswith("(?:") and re.fullmatch(rx, "v3-extra")  # el resto cuelga de las dos alternativas
+
+
+POLITICA = {"rama": "lts", "motivo": "seguimos la LTS"}
+
+
+def _con_politica(**cambios: Any) -> dict[str, Any]:
+    base = _producto(
+        imagen_regex=IMAGEN, ejemplos_imagen={"x/nasos:3.1": "3", "nasos:3": None}, politica=POLITICA
+    )
+    base["ciclos"][1]["lts"] = True  # el ciclo 2 es la LTS
+    return base | cambios
+
+
+def test_politica_de_rama() -> None:
+    p = Producto.model_validate(_con_politica())
+    assert p.politica is not None and p.politica.rama == "lts"
+    assert ciclos.catalogo()["prometheus"].politica is not None
+
+
+@pytest.mark.parametrize(
+    ("cambios", "mensaje"),
+    [
+        ({"ciclos": [{"ciclo": "3", "publicado": "2025-05-01"}]}, "ningún ciclo LTS"),
+        ({"imagen_regex": None, "ejemplos_imagen": {}}, "imagen_regex"),
+        ({"politica": {"rama": "lts", "motivo": 'con "comillas"'}}, "motivo"),
+        ({"politica": {"rama": "estable", "motivo": "x"}}, "rama"),
+    ],
+)
+def test_politica_invalida(cambios: dict[str, Any], mensaje: str) -> None:
+    with pytest.raises(ValidationError, match=mensaje):
+        Producto.model_validate(_con_politica(**cambios))
+
+
+def test_actualizar_conserva_la_politica() -> None:
+    p = Producto.model_validate(_con_politica(fuente="endoflife", endoflife="nas-os", referencia=None))
+    nuevo = ciclos.desde_endoflife(p, fetch=lambda _url: _respuesta(), hoy=date(2026, 10, 1))
+    assert nuevo.politica == p.politica
