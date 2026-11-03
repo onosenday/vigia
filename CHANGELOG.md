@@ -1,7 +1,14 @@
 # Cambios
 
-## Sin publicar
+## 0.5.3 (2026-11-03)
 
+Al actualizar un sitio: nada cambia en `site.yaml`. Tras `vigia deploy`, el bot se recompila (*Build* o *Pull* en
+su stack si no se recompila solo). Si el sitio fijaba Prometheus en la 3.15, súbelo a la LTS 3.13
+(`monitor.imagenes.prometheus: prom/prometheus:v3.13.5`): la 3.15 pierde el soporte el 06-11-2026.
+
+- **Nuevo**: decisiones en `/pendientes` (`modulos.bot.decisiones`, [docs/bot.md](docs/bot.md)). Lo que el sitio
+  ya ha decidido no hacer pasa a un bloque «Decidido» con el motivo; cada decisión caduca cuando cambia lo
+  ofrecido o en su fecha `revisar`. `vigia decisiones` dice cuáles siguen vigentes y `--limpiar` quita las demás.
 - **Nuevo**: política de rama en el catálogo. Prometheus sigue su LTS: ya no se ofrece la 3.15 a quien está en
   la 3.13 (ni alerta, ni panel, ni `/pendientes`, donde sale en «Decidido»). Un sitio puede seguir todas las
   ramas con `ciclos.politica: {prometheus: todas}`. Si tenías una decisión en `decisiones.yaml` para eso, sobra:

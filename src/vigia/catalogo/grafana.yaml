@@ -14,7 +14,7 @@ ejemplos_imagen:
   grafana/grafana:latest: null
 aviso_dias: 30
 aviso_version: false
-comprobado: '2026-11-01'
+comprobado: '2026-11-03'
 ciclos:
 - ciclo: '13.3'
   publicado: '2026-10-20'

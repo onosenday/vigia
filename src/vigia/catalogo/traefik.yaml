@@ -14,7 +14,7 @@ ejemplos_imagen:
   traefik:v3: null
   traefik:latest: null
 aviso_version: true
-comprobado: '2026-11-01'
+comprobado: '2026-11-03'
 ciclos:
 - ciclo: '3.7'
   publicado: '2026-05-05'
