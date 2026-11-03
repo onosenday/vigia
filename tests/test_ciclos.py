@@ -443,3 +443,19 @@ def test_sitio_politica_sin_politica_en_el_catalogo(example_data: dict[str, Any]
     example_data["ciclos"] = {"politica": {producto: "todas"}}
     with pytest.raises(ValidationError, match="sin política de rama"):
         Site.model_validate(example_data)
+
+
+def test_reglas_de_politica() -> None:
+    p = Producto.model_validate(_con_politica())
+    rules = _reglas({p.producto: p})
+    tabla = [r["labels"] for r in rules if r["record"] == ciclos.POLITICA_CICLO]
+    assert tabla == [
+        {"producto": "nas-os", "ciclo": "3", "lts": "false", "motivo": "seguimos la LTS"},
+        {"producto": "nas-os", "ciclo": "2", "lts": "true", "motivo": "seguimos la LTS"},
+    ]
+    (d,) = [r for r in rules if r["record"] == ciclos.DESCARTADA]
+    assert d["labels"] == {"producto": "nas-os"}
+    assert d["expr"].startswith("max by (nombre, contenedor, local, remota, producto, motivo)")
+    assert 'wud_containers{nueva="true", tipo="tag"}' in d["expr"]
+    sin = _reglas({p.producto: p}, politica={"nas-os": "todas"})
+    assert not [r for r in sin if r["record"] in (ciclos.POLITICA_CICLO, ciclos.DESCARTADA)]

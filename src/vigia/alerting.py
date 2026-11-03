@@ -401,11 +401,12 @@ def image_rules(s: Site) -> list[dict[str, Any]]:
     quien = '{{ index .Labels "nombre" }}: {{ index .Labels "contenedor" }}'
     por = "nombre, contenedor, imagen, local, remota"
     return [
-        # etiqueta con versión y otra más nueva: watchtower nunca cambia de etiqueta
+        # etiqueta con versión y otra más nueva: watchtower nunca cambia de etiqueta; sin las que descarta la
+        # política de rama del catálogo
         _rule(
             "vigia-imagen-version",
             "Versión nueva de una imagen",
-            f'max by ({por}) (wud_containers{{nueva="true", tipo="tag"}})',
+            f'max by ({por}) (wud_containers{{nueva="true", tipo="tag"}} {ciclos.SIN_DESCARTADAS})',
             "gt",
             0,
             "1h",

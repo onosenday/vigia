@@ -108,7 +108,13 @@ def _imagenes(pid: int, x: int, y: int, w: int) -> Panel:
     t = merged_table(
         pid,
         "Imágenes nuevas",
-        [('max by (nombre, contenedor, imagen, tipo, local, remota) (wud_containers{nueva="true"})', "_")],
+        [
+            (
+                "max by (nombre, contenedor, imagen, tipo, local, remota) "
+                f'(wud_containers{{nueva="true"}} {ciclos.SIN_DESCARTADAS})',
+                "_",
+            )
+        ],
         x,
         y,
         w,

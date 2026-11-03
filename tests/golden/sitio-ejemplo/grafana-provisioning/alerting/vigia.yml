@@ -637,7 +637,8 @@ groups:
       datasourceUid: prometheus
       model:
         refId: A
-        expr: max by (nombre, contenedor, imagen, local, remota) (wud_containers{nueva="true", tipo="tag"})
+        expr: max by (nombre, contenedor, imagen, local, remota) (wud_containers{nueva="true", tipo="tag"} unless on (nombre,
+          contenedor, remota) vigia_imagen_descartada)
         instant: true
         range: false
     - refId: B

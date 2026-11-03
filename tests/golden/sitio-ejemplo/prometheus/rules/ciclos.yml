@@ -3848,6 +3848,258 @@ groups:
     labels:
       producto: prometheus
       ciclo: '2.36'
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.15'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.14'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.13'
+      lts: 'true'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.12'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.11'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.10'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.9'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.8'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.7'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.6'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.5'
+      lts: 'true'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.4'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.3'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.2'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.1'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.0'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.55'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.54'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.53'
+      lts: 'true'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.52'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.51'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.50'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.49'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.48'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.47'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.46'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.45'
+      lts: 'true'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.44'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.43'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.42'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.41'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.40'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.39'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.38'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.37'
+      lts: 'true'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '2.36'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
   - record: vigia_ciclos_catalogo_timestamp
     expr: vector(1793491200)
     labels:
@@ -6269,3 +6521,12 @@ groups:
     expr: (vigia_producto_ciclo * on (producto, ciclo) group_left () vigia_ciclo_fin_soporte_timestamp - time()) / 86400
   - record: vigia_version_mayor_disponible
     expr: vigia_producto_ciclo * on (producto, ciclo) group_left (ultimo) vigia_ciclo_superado
+  - record: vigia_imagen_descartada
+    expr: max by (nombre, contenedor, local, remota, producto, motivo) (((label_replace(label_replace(label_replace(label_replace(label_join(label_join(label_replace(wud_containers{nueva="true",
+      tipo="tag"}, "producto", "prometheus", "", ""), "img_local", ":", "imagen", "local"), "img_remota", ":", "imagen", "remota"),
+      "v_local", "$1", "img_local", "(?:(?:.*/)?prometheus:v?(\\d+\\.\\d+)).*"), "v_remota", "$1", "img_remota", "(?:(?:.*/)?prometheus:v?(\\d+\\.\\d+)).*"),
+      "ciclo", "$1", "v_local", "(?:(\\d+\\.\\d+)).*"), "ciclo_remota", "$1", "v_remota", "(?:(\\d+\\.\\d+)).*") * on (producto,
+      ciclo) group_left (motivo) vigia_politica_ciclo{producto="prometheus", lts="true"}) * on (producto, ciclo_remota) group_left
+      () label_replace(vigia_politica_ciclo{producto="prometheus", lts="false"}, "ciclo_remota", "$1", "ciclo", "(.*)")))
+    labels:
+      producto: prometheus

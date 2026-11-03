@@ -11,6 +11,7 @@ alertas, paneles y bot usen la misma tabla:
   vigia_ciclo_superado{producto, ciclo, ultimo}         1 por ciclo anterior al de referencia (aviso_version)
   vigia_ciclo_aviso_dias{producto}                      días de aviso antes del fin de soporte
   vigia_ciclo_version{producto, ciclo, version}         versión exacta → ciclo (Windows: el build no lo dice)
+  vigia_politica_ciclo{producto, ciclo, lts, motivo}    1 por ciclo de un producto con política de rama
 
 y, con la versión instalada en cada equipo (node_os_info, windows_os_info, vigia_producto_info del
 updates-exporter y la imagen de cada contenedor en cAdvisor, con la etiqueta `contenedor`), las derivadas:
@@ -18,6 +19,11 @@ updates-exporter y la imagen de cada contenedor en cAdvisor, con la etiqueta `co
   vigia_producto_ciclo{nombre, producto, producto_nombre, ciclo, version}   1 por equipo y producto
   vigia_soporte_restante_dias{…}            días hasta el fin de soporte (negativo: ya sin soporte)
   vigia_version_mayor_disponible{…, ultimo} 1 si el ciclo instalado es anterior al de referencia
+
+y, con las imágenes nuevas de What's Up Docker (wud_containers):
+
+  vigia_imagen_descartada{nombre, contenedor, local, remota, producto, motivo}   imagen nueva que la
+                                            política de rama no ofrece
 """
 
 from __future__ import annotations
@@ -50,6 +56,10 @@ RESTANTE = "vigia_soporte_restante_dias"
 MAYOR = "vigia_version_mayor_disponible"
 AVISO = "vigia_ciclo_aviso_dias"
 VERSION = "vigia_ciclo_version"
+POLITICA_CICLO = "vigia_politica_ciclo"
+DESCARTADA = "vigia_imagen_descartada"
+SIN_DESCARTADAS = f"unless on (nombre, contenedor, remota) {DESCARTADA}"
+"""Lo que se añade a una consulta de wud_containers para no ofrecer lo que la política descarta."""
 PRODUCTO_INFO = "vigia_producto_info"
 """Lo publica el updates-exporter: producto y versión que informa cada host (docs/actualizaciones.md)."""
 
@@ -322,13 +332,43 @@ def _desde_contenedor(p: Producto) -> str:
     return f"group by (nombre, contenedor, producto, producto_nombre, ciclo, version) ({e})"
 
 
+def _descartadas(p: Producto) -> str:
+    """Imágenes nuevas (What's Up Docker) que la política no ofrece: la local está en una LTS y la remota en
+    un ciclo conocido que no lo es. Con otra cosa (tag sin versión, ciclo desconocido) se avisa como siempre.
+
+    wud_containers da la imagen sin etiqueta (`imagen`) y las etiquetas aparte (`local`, `remota`): se unen
+    para aplicar `imagen_regex`, que casa `repo/nombre:etiqueta`."""
+    assert p.imagen_regex
+    rx = _promql(p.imagen_regex)
+    e = 'wud_containers{nueva="true", tipo="tag"}'
+    e = _replace(e, "producto", p.producto)
+    e = f'label_join({e}, "img_local", ":", "imagen", "local")'
+    e = f'label_join({e}, "img_remota", ":", "imagen", "remota")'
+    e = _replace(e, "v_local", "$1", "img_local", rx)
+    e = _replace(e, "v_remota", "$1", "img_remota", rx)
+    e = _replace(e, "ciclo", "$1", "v_local", p.regex_promql)
+    e = _replace(e, "ciclo_remota", "$1", "v_remota", p.regex_promql)
+    tabla = f"{POLITICA_CICLO}{{producto={_q(p.producto)}"
+    lts = tabla + ', lts="true"}'
+    corta = _replace(tabla + ', lts="false"}', "ciclo_remota", "$1", "ciclo", "(.*)")
+    e = f"({e} * on (producto, ciclo) group_left (motivo) {lts})"
+    e = f"({e} * on (producto, ciclo_remota) group_left () {corta})"
+    return f"max by (nombre, contenedor, local, remota, producto, motivo) ({e})"
+
+
 def reglas(
-    catalogo: Catalogo, fecha_aviso: Mapping[str, FechaAviso] | None = None, soporte_dias: int = 90
+    catalogo: Catalogo,
+    fecha_aviso: Mapping[str, FechaAviso] | None = None,
+    soporte_dias: int = 90,
+    politica: Mapping[str, str] | None = None,
 ) -> dict[str, Any]:
     """Reglas de grabación de Prometheus: la tabla de ciclos (constantes) y lo derivado por equipo.
 
-    `soporte_dias`: días de aviso de los productos sin `aviso_dias` propio (umbral del sitio)."""
+    `soporte_dias`: días de aviso de los productos sin `aviso_dias` propio (umbral del sitio).
+    `politica`: productos en que el sitio sigue todas las ramas (`todas`): sin sus reglas de política."""
     fecha_aviso = fecha_aviso or {}
+    politica = politica or {}
+    con_politica = [p for p in catalogo.values() if p.politica and politica.get(p.producto) != "todas"]
     tabla: list[dict[str, Any]] = []
     for p in catalogo.values():
         aviso = fecha_aviso.get(p.producto, p.fecha_aviso)
@@ -344,6 +384,19 @@ def reglas(
                 tabla.append(_regla(VERSION, 1, producto=p.producto, ciclo=ciclo, version=version))
         for c in p.superados if p.aviso_version else []:
             tabla.append(_regla(SUPERADO, 1, producto=p.producto, ciclo=c.ciclo, ultimo=p.ultimo.ciclo))
+        if p.politica and p in con_politica:
+            for c in p.ciclos:
+                lts = "true" if c.lts else "false"
+                tabla.append(
+                    _regla(
+                        POLITICA_CICLO,
+                        1,
+                        producto=p.producto,
+                        ciclo=c.ciclo,
+                        lts=lts,
+                        motivo=p.politica.motivo,
+                    )
+                )
 
     # etiquetas fijas por regla: sin ellas, varias reglas que graban la misma serie son «duplicadas»
     def fuente(p: Producto, origen: str, expr: str) -> dict[str, Any]:
@@ -353,12 +406,16 @@ def reglas(
     fuentes += [fuente(p, "updates-exporter", _desde_exporter(p)) for p in catalogo.values() if p.ciclo_regex]
     fuentes += [fuente(p, "windows", _desde_windows(p)) for p in catalogo.values() if p.windows_producto]
     fuentes += [fuente(p, "contenedor", _desde_contenedor(p)) for p in catalogo.values() if p.imagen_regex]
-    derivadas = [
+    derivadas: list[dict[str, Any]] = [
         {
             "record": RESTANTE,
             "expr": f"({PRODUCTO_CICLO} * on (producto, ciclo) group_left () {FIN} - time()) / 86400",
         },
         {"record": MAYOR, "expr": f"{PRODUCTO_CICLO} * on (producto, ciclo) group_left (ultimo) {SUPERADO}"},
+    ]
+    derivadas += [
+        {"record": DESCARTADA, "expr": _descartadas(p), "labels": {"producto": p.producto}}
+        for p in con_politica
     ]
     return {
         # un solo grupo: Prometheus evalúa sus reglas en orden y cada una ve las anteriores en la misma pasada

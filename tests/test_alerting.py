@@ -274,6 +274,10 @@ def test_reglas_de_imagenes(example_data: dict[str, Any]) -> None:
     example_data["alertas"].setdefault("umbrales", {})["imagen_durante"] = "72h"
     rules = _rules(_build(example_data))
     assert 'tipo="tag"' in rules["vigia-imagen-version"]["data"][0]["model"]["expr"]
+    assert (
+        "unless on (nombre, contenedor, remota) vigia_imagen_descartada"
+        in (rules["vigia-imagen-version"]["data"][0]["model"]["expr"])
+    )
     assert rules["vigia-imagen-sin-aplicar"]["for"] == "72h"
     for h in example_data["hosts"]:
         h.pop("imagenes", None)

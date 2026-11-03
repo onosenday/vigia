@@ -281,7 +281,7 @@
       "type": "prometheus",
       "uid": "prometheus"
      },
-     "expr": "max by (nombre, contenedor, imagen, tipo, local, remota) (wud_containers{nueva=\"true\"})",
+     "expr": "max by (nombre, contenedor, imagen, tipo, local, remota) (wud_containers{nueva=\"true\"} unless on (nombre, contenedor, remota) vigia_imagen_descartada)",
      "legendFormat": "{{nombre}}",
      "instant": true,
      "range": false,

@@ -75,6 +75,8 @@ def test_panel_de_mantenimiento(example_data: dict[str, Any]) -> None:
     d = _gen(example_data)["mantenimiento.json"]
     titulos = [p["title"] for p in d["panels"]]
     assert titulos[1:] == ["Versiones y soporte", "Actualizaciones de los hosts", "Imágenes nuevas"]
+    (imgs,) = [p for p in d["panels"] if p["title"] == "Imágenes nuevas"]
+    assert "unless on (nombre, contenedor, remota) vigia_imagen_descartada" in json.dumps(imgs)
     for h in example_data["hosts"]:
         for k in ("node_exporter", "windows_exporter", "cadvisor", "imagenes", "actualizaciones"):
             h.pop(k, None)

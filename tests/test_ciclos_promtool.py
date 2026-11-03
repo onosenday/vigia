@@ -64,6 +64,19 @@ def _windows(nombre: str, producto: str, version: str) -> dict[str, str]:
     }
 
 
+def _wud(contenedor: str, imagen: str, local: str, remota: str) -> dict[str, str]:
+    """Imagen nueva con otra etiqueta según What's Up Docker (`imagen` sin etiqueta, como la publica)."""
+    return {
+        "series": f'wud_containers{{nombre="srv-1", contenedor="{contenedor}", imagen="{imagen}", '
+        f'local="{local}", remota="{remota}", nueva="true", tipo="tag", job="imagenes"}}',
+        "values": "1 1",
+    }
+
+
+def _etiquetas(labels: dict[str, str]) -> str:
+    return "{" + ", ".join(f'{k}="{v}"' for k, v in labels.items()) + "}"
+
+
 def _ultimo(producto: str) -> str:
     return ciclos.catalogo()[producto].ultimo.ciclo
 
@@ -220,4 +233,52 @@ def test_configuracion_y_reglas_del_golden(tmp_path: Path) -> None:
     # rule_files apunta a /etc/prometheus: aquí, a la copia
     conf.write_text(conf.read_text(encoding="utf-8").replace("/etc/prometheus/", f"{tmp_path}/prometheus/"))
     res = subprocess.run([*cmd, "check", "config", str(conf)], cwd=tmp_path, capture_output=True, text=True)  # noqa: S603
+    assert res.returncode == 0, res.stdout + res.stderr
+
+
+def test_imagenes_descartadas_por_la_politica(tmp_path: Path, example_data: dict[str, Any]) -> None:
+    """La alerta de imágenes nuevas no ofrece a quien está en la LTS de Prometheus un tag de rama corta."""
+    cmd = _promtool(tmp_path)
+    if not cmd:
+        pytest.skip("sin promtool (ver VIGIA_PROMTOOL)")
+    reglas = ciclos.reglas(ciclos.catalogo())
+    (tmp_path / "ciclos.yml").write_text(yaml.safe_dump(reglas), encoding="utf-8")
+    politica = ciclos.catalogo()["prometheus"].politica
+    assert politica is not None
+    (alerta,) = [
+        r
+        for r in alerting.image_rules(Site.model_validate(example_data))
+        if r["uid"] == "vigia-imagen-version"
+    ]
+    expr = f"({alerta['data'][0]['model']['expr']}) > 0"
+
+    def img(contenedor: str, imagen: str, local: str, remota: str) -> dict[str, str]:
+        return {"contenedor": contenedor, "imagen": imagen, "local": local, "remota": remota}
+
+    descartada = img("prom-lts", "prom/prometheus", "v3.13.5", "v3.15.1")  # de la LTS a una rama corta
+    avisan = [
+        img("prom-parche", "prom/prometheus", "v3.13.5", "v3.13.6"),  # misma LTS
+        img("prom-corta", "prom/prometheus", "v3.14.0", "v3.15.1"),  # la local no es LTS: debe moverse
+        img("prom-nueva", "prom/prometheus", "v3.13.5", "v9.9.0"),  # ciclo que el catálogo no conoce
+        img("grafana", "grafana/grafana-oss", "13.0.2", "13.3.0"),  # producto sin política
+    ]
+    grabada = {"nombre": "srv-1"} | {k: v for k, v in descartada.items() if k != "imagen"}
+    grabada |= {"producto": "prometheus", "motivo": politica.motivo}
+    pruebas = [
+        _muestras(ciclos.DESCARTADA, [{"labels": ciclos.DESCARTADA + _etiquetas(grabada), "value": 1}]),
+        _muestras(expr, [{"labels": _etiquetas({"nombre": "srv-1"} | m), "value": 1} for m in avisan]),
+    ]
+    prueba = {
+        "rule_files": ["ciclos.yml"],
+        "evaluation_interval": f"{HORAS}h",
+        "tests": [
+            {
+                "interval": f"{HORAS}h",
+                "input_series": [_wud(**m) for m in [descartada, *avisan]],
+                "promql_expr_test": pruebas,
+            }
+        ],
+    }
+    (tmp_path / "prueba.yml").write_text(yaml.safe_dump(prueba, sort_keys=False), encoding="utf-8")
+    res = subprocess.run([*cmd, "test", "rules", "prueba.yml"], cwd=tmp_path, capture_output=True, text=True)  # noqa: S603
     assert res.returncode == 0, res.stdout + res.stderr
