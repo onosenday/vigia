@@ -53,6 +53,8 @@ VERSIONES = f"max by ({_PRODUCTO}, ultimo) (vigia_version_mayor_disponible)"
 PENDIENTES = "max by (nombre) (vigia_actualizaciones_pendientes)"
 SEGURIDAD = "max by (nombre) (vigia_actualizaciones_seguridad)"
 IMAGENES = 'max by (nombre, contenedor, tipo, local, remota) (wud_containers{nueva="true"})'
+DESCARTADAS = "max by (nombre, contenedor, remota, motivo) (vigia_imagen_descartada)"
+"""Imágenes nuevas que la política de rama del catálogo no ofrece (`ciclos.DESCARTADA`; un test lo vigila)."""
 DISP_INFO = "netinv_device_info"
 DISP_ULTIMA = "netinv_device_last_seen_seconds"
 DISP_PRIMERA = "netinv_device_first_seen_seconds"

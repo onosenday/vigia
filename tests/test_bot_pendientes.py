@@ -188,7 +188,11 @@ def test_todo_decidido() -> None:
 def test_estado_decisiones() -> None:
     ctx = contexto(PROM, decisiones=DEC)
     assert [e for _, e in estado_decisiones(ctx.cfg, ctx.prom, ctx.ahora())] == [
-        VIGENTE, VIGENTE, VIGENTE, VIGENTE, OBSOLETA
+        VIGENTE,
+        VIGENTE,
+        VIGENTE,
+        VIGENTE,
+        OBSOLETA,
     ]
 
 
@@ -258,3 +262,35 @@ def test_decision_vencida() -> None:
         "NAS · Debian 12: soporte hasta 25-02-2027 · próximo",
         "1 decisión obsoleta o vencida: vigia decisiones --limpiar",
     ]
+
+
+PROM_LTS: dict[str, Serie] = {
+    c.IMAGENES: [
+        (_nodo("Nodo 1", contenedor="prometheus", tipo="tag", local="v3.13.5", remota="v3.15.1"), 1)
+    ],
+    c.DESCARTADAS: [
+        (_nodo("Nodo 1", contenedor="prometheus", remota="v3.15.1", motivo="vigia sigue la LTS"), 1)
+    ],
+}
+
+
+def test_imagen_descartada_por_vigia() -> None:
+    texto = responder("/pendientes", contexto(PROM_LTS)) or ""
+    assert texto.splitlines() == [
+        "Nada pendiente ✅",
+        "<b>✔ Decidido (no hace falta hacer nada)</b>",
+        "Nodo 1 · prometheus v3.13.5 → v3.15.1 — vigia sigue la LTS (vigia)",
+    ]
+
+
+def test_la_decision_del_sitio_gana_a_la_de_vigia() -> None:
+    dec = (Decision("imagenes", "Nodo 1", "prometheus", "lo nuestro", ofrecido="v3.15.1"),)
+    ctx = contexto(PROM_LTS, decisiones=dec)
+    assert "Nodo 1 · prometheus v3.13.5 → v3.15.1 — lo nuestro" in (responder("/pendientes", ctx) or "")
+    assert [e for _, e in estado_decisiones(ctx.cfg, ctx.prom, ctx.ahora())] == [VIGENTE]
+
+
+def test_descartadas_es_la_serie_del_catalogo() -> None:
+    from vigia import ciclos
+
+    assert ciclos.DESCARTADA in c.DESCARTADAS

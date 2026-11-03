@@ -16,6 +16,7 @@ from .consultas import (
     AVISO_DIAS,
     CERTIFICADOS,
     CONSUMIBLES,
+    DESCARTADAS,
     DISCOS,
     IMAGENES,
     PENDIENTES,
@@ -176,6 +177,10 @@ def _calcular(cfg: Config, prom: Prometheus, ahora: float) -> tuple[list[str], l
     )
 
     imgs = q(IMAGENES)
+    descartes = {
+        (m.get("nombre"), m.get("contenedor"), m.get("remota")): m.get("motivo", "")
+        for m, _ in q(DESCARTADAS)
+    }
     tags = sorted(
         (m for m, _ in imgs if m.get("tipo") == "tag"),
         key=lambda m: (orden(m.get("nombre", "")), m.get("contenedor", "")),
@@ -187,8 +192,11 @@ def _calcular(cfg: Config, prom: Prometheus, ahora: float) -> tuple[list[str], l
             f"{esc(m.get('remota', ''))}"
         )
         d = juez.busca("imagenes", m, m.get("remota"))
-        if d:
+        motivo = descartes.get((m.get("nombre"), m.get("contenedor"), m.get("remota")))
+        if d:  # el sitio va primero: su decisión es más concreta y sigue contando como usada
             decididas.append(linea + _motivo(d))
+        elif motivo is not None:
+            decididas.append(f"{linea} — {esc(motivo)} (vigia)")
         else:
             lineas.append(linea)
     digest: dict[str, list[str]] = {}
