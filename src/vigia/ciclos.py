@@ -369,6 +369,7 @@ def reglas(
     fecha_aviso = fecha_aviso or {}
     politica = politica or {}
     con_politica = [p for p in catalogo.values() if p.politica and politica.get(p.producto) != "todas"]
+    ids_politica = {p.producto for p in con_politica}
     tabla: list[dict[str, Any]] = []
     for p in catalogo.values():
         aviso = fecha_aviso.get(p.producto, p.fecha_aviso)
@@ -384,7 +385,7 @@ def reglas(
                 tabla.append(_regla(VERSION, 1, producto=p.producto, ciclo=ciclo, version=version))
         for c in p.superados if p.aviso_version else []:
             tabla.append(_regla(SUPERADO, 1, producto=p.producto, ciclo=c.ciclo, ultimo=p.ultimo.ciclo))
-        if p.politica and p in con_politica:
+        if p.politica and p.producto in ids_politica:
             for c in p.ciclos:
                 lts = "true" if c.lts else "false"
                 tabla.append(

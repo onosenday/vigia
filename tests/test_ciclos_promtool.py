@@ -256,16 +256,25 @@ def test_imagenes_descartadas_por_la_politica(tmp_path: Path, example_data: dict
         return {"contenedor": contenedor, "imagen": imagen, "local": local, "remota": remota}
 
     descartada = img("prom-lts", "prom/prometheus", "v3.13.5", "v3.15.1")  # de la LTS a una rama corta
+    # igual, con sufijo
+    sufijo = img("prom-sufijo", "prom/prometheus", "v3.13.5-distroless", "v3.15.1-distroless")
     avisan = [
         img("prom-parche", "prom/prometheus", "v3.13.5", "v3.13.6"),  # misma LTS
         img("prom-corta", "prom/prometheus", "v3.14.0", "v3.15.1"),  # la local no es LTS: debe moverse
         img("prom-nueva", "prom/prometheus", "v3.13.5", "v9.9.0"),  # ciclo que el catálogo no conoce
         img("grafana", "grafana/grafana-oss", "13.0.2", "13.3.0"),  # producto sin política
+        img("prom-latest", "prom/prometheus", "v3.13.5", "latest"),  # sin ciclo que juzgar: avisa
     ]
-    grabada = {"nombre": "srv-1"} | {k: v for k, v in descartada.items() if k != "imagen"}
-    grabada |= {"producto": "prometheus", "motivo": politica.motivo}
+    grabadas = [
+        {"nombre": "srv-1"}
+        | {k: v for k, v in d.items() if k != "imagen"}
+        | {"producto": "prometheus", "motivo": politica.motivo}
+        for d in (descartada, sufijo)
+    ]
     pruebas = [
-        _muestras(ciclos.DESCARTADA, [{"labels": ciclos.DESCARTADA + _etiquetas(grabada), "value": 1}]),
+        _muestras(
+            ciclos.DESCARTADA, [{"labels": ciclos.DESCARTADA + _etiquetas(g), "value": 1} for g in grabadas]
+        ),
         _muestras(expr, [{"labels": _etiquetas({"nombre": "srv-1"} | m), "value": 1} for m in avisan]),
     ]
     prueba = {
@@ -274,7 +283,7 @@ def test_imagenes_descartadas_por_la_politica(tmp_path: Path, example_data: dict
         "tests": [
             {
                 "interval": f"{HORAS}h",
-                "input_series": [_wud(**m) for m in [descartada, *avisan]],
+                "input_series": [_wud(**m) for m in [descartada, sufijo, *avisan]],
                 "promql_expr_test": pruebas,
             }
         ],
