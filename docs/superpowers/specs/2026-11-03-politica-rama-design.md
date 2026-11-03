@@ -35,18 +35,18 @@ politica: {rama: lts, motivo: "vigia sigue la LTS; las demás ramas duran 6 sema
 
 En `ciclos.reglas`, para cada producto con `politica.rama == "lts"`:
 
-- Constante `vigia_ciclo_lts{producto, ciclo}` = 1 por cada ciclo LTS del catálogo.
-- Constante `vigia_politica_info{producto, motivo}` = 1.
-- Derivada `vigia_imagen_descartada{nombre, contenedor, local, remota, producto, motivo}` = 1 cuando:
-  - `wud_containers{nueva="true", tipo="tag"}` cuya imagen (`imagen:remota`) casa con `imagen_regex`;
-  - el ciclo de `local` es LTS (`vigia_ciclo_lts`), y
-  - el ciclo de `remota` no es LTS (`unless on (producto, ciclo_remota) vigia_ciclo_lts`).
+- Constante `vigia_politica_ciclo{producto, ciclo, lts, motivo}` = 1 por cada ciclo del catálogo
+  (`lts` = `"true"`/`"false"`), salvo que el sitio la desactive.
+- Derivada `vigia_imagen_descartada{nombre, contenedor, local, remota, producto, motivo}` = 1 cuando, en
+  `wud_containers{nueva="true", tipo="tag"}`:
+  - el ciclo de `imagen:local` es LTS (`* on (producto, ciclo) … {lts="true"}`), y
+  - el ciclo de `imagen:remota` es un ciclo conocido no LTS (`* on (producto, ciclo_remota) … {lts="false"}`).
 
   El ciclo se saca con `label_join` (`imagen` + `:` + tag) y `label_replace` con `imagen_regex` y
   `ciclo_regex`, como en `_desde_contenedor`.
 - Si la local no está en una LTS no se descarta nada: ese sitio sí debe moverse (y ya le avisa «Fin de soporte
   cercano»). Un tag remoto de la misma LTS (`v3.13.6`) se sigue avisando.
-- Solo se generan si el sitio tiene algún host con `imagenes`.
+- Se generan siempre (sin `wud_containers` no producen series).
 
 ### 3. Consumidores
 
@@ -74,8 +74,8 @@ que `fecha_aviso` (parámetro de `ciclos.reglas`).
 ## Errores y casos límite
 
 - Tag remoto sin versión (`latest`) o que no casa con `imagen_regex`: no se descarta (se avisa como hoy).
-- Ciclo remoto fuera del catálogo (vigia antiguo): se descarta solo si la local es LTS; ya avisa «Catálogo de
-  ciclos antiguo» cuando toca.
+- Ciclo remoto fuera del catálogo (vigia antiguo): no se descarta (no se sabe si es LTS); ya avisa «Catálogo
+  de ciclos antiguo» cuando toca.
 - Nueva LTS publicada y catalogada: su ciclo es LTS, así que se ofrece sola.
 
 ## Tests
