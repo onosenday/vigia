@@ -82,6 +82,14 @@ modules:
       validate_answer_rrs:
         fail_if_not_matches_regexp: [{{ dns_regex }}]
 {% endif %}
+{% if tcp %}
+  # Servicios internos sin HTTP (Samba, bases de datos…): solo se abre y se cierra la conexión.
+  tcp:
+    prober: tcp
+    timeout: 5s
+    tcp:
+      preferred_ip_protocol: ip4
+{% endif %}
 {% if minecraft %}
   # Minecraft Java: saludo de estado mínimo + ping (todos los bytes < 0x80 para que no los recodifique
   # UTF-8). El ping hace que el servidor cierre tras responder: blackbox lee por líneas y el JSON con

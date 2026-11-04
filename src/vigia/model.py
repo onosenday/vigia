@@ -404,7 +404,7 @@ class Ping(Base):
         return self
 
 
-BLACKBOX_MODULES = ("http_any", "https_interno", "minecraft")
+BLACKBOX_MODULES = ("http_any", "https_interno", "minecraft", "tcp")
 
 
 class Service(Base):
@@ -414,8 +414,8 @@ class Service(Base):
     nombre: Text
     host: Id
     """Host (o VIP) donde corre: agrupa el servicio en los paneles."""
-    modulo: Literal["http_any", "https_interno", "minecraft"] | None = None
-    """Sonda de blackbox si no es la normal (`http_any`)."""
+    modulo: Literal["http_any", "https_interno", "minecraft", "tcp"] | None = None
+    """Sonda de blackbox si no es la normal (`http_any`). `tcp`: solo conecta y cierra (host:puerto)."""
     espera_200: bool = False
     """Confirmado que responde 200: obligatorio en hosts cuyos discos hibernan."""
     alerta: bool = True
@@ -424,9 +424,9 @@ class Service(Base):
     def _check_module(self) -> Service:
         is_url = "://" in self.url
         if not is_url and self.modulo in (None, "http_any", "https_interno"):
-            raise ValueError(f"servicio {self.nombre}: host:puerto necesita un módulo TCP (p. ej. minecraft)")
-        if is_url and self.modulo == "minecraft":
-            raise ValueError(f"servicio {self.nombre}: el módulo minecraft va con host:puerto, no con URL")
+            raise ValueError(f"servicio {self.nombre}: host:puerto necesita un módulo TCP (tcp o minecraft)")
+        if is_url and self.modulo in ("minecraft", "tcp"):
+            raise ValueError(f"servicio {self.nombre}: el módulo {self.modulo} va con host:puerto, no URL")
         return self
 
 

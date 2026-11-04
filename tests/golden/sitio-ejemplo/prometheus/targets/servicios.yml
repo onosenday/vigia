@@ -17,3 +17,9 @@
     nombre: Juego
     host: vip
     __param_module: minecraft
+- targets:
+  - 10.99.0.11:445
+  labels:
+    nombre: Ficheros
+    host: nodo2
+    __param_module: tcp

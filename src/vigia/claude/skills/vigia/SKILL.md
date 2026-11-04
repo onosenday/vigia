@@ -70,6 +70,7 @@ Si se cambió el propio paquete vigia en local: `uv sync --reinstall-package vig
   loopback si el monitor sondea la IP pública de su propio router. `ping: false` si el equipo filtra ICMP (solo
   por `puertos`). Guía y reglas de seguridad en `docs/externos.md` del paquete.
 - **Servicio por IP:puerto**: `servicios:` con `url`, `nombre`, `host` (agrupa en paneles).
+  Sin HTTP (Samba, una BD…): `url: <ip>:<puerto>` con `modulo: tcp` (solo conecta y cierra).
 - **Web por nombre** (tras proxy inverso): `web.objetivos`; con CA interna, `web.ca: assets/ca.crt`.
 - **Equipos que aún no están en el sitio**: `uv run vigia descubrir` (explica qué hará) y con `--yes` lo
   lanza. Exige `modulos.netinv.autorizacion` y que `propuesta.yaml` esté en `.gitignore`. Lee netinv si está

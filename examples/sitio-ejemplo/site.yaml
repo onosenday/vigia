@@ -84,6 +84,7 @@ servicios:
   - {url: "http://10.99.0.11:8000", nombre: Panel nodo2, host: nodo2}
   - {url: "https://10.99.0.20:5001", nombre: DSM, host: nas1, espera_200: true}
   - {url: "10.99.0.2:25565", nombre: Juego, host: vip, modulo: minecraft}
+  - {url: "10.99.0.11:445", nombre: Ficheros, host: nodo2, modulo: tcp}   # sin HTTP: solo conecta
 
 # Tareas programadas que escriben su estado en el textfile de node_exporter (docs/tareas.md).
 tareas:

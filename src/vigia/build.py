@@ -268,6 +268,7 @@ def build_site(s: Site, site_root: Path) -> dict[str, str | bytes]:
             s=s,
             ca=s.web.ca is not None,
             minecraft=any(x.modulo == "minecraft" for x in s.servicios),
+            tcp=any(x.modulo == "tcp" for x in s.servicios),
             dns_regex=_dns_regex(s.dns.espera) if s.dns else "",
             header=_header(s, "blackbox_exporter"),
         )

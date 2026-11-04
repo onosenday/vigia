@@ -84,3 +84,10 @@ def test_snmp_protocolos_v3() -> None:
     assert (auths["nas-sha1"]["auth_protocol"], auths["nas-sha1"]["priv_protocol"]) == ("SHA", "AES256")
     assert "context_name" not in auths["nas"]
     assert auths["jetdirect"]["context_name"] == "Jetdirect"
+
+
+def test_modulo_tcp_solo_si_se_usa() -> None:
+    gen = _generated()
+    assert b"\n  tcp:\n" in gen["blackbox/blackbox.yml"]
+    servicios = gen["prometheus/targets/servicios.yml"].decode()
+    assert "__param_module: tcp" in servicios

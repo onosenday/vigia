@@ -230,3 +230,23 @@ def test_tareas_repetidas(example_data: dict[str, Any]) -> None:
 def test_tarea_max_horas_fuera_de_rango(example_data: dict[str, Any], horas: int) -> None:
     _con_tareas(example_data)["tareas"][0]["max_horas"] = horas
     _assert_invalid(example_data, "max_horas")
+
+
+def test_servicio_tcp_con_host_puerto(example_data: dict[str, Any]) -> None:
+    example_data["servicios"].append(
+        {"url": "10.99.0.11:445", "nombre": "Samba", "host": "nodo2", "modulo": "tcp"}
+    )
+    s = _validate(example_data)
+    assert s.servicios[-1].modulo == "tcp"
+
+
+def test_servicio_tcp_con_url(example_data: dict[str, Any]) -> None:
+    example_data["servicios"].append(
+        {"url": "http://10.99.0.11:445", "nombre": "Samba", "host": "nodo2", "modulo": "tcp"}
+    )
+    _assert_invalid(example_data, "el módulo tcp va con host:puerto, no URL")
+
+
+def test_servicio_host_puerto_sin_modulo(example_data: dict[str, Any]) -> None:
+    example_data["servicios"].append({"url": "10.99.0.11:445", "nombre": "Samba", "host": "nodo2"})
+    _assert_invalid(example_data, "host:puerto necesita un módulo TCP")
