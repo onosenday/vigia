@@ -13,7 +13,7 @@ ejemplos_imagen:
   valkey/valkey:8.1-alpine: '8.1'
   docker.io/valkey/valkey:8-alpine: null
 aviso_version: true
-comprobado: '2026-11-03'
+comprobado: '2026-11-04'
 ciclos:
 - ciclo: '9.1'
   publicado: '2026-05-19'

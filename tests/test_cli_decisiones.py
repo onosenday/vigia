@@ -39,7 +39,7 @@ def _prom(monkeypatch: pytest.MonkeyPatch, caido: bool = False) -> None:
                     "local": "v3.13.5",
                     "remota": "v3.15.1",
                 },
-                1,
+                1.0,
             )
         ]
     }

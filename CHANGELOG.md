@@ -1,5 +1,14 @@
 # Cambios
 
+## 0.5.4 (2026-11-04)
+
+Al actualizar un sitio: nada cambia en `site.yaml`.
+
+- **Nuevo**: módulo `tcp` para `servicios` sin HTTP en la red del sitio (Samba, una base de datos…):
+  `{url: "<ip>:<puerto>", nombre: …, host: …, modulo: tcp}`. Solo abre y cierra la conexión; blackbox lleva el
+  módulo solo si algún servicio lo usa.
+- **Docs**: en la skill, la lección de What's Up Docker con etiquetas variante (`9-alpine` frente a `9-alpine3.24`).
+
 ## 0.5.3 (2026-11-03)
 
 Al actualizar un sitio: nada cambia en `site.yaml`. Tras `vigia deploy`, el bot se recompila (*Build* o *Pull* en

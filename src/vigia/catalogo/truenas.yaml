@@ -11,7 +11,7 @@ ejemplos:
   24.10.2: '24.10'
 ejemplos_imagen: {}
 aviso_version: true
-comprobado: '2026-11-03'
+comprobado: '2026-11-04'
 ciclos:
 - ciclo: '25.10'
   publicado: '2025-10-28'

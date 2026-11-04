@@ -1,10 +1,10 @@
-# Ciclos de vida (reglas de grabación constantes, docs/ciclos.md) — generado por vigia 0.5.3 para «Oficina de ejemplo».
+# Ciclos de vida (reglas de grabación constantes, docs/ciclos.md) — generado por vigia 0.5.4 para «Oficina de ejemplo».
 # No editar: cambia site.yaml y ejecuta `vigia build`.
 groups:
 - name: vigia-ciclos
   rules:
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793664000)
+    expr: vector(1793750400)
     labels:
       producto: debian
   - record: vigia_ciclo_aviso_dias
@@ -312,7 +312,7 @@ groups:
       ciclo: '1.1'
       ultimo: '13'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793664000)
+    expr: vector(1793750400)
     labels:
       producto: grafana
   - record: vigia_ciclo_aviso_dias
@@ -650,7 +650,7 @@ groups:
       producto: grafana
       ciclo: '6'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793664000)
+    expr: vector(1793750400)
     labels:
       producto: linuxmint
   - record: vigia_ciclo_aviso_dias
@@ -1021,7 +1021,7 @@ groups:
       ciclo: '18.1'
       ultimo: '22.3'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793664000)
+    expr: vector(1793750400)
     labels:
       producto: mariadb
   - record: vigia_ciclo_aviso_dias
@@ -1533,7 +1533,7 @@ groups:
       ciclo: '5.1'
       ultimo: '13.0'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793664000)
+    expr: vector(1793750400)
     labels:
       producto: mongodb
   - record: vigia_ciclo_aviso_dias
@@ -2096,7 +2096,7 @@ groups:
       ciclo: '1.0'
       ultimo: '9.0'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793664000)
+    expr: vector(1793750400)
     labels:
       producto: mysql
   - record: vigia_ciclo_aviso_dias
@@ -2484,7 +2484,7 @@ groups:
       ciclo: '3.23'
       ultimo: '26.10'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793664000)
+    expr: vector(1793750400)
     labels:
       producto: nginx
   - record: vigia_ciclo_aviso_dias
@@ -2899,7 +2899,7 @@ groups:
       ciclo: '5'
       ultimo: '8'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793664000)
+    expr: vector(1793750400)
     labels:
       producto: postgresql
   - record: vigia_ciclo_aviso_dias
@@ -3445,7 +3445,7 @@ groups:
       ciclo: '6.0'
       ultimo: '18'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793664000)
+    expr: vector(1793750400)
     labels:
       producto: prometheus
   - record: vigia_ciclo_aviso_dias
@@ -4101,7 +4101,7 @@ groups:
       lts: 'false'
       motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793664000)
+    expr: vector(1793750400)
     labels:
       producto: proxmox-ve
   - record: vigia_ciclo_aviso_dias
@@ -4251,7 +4251,7 @@ groups:
       ciclo: '1'
       ultimo: '9'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793664000)
+    expr: vector(1793750400)
     labels:
       producto: redis
   - record: vigia_ciclo_aviso_dias
@@ -4592,7 +4592,7 @@ groups:
       ciclo: '5.2'
       ultimo: '7.4'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793664000)
+    expr: vector(1793750400)
     labels:
       producto: traefik
   - record: vigia_ciclo_aviso_dias
@@ -4946,7 +4946,7 @@ groups:
       ciclo: '1.7'
       ultimo: '3.7'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793664000)
+    expr: vector(1793750400)
     labels:
       producto: truenas
   - record: vigia_ciclo_aviso_dias
@@ -5023,7 +5023,7 @@ groups:
       ciclo: '23.10'
       ultimo: '25.10'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793664000)
+    expr: vector(1793750400)
     labels:
       producto: ubuntu
   - record: vigia_ciclo_aviso_dias
@@ -5784,7 +5784,7 @@ groups:
       ciclo: '4.10'
       ultimo: '26.04'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793664000)
+    expr: vector(1793750400)
     labels:
       producto: valkey
   - record: vigia_ciclo_aviso_dias
@@ -5871,7 +5871,7 @@ groups:
       ciclo: '7.2'
       ultimo: '9.1'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793664000)
+    expr: vector(1793750400)
     labels:
       producto: windows-server
   - record: vigia_ciclo_aviso_dias

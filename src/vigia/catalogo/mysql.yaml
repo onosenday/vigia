@@ -13,7 +13,7 @@ ejemplos_imagen:
   mysql:8.4: '8.4'
   mysql:8: null
 aviso_version: true
-comprobado: '2026-11-03'
+comprobado: '2026-11-04'
 ciclos:
 - ciclo: '26.10'
   publicado: '2026-10-20'

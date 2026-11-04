@@ -14,7 +14,7 @@ ejemplos_imagen:
   lscr.io/linuxserver/mariadb:11.4.5-r0-ls1: '11.4'
   mariadb:11: null
 aviso_version: true
-comprobado: '2026-11-03'
+comprobado: '2026-11-04'
 ciclos:
 - ciclo: '13.0'
   publicado: '2026-09-15'

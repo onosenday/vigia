@@ -13,7 +13,7 @@ ejemplos_imagen:
   mongo:7.0: '7.0'
   mongo:7: null
 aviso_version: true
-comprobado: '2026-11-03'
+comprobado: '2026-11-04'
 ciclos:
 - ciclo: '9.0'
   publicado: '2026-09-30'
