@@ -63,11 +63,12 @@ politica: {rama: lts, motivo: "vigia sigue la LTS de Prometheus; las demás rama
 ```
 
 Con `rama: lts` (el producto necesita un ciclo LTS e `imagen_regex`), si un contenedor está en un ciclo LTS y
-What's Up Docker ofrece una etiqueta de un ciclo conocido que no lo es (`v3.13.5` → `v3.15.1`), no salta «Versión
+What's Up Docker ofrece una etiqueta de un ciclo que no lo es (`v3.13.5` → `v3.15.1`), no salta «Versión
 nueva de una imagen», no aparece en el panel «Imágenes nuevas» y `/pendientes` la pone en «Decidido» con el
-motivo y `(vigia)`. Una versión nueva de la misma LTS (`v3.13.6`) o una LTS nueva sí se ofrecen. Si el contenedor
-ya está fuera de la LTS, o la etiqueta no lleva versión (`latest`) o es de un ciclo fuera del catálogo, no se
-descarta nada.
+motivo y `(vigia)`. Una versión nueva de la misma LTS (`v3.13.6`) o una LTS nueva sí se ofrecen. Una rama que el
+catálogo aún no conoce (publicada después de su comprobación) se trata como no LTS: si resultara ser una LTS, se
+ofrece al pasar a una versión de vigia con el catálogo refrescado. Si el contenedor ya está fuera de la LTS, o la
+etiqueta no lleva versión (`latest`), no se descarta nada.
 
 Para que un sitio siga todas las ramas:
 

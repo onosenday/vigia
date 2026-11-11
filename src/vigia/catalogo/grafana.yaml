@@ -14,32 +14,32 @@ ejemplos_imagen:
   grafana/grafana:latest: null
 aviso_dias: 30
 aviso_version: false
-comprobado: '2026-11-04'
+comprobado: '2026-11-11'
 ciclos:
 - ciclo: '13.3'
   publicado: '2026-10-20'
   fin_soporte: '2027-07-20'
-  ultima_version: 13.3.0
+  ultima_version: 13.3.1
   lts: false
 - ciclo: '13.2'
   publicado: '2026-08-18'
   fin_soporte: '2027-05-18'
-  ultima_version: 13.2.5
+  ultima_version: 13.2.6
   lts: false
 - ciclo: '13.1'
   publicado: '2026-06-23'
   fin_soporte: '2027-03-20'
-  ultima_version: 13.1.9
+  ultima_version: 13.1.10
   lts: false
 - ciclo: '13.0'
   publicado: '2026-04-14'
   fin_soporte: '2027-01-09'
-  ultima_version: 13.0.12
+  ultima_version: 13.0.13
   lts: false
 - ciclo: '12.4'
   publicado: '2026-02-24'
   fin_soporte: '2027-05-24'
-  ultima_version: 12.4.14
+  ultima_version: 12.4.15
   lts: false
 - ciclo: '12.3'
   publicado: '2025-11-19'

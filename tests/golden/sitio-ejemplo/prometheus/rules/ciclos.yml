@@ -4,7 +4,7 @@ groups:
 - name: vigia-ciclos
   rules:
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793750400)
+    expr: vector(1794355200)
     labels:
       producto: debian
   - record: vigia_ciclo_aviso_dias
@@ -312,7 +312,7 @@ groups:
       ciclo: '1.1'
       ultimo: '13'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793750400)
+    expr: vector(1794355200)
     labels:
       producto: grafana
   - record: vigia_ciclo_aviso_dias
@@ -650,7 +650,7 @@ groups:
       producto: grafana
       ciclo: '6'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793750400)
+    expr: vector(1794355200)
     labels:
       producto: linuxmint
   - record: vigia_ciclo_aviso_dias
@@ -1021,7 +1021,7 @@ groups:
       ciclo: '18.1'
       ultimo: '22.3'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793750400)
+    expr: vector(1794355200)
     labels:
       producto: mariadb
   - record: vigia_ciclo_aviso_dias
@@ -1533,7 +1533,7 @@ groups:
       ciclo: '5.1'
       ultimo: '13.0'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793750400)
+    expr: vector(1794355200)
     labels:
       producto: mongodb
   - record: vigia_ciclo_aviso_dias
@@ -2096,7 +2096,7 @@ groups:
       ciclo: '1.0'
       ultimo: '9.0'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793750400)
+    expr: vector(1794355200)
     labels:
       producto: mysql
   - record: vigia_ciclo_aviso_dias
@@ -2484,7 +2484,7 @@ groups:
       ciclo: '3.23'
       ultimo: '26.10'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793750400)
+    expr: vector(1794355200)
     labels:
       producto: nginx
   - record: vigia_ciclo_aviso_dias
@@ -2899,7 +2899,7 @@ groups:
       ciclo: '5'
       ultimo: '8'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793750400)
+    expr: vector(1794355200)
     labels:
       producto: postgresql
   - record: vigia_ciclo_aviso_dias
@@ -3445,7 +3445,7 @@ groups:
       ciclo: '6.0'
       ultimo: '18'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793750400)
+    expr: vector(1794355200)
     labels:
       producto: prometheus
   - record: vigia_ciclo_aviso_dias
@@ -3456,8 +3456,19 @@ groups:
     expr: vector(1)
     labels:
       producto: prometheus
+      ciclo: '3.16'
+      ultimo: '3.16'
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1797379200)
+    labels:
+      producto: prometheus
+      ciclo: '3.16'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: prometheus
       ciclo: '3.15'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1793923200)
     labels:
@@ -3468,7 +3479,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '3.14'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1790726400)
     labels:
@@ -3479,7 +3490,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '3.13'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1816992000)
     labels:
@@ -3490,7 +3501,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '3.12'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1783555200)
     labels:
@@ -3501,7 +3512,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '3.11'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1778716800)
     labels:
@@ -3512,7 +3523,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '3.10'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1775606400)
     labels:
@@ -3523,7 +3534,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '3.9'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1771286400)
     labels:
@@ -3534,7 +3545,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '3.8'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1767916800)
     labels:
@@ -3545,7 +3556,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '3.7'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1764115200)
     labels:
@@ -3556,7 +3567,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '3.6'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1762041600)
     labels:
@@ -3567,7 +3578,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '3.5'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1785456000)
     labels:
@@ -3578,7 +3589,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '3.4'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1751068800)
     labels:
@@ -3589,7 +3600,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '3.3'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1748304000)
     labels:
@@ -3600,7 +3611,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '3.2'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1743379200)
     labels:
@@ -3611,7 +3622,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '3.1'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1739404800)
     labels:
@@ -3622,7 +3633,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '3.0'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1735171200)
     labels:
@@ -3633,7 +3644,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '2.55'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1733184000)
     labels:
@@ -3644,7 +3655,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '2.54'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1726790400)
     labels:
@@ -3655,7 +3666,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '2.53'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1753920000)
     labels:
@@ -3666,7 +3677,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '2.52'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1718755200)
     labels:
@@ -3677,7 +3688,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '2.51'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1714435200)
     labels:
@@ -3688,7 +3699,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '2.50'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1712188800)
     labels:
@@ -3699,7 +3710,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '2.49'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1708905600)
     labels:
@@ -3710,7 +3721,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '2.48'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1703721600)
     labels:
@@ -3721,7 +3732,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '2.47'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1697587200)
     labels:
@@ -3732,7 +3743,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '2.46'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1693872000)
     labels:
@@ -3743,7 +3754,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '2.45'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1722384000)
     labels:
@@ -3754,7 +3765,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '2.44'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1691280000)
     labels:
@@ -3765,7 +3776,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '2.43'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1682985600)
     labels:
@@ -3776,7 +3787,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '2.42'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1678752000)
     labels:
@@ -3787,7 +3798,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '2.41'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1675123200)
     labels:
@@ -3798,7 +3809,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '2.40'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1671408000)
     labels:
@@ -3809,7 +3820,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '2.39'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1668556800)
     labels:
@@ -3820,7 +3831,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '2.38'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1664236800)
     labels:
@@ -3831,7 +3842,7 @@ groups:
     labels:
       producto: prometheus
       ciclo: '2.37'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1690761600)
     labels:
@@ -3842,12 +3853,19 @@ groups:
     labels:
       producto: prometheus
       ciclo: '2.36'
-      ultimo: '3.15'
+      ultimo: '3.16'
   - record: vigia_ciclo_fin_soporte_timestamp
     expr: vector(1657497600)
     labels:
       producto: prometheus
       ciclo: '2.36'
+  - record: vigia_politica_ciclo
+    expr: vector(1)
+    labels:
+      producto: prometheus
+      ciclo: '3.16'
+      lts: 'false'
+      motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
   - record: vigia_politica_ciclo
     expr: vector(1)
     labels:
@@ -4101,7 +4119,7 @@ groups:
       lts: 'false'
       motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793750400)
+    expr: vector(1794355200)
     labels:
       producto: proxmox-ve
   - record: vigia_ciclo_aviso_dias
@@ -4251,7 +4269,7 @@ groups:
       ciclo: '1'
       ultimo: '9'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793750400)
+    expr: vector(1794355200)
     labels:
       producto: redis
   - record: vigia_ciclo_aviso_dias
@@ -4592,7 +4610,7 @@ groups:
       ciclo: '5.2'
       ultimo: '7.4'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793750400)
+    expr: vector(1794355200)
     labels:
       producto: traefik
   - record: vigia_ciclo_aviso_dias
@@ -4946,7 +4964,7 @@ groups:
       ciclo: '1.7'
       ultimo: '3.7'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793750400)
+    expr: vector(1794355200)
     labels:
       producto: truenas
   - record: vigia_ciclo_aviso_dias
@@ -5023,7 +5041,7 @@ groups:
       ciclo: '23.10'
       ultimo: '25.10'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793750400)
+    expr: vector(1794355200)
     labels:
       producto: ubuntu
   - record: vigia_ciclo_aviso_dias
@@ -5784,7 +5802,7 @@ groups:
       ciclo: '4.10'
       ultimo: '26.04'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793750400)
+    expr: vector(1794355200)
     labels:
       producto: valkey
   - record: vigia_ciclo_aviso_dias
@@ -5871,7 +5889,7 @@ groups:
       ciclo: '7.2'
       ultimo: '9.1'
   - record: vigia_ciclos_catalogo_timestamp
-    expr: vector(1793750400)
+    expr: vector(1794355200)
     labels:
       producto: windows-server
   - record: vigia_ciclo_aviso_dias
@@ -6527,6 +6545,13 @@ groups:
       "v_local", "$1", "img_local", "(?:(?:.*/)?prometheus:v?(\\d+\\.\\d+)).*"), "v_remota", "$1", "img_remota", "(?:(?:.*/)?prometheus:v?(\\d+\\.\\d+)).*"),
       "ciclo", "$1", "v_local", "(?:(\\d+\\.\\d+)).*"), "ciclo_remota", "$1", "v_remota", "(?:(\\d+\\.\\d+)).*") * on (producto,
       ciclo) group_left (motivo) vigia_politica_ciclo{producto="prometheus", lts="true"}) * on (producto, ciclo_remota) group_left
-      () label_replace(vigia_politica_ciclo{producto="prometheus", lts="false"}, "ciclo_remota", "$1", "ciclo", "(.*)")))
+      () label_replace(vigia_politica_ciclo{producto="prometheus", lts="false"}, "ciclo_remota", "$1", "ciclo", "(.*)")) or
+      ((label_replace((label_replace(label_replace(label_replace(label_replace(label_join(label_join(label_replace(wud_containers{nueva="true",
+      tipo="tag"}, "producto", "prometheus", "", ""), "img_local", ":", "imagen", "local"), "img_remota", ":", "imagen", "remota"),
+      "v_local", "$1", "img_local", "(?:(?:.*/)?prometheus:v?(\\d+\\.\\d+)).*"), "v_remota", "$1", "img_remota", "(?:(?:.*/)?prometheus:v?(\\d+\\.\\d+)).*"),
+      "ciclo", "$1", "v_local", "(?:(\\d+\\.\\d+)).*"), "ciclo_remota", "$1", "v_remota", "(?:(\\d+\\.\\d+)).*") * on (producto,
+      ciclo) group_left (motivo) vigia_politica_ciclo{producto="prometheus", lts="true"}), "hay", "1", "ciclo_remota", ".+")
+      * on (hay) group_left () label_replace(vector(1), "hay", "1", "", "")) unless on (producto, ciclo_remota) label_replace(vigia_politica_ciclo{producto="prometheus"},
+      "ciclo_remota", "$1", "ciclo", "(.*)")))
     labels:
       producto: prometheus

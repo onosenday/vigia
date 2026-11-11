@@ -258,10 +258,11 @@ def test_imagenes_descartadas_por_la_politica(tmp_path: Path, example_data: dict
     descartada = img("prom-lts", "prom/prometheus", "v3.13.5", "v3.15.1")  # de la LTS a una rama corta
     # igual, con sufijo
     sufijo = img("prom-sufijo", "prom/prometheus", "v3.13.5-distroless", "v3.15.1-distroless")
+    # ciclo que el catálogo aún no conoce: se trata como rama corta
+    nueva = img("prom-nueva", "prom/prometheus", "v3.13.5", "v9.9.0")
     avisan = [
         img("prom-parche", "prom/prometheus", "v3.13.5", "v3.13.6"),  # misma LTS
         img("prom-corta", "prom/prometheus", "v3.14.0", "v3.15.1"),  # la local no es LTS: debe moverse
-        img("prom-nueva", "prom/prometheus", "v3.13.5", "v9.9.0"),  # ciclo que el catálogo no conoce
         img("grafana", "grafana/grafana-oss", "13.0.2", "13.3.0"),  # producto sin política
         img("prom-latest", "prom/prometheus", "v3.13.5", "latest"),  # sin ciclo que juzgar: avisa
     ]
@@ -269,7 +270,7 @@ def test_imagenes_descartadas_por_la_politica(tmp_path: Path, example_data: dict
         {"nombre": "srv-1"}
         | {k: v for k, v in d.items() if k != "imagen"}
         | {"producto": "prometheus", "motivo": politica.motivo}
-        for d in (descartada, sufijo)
+        for d in (descartada, sufijo, nueva)
     ]
     pruebas = [
         _muestras(
@@ -283,7 +284,7 @@ def test_imagenes_descartadas_por_la_politica(tmp_path: Path, example_data: dict
         "tests": [
             {
                 "interval": f"{HORAS}h",
-                "input_series": [_wud(**m) for m in [descartada, sufijo, *avisan]],
+                "input_series": [_wud(**m) for m in [descartada, sufijo, nueva, *avisan]],
                 "promql_expr_test": pruebas,
             }
         ],

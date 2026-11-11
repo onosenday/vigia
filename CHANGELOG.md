@@ -1,5 +1,10 @@
 # Cambios
 
+## Sin publicar
+
+- **Arreglo**: con la política de rama, una rama que el catálogo aún no conoce se trata como no LTS: la 3.16 de
+  Prometheus ya no se ofrece a quien está en la LTS 3.13 (vigia-9nz). Catálogo refrescado (Prometheus 3.16).
+
 ## 0.5.4 (2026-11-04)
 
 Al actualizar un sitio: nada cambia en `site.yaml`.

@@ -16,32 +16,32 @@ ejemplos_imagen:
   postgres:16.4-alpine: '16'
   postgres:latest: null
 aviso_version: true
-comprobado: '2026-11-04'
+comprobado: '2026-11-11'
 ciclos:
 - ciclo: '18'
   publicado: '2025-09-25'
   fin_soporte: '2030-11-14'
-  ultima_version: '18.6'
+  ultima_version: '18.7'
   lts: false
 - ciclo: '17'
   publicado: '2024-09-26'
   fin_soporte: '2029-11-08'
-  ultima_version: '17.11'
+  ultima_version: '17.12'
   lts: false
 - ciclo: '16'
   publicado: '2023-09-14'
   fin_soporte: '2028-11-09'
-  ultima_version: '16.15'
+  ultima_version: '16.16'
   lts: false
 - ciclo: '15'
   publicado: '2022-10-13'
   fin_soporte: '2027-11-11'
-  ultima_version: '15.19'
+  ultima_version: '15.20'
   lts: false
 - ciclo: '14'
   publicado: '2021-09-30'
   fin_soporte: '2026-11-12'
-  ultima_version: '14.24'
+  ultima_version: '14.25'
   lts: false
 - ciclo: '13'
   publicado: '2020-09-24'

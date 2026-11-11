@@ -13,17 +13,17 @@ ejemplos_imagen:
   mongo:7.0: '7.0'
   mongo:7: null
 aviso_version: true
-comprobado: '2026-11-04'
+comprobado: '2026-11-11'
 ciclos:
 - ciclo: '9.0'
   publicado: '2026-09-30'
   fin_soporte: '2031-10-31'
-  ultima_version: 9.0.4
+  ultima_version: 9.0.8
   lts: false
 - ciclo: '8.3'
   publicado: '2026-05-31'
   fin_soporte: '2029-10-31'
-  ultima_version: 8.3.13
+  ultima_version: 8.3.17
   lts: false
 - ciclo: '8.2'
   publicado: '2025-09-30'
@@ -38,7 +38,7 @@ ciclos:
 - ciclo: '8.0'
   publicado: '2024-10-31'
   fin_soporte: '2029-10-31'
-  ultima_version: 8.0.34
+  ultima_version: 8.0.38
   lts: false
 - ciclo: '7.3'
   publicado: '2024-03-31'
@@ -58,7 +58,7 @@ ciclos:
 - ciclo: '7.0'
   publicado: '2023-08-31'
   fin_soporte: '2027-08-31'
-  ultima_version: 7.0.45
+  ultima_version: 7.0.48
   lts: false
 - ciclo: '6.3'
   publicado: '2023-04-30'
@@ -78,7 +78,7 @@ ciclos:
 - ciclo: '6.0'
   publicado: '2022-07-31'
   fin_soporte: '2025-07-31'
-  ultima_version: 6.0.29
+  ultima_version: 6.0.30
   lts: false
 - ciclo: '5.3'
   publicado: '2022-03-31'
@@ -98,12 +98,12 @@ ciclos:
 - ciclo: '5.0'
   publicado: '2021-07-31'
   fin_soporte: '2024-10-31'
-  ultima_version: 5.0.34
+  ultima_version: 5.0.35
   lts: false
 - ciclo: '4.4'
   publicado: '2020-07-31'
   fin_soporte: '2024-02-29'
-  ultima_version: 4.4.31
+  ultima_version: 4.4.32
   lts: false
 - ciclo: '4.2'
   publicado: '2019-08-31'

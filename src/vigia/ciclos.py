@@ -334,7 +334,9 @@ def _desde_contenedor(p: Producto) -> str:
 
 def _descartadas(p: Producto) -> str:
     """Imágenes nuevas (What's Up Docker) que la política no ofrece: la local está en una LTS y la remota en
-    un ciclo conocido que no lo es. Con otra cosa (tag sin versión, ciclo desconocido) se avisa como siempre.
+    un ciclo que no lo es o que el catálogo aún no conoce: una rama publicada después de la última
+    comprobación se trata como corta (si fuera una LTS, se ofrece al refrescar el catálogo). Sin versión
+    (`latest`), se avisa.
 
     wud_containers da la imagen sin etiqueta (`imagen`) y las etiquetas aparte (`local`, `remota`): se unen
     para aplicar `imagen_regex`, que casa `repo/nombre:etiqueta`."""
@@ -351,9 +353,14 @@ def _descartadas(p: Producto) -> str:
     tabla = f"{POLITICA_CICLO}{{producto={_q(p.producto)}"
     lts = tabla + ', lts="true"}'
     corta = _replace(tabla + ', lts="false"}', "ciclo_remota", "$1", "ciclo", "(.*)")
+    conocida = _replace(tabla + "}", "ciclo_remota", "$1", "ciclo", "(.*)")
     e = f"({e} * on (producto, ciclo) group_left (motivo) {lts})"
-    e = f"({e} * on (producto, ciclo_remota) group_left () {corta})"
-    return f"max by (nombre, contenedor, local, remota, producto, motivo) ({e})"
+    no_lts = f"({e} * on (producto, ciclo_remota) group_left () {corta})"
+    # solo con ciclo remoto (`latest` no lo tiene): `hay` existe si ciclo_remota no está vacía
+    hay = _replace("vector(1)", "hay", "1", "", "")
+    con_ciclo = f"({_replace(e, 'hay', '1', 'ciclo_remota', '.+')} * on (hay) group_left () {hay})"
+    desconocida = f"({con_ciclo} unless on (producto, ciclo_remota) {conocida})"
+    return f"max by (nombre, contenedor, local, remota, producto, motivo) ({no_lts} or {desconocida})"
 
 
 def reglas(
