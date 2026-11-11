@@ -256,6 +256,7 @@ def build_site(s: Site, site_root: Path) -> dict[str, str | bytes]:
             s.ciclos.fecha_aviso,
             s.alertas.umbrales.soporte_dias,
             politica=s.ciclos.politica,
+            imagenes=s.monitor.imagenes.values(),
         ),
         _header(s, "Ciclos de vida (reglas de grabación constantes, docs/ciclos.md)"),
     )

@@ -24,6 +24,10 @@ y, con las imágenes nuevas de What's Up Docker (wud_containers):
 
   vigia_imagen_descartada{nombre, contenedor, local, remota, producto, motivo}   imagen nueva que la
                                             política de rama no ofrece
+
+y, del sitio:
+
+  vigia_imagen_fijada{imagen, motivo}       1 por imagen que `monitor.imagenes` fija por digest
 """
 
 from __future__ import annotations
@@ -31,7 +35,7 @@ from __future__ import annotations
 import functools
 import json
 import re
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Iterable, Mapping
 from datetime import UTC, date, datetime, time
 from importlib.resources import files
 from pathlib import Path
@@ -60,6 +64,10 @@ POLITICA_CICLO = "vigia_politica_ciclo"
 DESCARTADA = "vigia_imagen_descartada"
 SIN_DESCARTADAS = f"unless on (nombre, contenedor, remota) {DESCARTADA}"
 """Lo que se añade a una consulta de wud_containers para no ofrecer lo que la política descarta."""
+FIJADA = "vigia_imagen_fijada"
+SIN_FIJADAS = f"unless on (imagen) {FIJADA}"
+"""Lo que se añade a una consulta de wud_containers para no ofrecer lo que el sitio fija por digest."""
+MOTIVO_FIJADA = "fijada por digest en monitor.imagenes"
 PRODUCTO_INFO = "vigia_producto_info"
 """Lo publica el updates-exporter: producto y versión que informa cada host (docs/actualizaciones.md)."""
 
@@ -363,16 +371,30 @@ def _descartadas(p: Producto) -> str:
     return f"max by (nombre, contenedor, local, remota, producto, motivo) ({no_lts} or {desconocida})"
 
 
+def imagen_wud(ref: str) -> str:
+    """La etiqueta `imagen` que What's Up Docker da a una referencia: sin registro, etiqueta ni digest, y con
+    `library/` en las oficiales (`ghcr.io/google/cadvisor:v1@sha256:…` → `google/cadvisor`)."""
+    ruta = ref.split("@", 1)[0]
+    base, _, ultima = ruta.rpartition("/")
+    ruta = f"{base}/{ultima.split(':', 1)[0]}" if base else ultima.split(":", 1)[0]
+    partes = ruta.split("/")
+    if len(partes) > 1 and ("." in partes[0] or ":" in partes[0] or partes[0] == "localhost"):
+        partes = partes[1:]
+    return "/".join(partes) if len(partes) > 1 else f"library/{partes[0]}"
+
+
 def reglas(
     catalogo: Catalogo,
     fecha_aviso: Mapping[str, FechaAviso] | None = None,
     soporte_dias: int = 90,
     politica: Mapping[str, str] | None = None,
+    imagenes: Iterable[str] = (),
 ) -> dict[str, Any]:
     """Reglas de grabación de Prometheus: la tabla de ciclos (constantes) y lo derivado por equipo.
 
     `soporte_dias`: días de aviso de los productos sin `aviso_dias` propio (umbral del sitio).
-    `politica`: productos en que el sitio sigue todas las ramas (`todas`): sin sus reglas de política."""
+    `politica`: productos en que el sitio sigue todas las ramas (`todas`): sin sus reglas de política.
+    `imagenes`: las de `monitor.imagenes`; las fijadas por digest no se ofrecen como nuevas (FIJADA)."""
     fecha_aviso = fecha_aviso or {}
     politica = politica or {}
     con_politica = [p for p in catalogo.values() if p.politica and politica.get(p.producto) != "todas"]
@@ -405,6 +427,9 @@ def reglas(
                         motivo=p.politica.motivo,
                     )
                 )
+
+    for img in sorted({imagen_wud(i) for i in imagenes if "@sha256:" in i}):
+        tabla.append(_regla(FIJADA, 1, imagen=img, motivo=MOTIVO_FIJADA))
 
     # etiquetas fijas por regla: sin ellas, varias reglas que graban la misma serie son «duplicadas»
     def fuente(p: Producto, origen: str, expr: str) -> dict[str, Any]:

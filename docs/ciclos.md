@@ -93,6 +93,7 @@ El build genera `prometheus/rules/ciclos.yml` con reglas de grabación constante
 | `vigia_ciclo_version{producto, ciclo, version}` | Versión exacta → ciclo, para los productos con `windows_producto` |
 | `vigia_politica_ciclo{producto, ciclo, lts, motivo}` | Política de rama vigente de un producto (ver arriba) |
 | `vigia_imagen_descartada{nombre, contenedor, local, remota, producto, motivo}` | 1 por imagen cuya versión nueva descarta la política de rama |
+| `vigia_imagen_fijada{imagen, motivo}` | 1 por imagen que `monitor.imagenes` fija por *digest* (`imagen` como la da What's Up Docker: sin registro ni etiqueta) |
 
 Y, con la versión instalada en cada equipo, en el mismo grupo (en orden, en la misma pasada):
 

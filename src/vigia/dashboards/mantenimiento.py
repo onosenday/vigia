@@ -111,7 +111,7 @@ def _imagenes(pid: int, x: int, y: int, w: int) -> Panel:
         [
             (
                 "max by (nombre, contenedor, imagen, tipo, local, remota) "
-                f'(wud_containers{{nueva="true"}} {ciclos.SIN_DESCARTADAS})',
+                f'(wud_containers{{nueva="true"}} {ciclos.SIN_DESCARTADAS} {ciclos.SIN_FIJADAS})',
                 "_",
             )
         ],

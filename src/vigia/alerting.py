@@ -412,11 +412,13 @@ def image_rules(s: Site) -> list[dict[str, Any]]:
             "1h",
             quien + ': {{ index .Labels "local" }} → {{ index .Labels "remota" }}',
         ),
-        # misma etiqueta, otro digest: es cosa de watchtower; si sigue sin aplicarse, está fuera de él
+        # misma etiqueta, otro digest: es cosa de watchtower; si sigue sin aplicarse, está fuera de él (salvo
+        # las que el sitio fija por digest en monitor.imagenes)
         _rule(
             "vigia-imagen-sin-aplicar",
             "Imagen nueva sin aplicar",
-            'max by (nombre, contenedor, imagen) (wud_containers{nueva="true", tipo="digest"})',
+            'max by (nombre, contenedor, imagen) (wud_containers{nueva="true", tipo="digest"}) '
+            + ciclos.SIN_FIJADAS,
             "gt",
             0,
             s.alertas.umbrales.imagen_durante,

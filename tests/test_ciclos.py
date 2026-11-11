@@ -459,3 +459,25 @@ def test_reglas_de_politica() -> None:
     assert 'wud_containers{nueva="true", tipo="tag"}' in d["expr"]
     sin = _reglas({p.producto: p}, politica={"nas-os": "todas"})
     assert not [r for r in sin if r["record"] in (ciclos.POLITICA_CICLO, ciclos.DESCARTADA)]
+
+
+@pytest.mark.parametrize(
+    ("ref", "imagen"),
+    [
+        ("ekofr/pihole-exporter@sha256:" + "a" * 64, "ekofr/pihole-exporter"),
+        ("ghcr.io/google/cadvisor:v0.60.6@sha256:" + "b" * 64, "google/cadvisor"),
+        ("quay.io/prometheus/node-exporter:v1.12.1", "prometheus/node-exporter"),
+        ("redis:8", "library/redis"),
+        ("registro.ejemplo.lan:5000/equipo/app:1", "equipo/app"),
+    ],
+)
+def test_imagen_wud(ref: str, imagen: str) -> None:
+    assert ciclos.imagen_wud(ref) == imagen
+
+
+def test_reglas_de_imagenes_fijadas_por_digest() -> None:
+    fijas = ["ekofr/pihole-exporter@sha256:" + "a" * 64, "prom/prometheus:v3.13.5"]
+    (grupo,) = ciclos.reglas(ciclos.catalogo(), imagenes=fijas)["groups"]
+    assert [r["labels"] for r in grupo["rules"] if r["record"] == ciclos.FIJADA] == [
+        {"imagen": "ekofr/pihole-exporter", "motivo": ciclos.MOTIVO_FIJADA}
+    ]

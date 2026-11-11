@@ -4,6 +4,9 @@
 
 - **Arreglo**: con la política de rama, una rama que el catálogo aún no conoce se trata como no LTS: la 3.16 de
   Prometheus ya no se ofrece a quien está en la LTS 3.13 (vigia-9nz). Catálogo refrescado (Prometheus 3.16).
+- **Arreglo**: una imagen fijada por *digest* en `monitor.imagenes` ya no avisa como «Imagen nueva sin aplicar» ni sale
+  en el panel «Imágenes nuevas»; en `/pendientes` va a «Decidido» con `(vigia)` (vigia-5n7). Tras `vigia deploy`, el bot
+  se recompila.
 
 ## 0.5.4 (2026-11-04)
 

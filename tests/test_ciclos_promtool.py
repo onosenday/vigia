@@ -64,11 +64,11 @@ def _windows(nombre: str, producto: str, version: str) -> dict[str, str]:
     }
 
 
-def _wud(contenedor: str, imagen: str, local: str, remota: str) -> dict[str, str]:
-    """Imagen nueva con otra etiqueta según What's Up Docker (`imagen` sin etiqueta, como la publica)."""
+def _wud(contenedor: str, imagen: str, local: str, remota: str, tipo: str = "tag") -> dict[str, str]:
+    """Imagen nueva según What's Up Docker (`imagen` sin etiqueta, como la publica)."""
     return {
         "series": f'wud_containers{{nombre="srv-1", contenedor="{contenedor}", imagen="{imagen}", '
-        f'local="{local}", remota="{remota}", nueva="true", tipo="tag", job="imagenes"}}',
+        f'local="{local}", remota="{remota}", nueva="true", tipo="{tipo}", job="imagenes"}}',
         "values": "1 1",
     }
 
@@ -287,6 +287,40 @@ def test_imagenes_descartadas_por_la_politica(tmp_path: Path, example_data: dict
                 "input_series": [_wud(**m) for m in [descartada, sufijo, nueva, *avisan]],
                 "promql_expr_test": pruebas,
             }
+        ],
+    }
+    (tmp_path / "prueba.yml").write_text(yaml.safe_dump(prueba, sort_keys=False), encoding="utf-8")
+    res = subprocess.run([*cmd, "test", "rules", "prueba.yml"], cwd=tmp_path, capture_output=True, text=True)  # noqa: S603
+    assert res.returncode == 0, res.stdout + res.stderr
+
+
+def test_imagen_fijada_por_digest_no_avisa(tmp_path: Path, example_data: dict[str, Any]) -> None:
+    """«Imagen nueva sin aplicar» calla con las imágenes que el sitio fija por digest en monitor.imagenes."""
+    cmd = _promtool(tmp_path)
+    if not cmd:
+        pytest.skip("sin promtool (ver VIGIA_PROMTOOL)")
+    fija = "registro.ejemplo.lan/org/exp@sha256:" + "a" * 64
+    (tmp_path / "ciclos.yml").write_text(
+        yaml.safe_dump(ciclos.reglas(ciclos.catalogo(), imagenes=[fija])), encoding="utf-8"
+    )
+    (alerta,) = [
+        r
+        for r in alerting.image_rules(Site.model_validate(example_data))
+        if r["uid"] == "vigia-imagen-sin-aplicar"
+    ]
+    expr = f"({alerta['data'][0]['model']['expr']}) > 0"
+    series = [
+        _wud("exp", "org/exp", "sha256:a", "sha256:b", tipo="digest"),
+        _wud("web", "org/web", "sha256:c", "sha256:d", tipo="digest"),
+    ]
+    esperado = [
+        {"labels": _etiquetas({"nombre": "srv-1", "contenedor": "web", "imagen": "org/web"}), "value": 1}
+    ]
+    prueba = {
+        "rule_files": ["ciclos.yml"],
+        "evaluation_interval": f"{HORAS}h",
+        "tests": [
+            {"interval": f"{HORAS}h", "input_series": series, "promql_expr_test": [_muestras(expr, esperado)]}
         ],
     }
     (tmp_path / "prueba.yml").write_text(yaml.safe_dump(prueba, sort_keys=False), encoding="utf-8")

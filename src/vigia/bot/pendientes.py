@@ -18,6 +18,7 @@ from .consultas import (
     CONSUMIBLES,
     DESCARTADAS,
     DISCOS,
+    FIJADAS,
     IMAGENES,
     PENDIENTES,
     PRODUCTOS,
@@ -199,15 +200,20 @@ def _calcular(cfg: Config, prom: Prometheus, ahora: float) -> tuple[list[str], l
             decididas.append(f"{linea} — {esc(motivo)} (vigia)")
         else:
             lineas.append(linea)
+    fijadas = {m.get("imagen"): m.get("motivo", "") for m, _ in q(FIJADAS)}
     digest: dict[str, list[str]] = {}
     for m, _ in sorted(imgs, key=lambda x: (orden(x[0].get("nombre", "")), x[0].get("contenedor", ""))):
         if m.get("tipo") == "digest":
             d = juez.busca("digest", m)
+            linea = (
+                f"{esc(m.get('nombre', ''))} · {esc(m.get('contenedor', ''))}: "
+                "imagen nueva sin cambiar de etiqueta"
+            )
+            fijada = fijadas.get(m.get("imagen"))
             if d:
-                decididas.append(
-                    f"{esc(m.get('nombre', ''))} · {esc(m.get('contenedor', ''))}: "
-                    f"imagen nueva sin cambiar de etiqueta{_motivo(d)}"
-                )
+                decididas.append(linea + _motivo(d))
+            elif fijada is not None:
+                decididas.append(f"{linea} — {esc(fijada)} (vigia)")
             else:
                 digest.setdefault(m.get("nombre", ""), []).append(m.get("contenedor", ""))
     for n in sorted(digest, key=orden):

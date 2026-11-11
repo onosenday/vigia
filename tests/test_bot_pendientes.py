@@ -294,3 +294,45 @@ def test_descartadas_es_la_serie_del_catalogo() -> None:
     from vigia import ciclos
 
     assert ciclos.DESCARTADA in c.DESCARTADAS
+
+
+def test_imagen_fijada_por_digest_va_a_decidido() -> None:
+    prom: dict[str, Serie] = {
+        c.IMAGENES: [
+            (
+                _nodo(
+                    "Nodo 1",
+                    contenedor="exp",
+                    imagen="org/exp",
+                    tipo="digest",
+                    local="sha256:a",
+                    remota="sha256:b",
+                ),
+                1,
+            ),
+            (
+                _nodo(
+                    "Nodo 1",
+                    contenedor="web",
+                    imagen="org/web",
+                    tipo="digest",
+                    local="sha256:c",
+                    remota="sha256:d",
+                ),
+                1,
+            ),
+        ],
+        c.FIJADAS: [({"imagen": "org/exp", "motivo": "fijada por digest en monitor.imagenes"}, 1)],
+    }
+    assert (responder("/pendientes", contexto(prom)) or "").splitlines() == [
+        "<b>🐳 Imágenes</b>",
+        "Nodo 1: 1 con imagen nueva sin cambiar de etiqueta (web)",
+        "<b>✔ Decidido (no hace falta hacer nada)</b>",
+        "Nodo 1 · exp: imagen nueva sin cambiar de etiqueta — fijada por digest en monitor.imagenes (vigia)",
+    ]
+
+
+def test_fijadas_es_la_serie_de_ciclos() -> None:
+    from vigia import ciclos
+
+    assert ciclos.FIJADA in c.FIJADAS
