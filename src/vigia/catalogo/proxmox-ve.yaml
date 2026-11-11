@@ -5,6 +5,7 @@ endoflife: proxmox-ve
 fecha_aviso: normal
 ultimo_lts: false
 os_ids: []
+windows_ediciones: false
 ciclo_regex: ^(\d+)
 ejemplos:
   8.4.1: '8'

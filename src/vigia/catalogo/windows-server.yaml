@@ -6,6 +6,7 @@ fecha_aviso: normal
 ultimo_lts: true
 os_ids: []
 windows_producto: Windows Server
+windows_ediciones: false
 ejemplos:
   10.0.26100: '2025'
   10.0.20348: '2022'

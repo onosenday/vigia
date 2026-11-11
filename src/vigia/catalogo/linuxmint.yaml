@@ -6,6 +6,7 @@ fecha_aviso: normal
 ultimo_lts: true
 os_ids:
 - linuxmint
+windows_ediciones: false
 ciclo_regex: ^(\d+(?:\.\d+)?)
 ejemplos:
   '22.2': '22.2'

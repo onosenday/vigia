@@ -5,6 +5,7 @@ endoflife: mariadb
 fecha_aviso: normal
 ultimo_lts: false
 os_ids: []
+windows_ediciones: false
 imagen_regex: ^(?:.*/)?mariadb:(\d+\.\d+)
 ciclo_regex: ^(\d+\.\d+)
 ejemplos:

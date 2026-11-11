@@ -5,6 +5,7 @@ endoflife: prometheus
 fecha_aviso: normal
 ultimo_lts: false
 os_ids: []
+windows_ediciones: false
 imagen_regex: ^(?:.*/)?prometheus:v?(\d+\.\d+)
 ciclo_regex: ^(\d+\.\d+)
 ejemplos:

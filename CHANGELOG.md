@@ -1,12 +1,14 @@
 # Cambios
 
-## Sin publicar
+## 0.5.5 (2026-11-11)
+
+Al actualizar un sitio: nada cambia en `site.yaml`. Tras `vigia deploy`, el bot, netinv y el updates-exporter se
+recompilan (imagen base nueva; *Build* o *Pull* en su stack si no se recompilan solos).
 
 - **Arreglo**: con la política de rama, una rama que el catálogo aún no conoce se trata como no LTS: la 3.16 de
   Prometheus ya no se ofrece a quien está en la LTS 3.13 (vigia-9nz). Catálogo refrescado (Prometheus 3.16).
 - **Arreglo**: una imagen fijada por *digest* en `monitor.imagenes` ya no avisa como «Imagen nueva sin aplicar» ni sale
-  en el panel «Imágenes nuevas»; en `/pendientes` va a «Decidido» con `(vigia)` (vigia-5n7). Tras `vigia deploy`, el bot
-  se recompila.
+  en el panel «Imágenes nuevas»; en `/pendientes` va a «Decidido» con `(vigia)` (vigia-5n7).
 - **Nuevo**: `/host` de un equipo SNMP muestra lo de sus paneles: impresora (estado, páginas, consumibles y errores),
   Synology (sistema, temperatura y RAID), switch y QNAP (interfaces conectadas) y SAI (vigia-0w4).
 - **Nuevo**: ciclos de vida de los puestos Windows 10/11 (producto `windows`), por build y edición (Pro, Enterprise,

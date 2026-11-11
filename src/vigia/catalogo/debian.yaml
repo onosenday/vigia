@@ -7,6 +7,7 @@ ultimo_lts: false
 os_ids:
 - debian
 - raspbian
+windows_ediciones: false
 ciclo_regex: ^(\d+)
 ejemplos:
   '12': '12'
