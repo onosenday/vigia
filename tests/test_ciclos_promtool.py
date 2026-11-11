@@ -152,6 +152,15 @@ def test_reglas_y_alertas_en_prometheus(tmp_path: Path, example_data: dict[str, 
                     "labels": info("nas-omv", "openmediavault", "7", "7.7.24-7"),
                     "value": -_dias("openmediavault", "7"),
                 },
+                # puestos: Windows 10 22H2 (todas las ediciones) y Windows 11 24H2 Pro (fin el 13-10-2026)
+                {
+                    "labels": info("pc-1", "windows", "10-22h2", "10.0.19045"),
+                    "value": -_dias("windows", "10-22h2"),
+                },
+                {
+                    "labels": info("pc-3", "windows", "11-24h2-w", "10.0.26100"),
+                    "value": -_dias("windows", "11-24h2-w"),
+                },
             ],
         ),
         # con soporte_dias = 700, Debian 12 (610 días) y PostgreSQL 14; Prometheus 3.15 con su aviso propio
@@ -172,6 +181,11 @@ def test_reglas_y_alertas_en_prometheus(tmp_path: Path, example_data: dict[str, 
                 {
                     "labels": info("dc-2", "windows-server", "2016", "10.0.14393"),
                     "value": _dias("windows-server", "2016"),
+                },
+                # el mismo build en Enterprise dura un año más; el LTSC (2029), fuera del margen
+                {
+                    "labels": info("pc-2", "windows", "11-24h2-e", "10.0.26100"),
+                    "value": _dias("windows", "11-24h2-e"),
                 },
             ],
         ),
@@ -203,6 +217,9 @@ def test_reglas_y_alertas_en_prometheus(tmp_path: Path, example_data: dict[str, 
                     _windows("dc-3", "Windows Server 2019 Standard", "10.0.17763"),
                     _windows("dc-9", "Windows Server Datacenter", "10.0.99999"),
                     _windows("pc-1", "Windows 10 Pro", "10.0.19045"),  # puesto: no es Windows Server
+                    _windows("pc-2", "Windows 11 Enterprise", "10.0.26100"),
+                    _windows("pc-3", "Windows 11 Pro", "10.0.26100"),
+                    _windows("pc-4", "Windows 11 Enterprise LTSC 2024", "10.0.26100"),
                     # OMV 7 que informa el updates-exporter (ya con `nombre` tras el relabel del job)
                     {
                         "series": 'vigia_producto_info{nombre="nas-omv", host="nas-omv", '

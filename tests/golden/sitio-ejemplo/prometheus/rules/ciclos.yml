@@ -6332,6 +6332,1127 @@ groups:
       producto: windows-server
       ciclo: '2000'
       ultimo: '2025'
+  - record: vigia_ciclos_catalogo_timestamp
+    expr: vector(1794355200)
+    labels:
+      producto: windows
+  - record: vigia_ciclo_aviso_dias
+    expr: vector(90)
+    labels:
+      producto: windows
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-26h2-e
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1886198400)
+    labels:
+      producto: windows
+      ciclo: 11-26h2-e
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-26h2-w
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1854748800)
+    labels:
+      producto: windows
+      ciclo: 11-26h2-w
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-26h1-e
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1868054400)
+    labels:
+      producto: windows
+      ciclo: 11-26h1-e
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-26h1-w
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1836604800)
+    labels:
+      producto: windows
+      ciclo: 11-26h1-w
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-25h2-e
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1854748800)
+    labels:
+      producto: windows
+      ciclo: 11-25h2-e
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-25h2-w
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1823299200)
+    labels:
+      producto: windows
+      ciclo: 11-25h2-w
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-24h2-iot-lts
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(2044051200)
+    labels:
+      producto: windows
+      ciclo: 11-24h2-iot-lts
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-24h2-e-lts
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1886198400)
+    labels:
+      producto: windows
+      ciclo: 11-24h2-e-lts
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-24h2-e
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1823299200)
+    labels:
+      producto: windows
+      ciclo: 11-24h2-e
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-24h2-w
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1791849600)
+    labels:
+      producto: windows
+      ciclo: 11-24h2-w
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-23h2-e
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1794268800)
+    labels:
+      producto: windows
+      ciclo: 11-23h2-e
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-23h2-w
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1762819200)
+    labels:
+      producto: windows
+      ciclo: 11-23h2-w
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-22h2
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1760400000)
+    labels:
+      producto: windows
+      ciclo: 10-22h2
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-22h2-e
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1760400000)
+    labels:
+      producto: windows
+      ciclo: 11-22h2-e
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-22h2-w
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1728345600)
+    labels:
+      producto: windows
+      ciclo: 11-22h2-w
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-21h2-iot-lts
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1957564800)
+    labels:
+      producto: windows
+      ciclo: 10-21h2-iot-lts
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-21h2-e-lts
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1799712000)
+    labels:
+      producto: windows
+      ciclo: 10-21h2-e-lts
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-21h2-e
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1718064000)
+    labels:
+      producto: windows
+      ciclo: 10-21h2-e
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-21h2-w
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1686614400)
+    labels:
+      producto: windows
+      ciclo: 10-21h2-w
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-21h2-e
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1728345600)
+    labels:
+      producto: windows
+      ciclo: 11-21h2-e
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-21h2-w
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1696896000)
+    labels:
+      producto: windows
+      ciclo: 11-21h2-w
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-21h1
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1670889600)
+    labels:
+      producto: windows
+      ciclo: 10-21h1
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-20h2-e
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1683590400)
+    labels:
+      producto: windows
+      ciclo: 10-20h2-e
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-20h2-w
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1652140800)
+    labels:
+      producto: windows
+      ciclo: 10-20h2-w
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-2004
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1639440000)
+    labels:
+      producto: windows
+      ciclo: 10-2004
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1909-e
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1652140800)
+    labels:
+      producto: windows
+      ciclo: 10-1909-e
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1909-w
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1620691200)
+    labels:
+      producto: windows
+      ciclo: 10-1909-w
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1903
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1607385600)
+    labels:
+      producto: windows
+      ciclo: 10-1903
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1809-e-lts
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1862611200)
+    labels:
+      producto: windows
+      ciclo: 10-1809-e-lts
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1809-e
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1620691200)
+    labels:
+      producto: windows
+      ciclo: 10-1809-e
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1809-w
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1604966400)
+    labels:
+      producto: windows
+      ciclo: 10-1809-w
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1803-e
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1620691200)
+    labels:
+      producto: windows
+      ciclo: 10-1803-e
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1803-w
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1573516800)
+    labels:
+      producto: windows
+      ciclo: 10-1803-w
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1709-e
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1602547200)
+    labels:
+      producto: windows
+      ciclo: 10-1709-e
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1709-w
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1554768000)
+    labels:
+      producto: windows
+      ciclo: 10-1709-w
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1703-e
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1570492800)
+    labels:
+      producto: windows
+      ciclo: 10-1703-e
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1703-w
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1539043200)
+    labels:
+      producto: windows
+      ciclo: 10-1703-w
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1607-e-lts
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1791849600)
+    labels:
+      producto: windows
+      ciclo: 10-1607-e-lts
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1607-e
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1554768000)
+    labels:
+      producto: windows
+      ciclo: 10-1607-e
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1607-w
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1523318400)
+    labels:
+      producto: windows
+      ciclo: 10-1607-w
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1511
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1507593600)
+    labels:
+      producto: windows
+      ciclo: 10-1511
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1507-e-lts
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1760400000)
+    labels:
+      producto: windows
+      ciclo: 10-1507-e-lts
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1507
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1494288000)
+    labels:
+      producto: windows
+      ciclo: 10-1507
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1507-iot
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1604966400)
+    labels:
+      producto: windows
+      ciclo: 10-1507-iot
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: '8.1'
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1673308800)
+    labels:
+      producto: windows
+      ciclo: '8.1'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: '8'
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1452556800)
+    labels:
+      producto: windows
+      ciclo: '8'
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 7-sp1
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1578960000)
+    labels:
+      producto: windows
+      ciclo: 7-sp1
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 6-sp2
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1491868800)
+    labels:
+      producto: windows
+      ciclo: 6-sp2
+  - record: vigia_ciclo_info
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 5-sp3
+      ultimo: 11-26h2-e
+  - record: vigia_ciclo_fin_soporte_timestamp
+    expr: vector(1396915200)
+    labels:
+      producto: windows
+      ciclo: 5-sp3
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-26h2-w
+      version: 10.0.26300
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-26h2-e
+      version: 10.0.26300
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-26h1-w
+      version: 10.0.28000
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-26h1-e
+      version: 10.0.28000
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-25h2-w
+      version: 10.0.26200
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-25h2-e
+      version: 10.0.26200
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-24h2-w
+      version: 10.0.26100
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-24h2-e
+      version: 10.0.26100
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-24h2-e-lts
+      version: 10.0.26100
+      edicion: e-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-24h2-iot-lts
+      version: 10.0.26100
+      edicion: iot-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-23h2-w
+      version: 10.0.22631
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-23h2-e
+      version: 10.0.22631
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-22h2
+      version: 10.0.19045
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-22h2
+      version: 10.0.19045
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-22h2
+      version: 10.0.19045
+      edicion: e-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-22h2
+      version: 10.0.19045
+      edicion: iot-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-22h2-w
+      version: 10.0.22621
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-22h2-e
+      version: 10.0.22621
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-21h2-w
+      version: 10.0.19044
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-21h2-e
+      version: 10.0.19044
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-21h2-e-lts
+      version: 10.0.19044
+      edicion: e-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-21h2-iot-lts
+      version: 10.0.19044
+      edicion: iot-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-21h2-w
+      version: 10.0.22000
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 11-21h2-e
+      version: 10.0.22000
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-21h1
+      version: 10.0.19043
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-21h1
+      version: 10.0.19043
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-21h1
+      version: 10.0.19043
+      edicion: e-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-21h1
+      version: 10.0.19043
+      edicion: iot-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-20h2-w
+      version: 10.0.19042
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-20h2-e
+      version: 10.0.19042
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-2004
+      version: 10.0.19041
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-2004
+      version: 10.0.19041
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-2004
+      version: 10.0.19041
+      edicion: e-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-2004
+      version: 10.0.19041
+      edicion: iot-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1909-w
+      version: 10.0.18363
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1909-e
+      version: 10.0.18363
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1903
+      version: 10.0.18362
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1903
+      version: 10.0.18362
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1903
+      version: 10.0.18362
+      edicion: e-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1903
+      version: 10.0.18362
+      edicion: iot-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1809-w
+      version: 10.0.17763
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1809-e
+      version: 10.0.17763
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1809-e-lts
+      version: 10.0.17763
+      edicion: e-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1809-e-lts
+      version: 10.0.17763
+      edicion: iot-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1803-w
+      version: 10.0.17134
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1803-e
+      version: 10.0.17134
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1709-w
+      version: 10.0.16299
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1709-e
+      version: 10.0.16299
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1703-w
+      version: 10.0.15063
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1703-e
+      version: 10.0.15063
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1607-w
+      version: 10.0.14393
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1607-e
+      version: 10.0.14393
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1607-e-lts
+      version: 10.0.14393
+      edicion: e-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1607-e-lts
+      version: 10.0.14393
+      edicion: iot-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1511
+      version: 10.0.10586
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1511
+      version: 10.0.10586
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1511
+      version: 10.0.10586
+      edicion: e-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1511
+      version: 10.0.10586
+      edicion: iot-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1507
+      version: 10.0.10240
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1507
+      version: 10.0.10240
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1507-e-lts
+      version: 10.0.10240
+      edicion: e-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 10-1507-e-lts
+      version: 10.0.10240
+      edicion: iot-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: '8.1'
+      version: 6.3.9600
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: '8.1'
+      version: 6.3.9600
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: '8.1'
+      version: 6.3.9600
+      edicion: e-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: '8.1'
+      version: 6.3.9600
+      edicion: iot-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: '8'
+      version: 6.2.9200
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: '8'
+      version: 6.2.9200
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: '8'
+      version: 6.2.9200
+      edicion: e-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: '8'
+      version: 6.2.9200
+      edicion: iot-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 7-sp1
+      version: 6.1.7601
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 7-sp1
+      version: 6.1.7601
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 7-sp1
+      version: 6.1.7601
+      edicion: e-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 7-sp1
+      version: 6.1.7601
+      edicion: iot-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 6-sp2
+      version: 6.0.6002
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 6-sp2
+      version: 6.0.6002
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 6-sp2
+      version: 6.0.6002
+      edicion: e-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 6-sp2
+      version: 6.0.6002
+      edicion: iot-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 5-sp3
+      version: 5.1.2600
+      edicion: w
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 5-sp3
+      version: 5.1.2600
+      edicion: e
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 5-sp3
+      version: 5.1.2600
+      edicion: e-lts
+  - record: vigia_ciclo_version
+    expr: vector(1)
+    labels:
+      producto: windows
+      ciclo: 5-sp3
+      version: 5.1.2600
+      edicion: iot-lts
   - record: vigia_producto_ciclo
     expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(node_os_info{id=~"debian|raspbian",
       version_id!=""}, "producto", "debian", "", ""), "producto_nombre", "Debian", "", ""), "version", "$1", "version_id",
@@ -6463,6 +7584,19 @@ groups:
       "(.*)"))
     labels:
       producto: windows-server
+      fuente: windows
+  - record: vigia_producto_ciclo
+    expr: max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(label_replace(windows_os_info{product=~"Windows.*",
+      product!~"Windows Server.*"}, "producto_nombre", "Windows", "", ""), "edicion", "w", "", ""), "edicion", "e", "product",
+      ".*(Enterprise|Education).*"), "edicion", "w", "product", ".*Pro.*"), "edicion", "e-lts", "product", ".*(LTSC|LTSB).*"),
+      "edicion", "iot-lts", "product", ".*IoT.*(LTSC|LTSB).*") * on (version, edicion) group_left (producto, ciclo) vigia_ciclo_version{producto="windows"})
+      or on (nombre) max by (nombre, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(label_replace(label_replace(label_replace(windows_os_info{product=~"Windows.*",
+      product!~"Windows Server.*"}, "producto_nombre", "Windows", "", ""), "edicion", "w", "", ""), "edicion", "e", "product",
+      ".*(Enterprise|Education).*"), "edicion", "w", "product", ".*Pro.*"), "edicion", "e-lts", "product", ".*(LTSC|LTSB).*"),
+      "edicion", "iot-lts", "product", ".*IoT.*(LTSC|LTSB).*"), "producto", "windows", "", ""), "ciclo", "$1", "version",
+      "(.*)"))
+    labels:
+      producto: windows
       fuente: windows
   - record: vigia_producto_ciclo
     expr: group by (nombre, contenedor, producto, producto_nombre, ciclo, version) (label_replace(label_replace(label_replace(label_replace(label_replace(container_last_seen{image=~"(?:(?:.*/)?grafana(?:-oss|-enterprise)?:v?(\\d+\\.\\d+)).*",

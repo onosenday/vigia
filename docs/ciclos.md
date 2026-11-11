@@ -1,7 +1,7 @@
 # Ciclos de vida
 
 vigia sabe cuándo pierde el soporte cada versión de los sistemas que vigila (Debian, Ubuntu, Linux Mint,
-Windows Server, OpenMediaVault, Synology DSM, Proxmox VE, TrueNAS) y lo lleva a Prometheus para avisar antes de que ocurra y cuando hay una
+Windows Server, Windows 10/11, OpenMediaVault, Synology DSM, Proxmox VE, TrueNAS) y lo lleva a Prometheus para avisar antes de que ocurra y cuando hay una
 versión mayor nueva.
 
 ## El catálogo
@@ -20,7 +20,7 @@ ciclos:
 - {ciclo: '7', publicado: '2024-03-01', fin_soporte: '2026-06-30'}
 ```
 
-- **Desde endoflife.date** (Debian, Ubuntu, Linux Mint, Windows Server, Proxmox VE, TrueNAS): `uv run vigia ciclos actualizar` en el repo
+- **Desde endoflife.date** (Debian, Ubuntu, Linux Mint, Windows Server, Windows, Proxmox VE, TrueNAS): `uv run vigia ciclos actualizar` en el repo
   de vigia refresca los ciclos y la fecha de comprobación; se revisa el diff y se commitea con la versión.
   Nunca lo ejecuta el build ni el despliegue. `fin_soporte` es el `eol` de endoflife.date (en Debian incluye
   el LTS) y `fin_extendido` su `extendedSupport`.
@@ -34,8 +34,13 @@ ciclos:
 - **Windows Server** (`windows_producto`): el build no contiene el nombre del ciclo, así que la versión de
   `windows_os_info` (`10.0.20348`) se busca tal cual en `ultima_version` de cada ciclo (2022). Si dos ciclos
   comparten build (2019 y 1809-sac), cuenta el LTSC. `fin_soporte` es el fin del soporte extendido de
-  Microsoft (actualizaciones de seguridad), no el del soporte general. Los puestos (Windows 10/11) no se
-  catalogan: sus ciclos dependen de la edición.
+  Microsoft (actualizaciones de seguridad), no el del soporte general.
+- **Windows 10/11** (`windows_ediciones`): en los puestos el ciclo depende del build y de la edición, que sale
+  del `product` de `windows_os_info`: Home y Pro (también Pro Education) → `-w`; Enterprise y Education → `-e`;
+  LTSC → `-e-lts`; IoT Enterprise LTSC → `-iot-lts` (o el LTSC si su build no tiene ciclo IoT propio). Así,
+  `10.0.26100` es `11-24h2-w` en un Pro y `11-24h2-e` en un Enterprise. Un build con un solo ciclo (`10-22h2`)
+  vale para todas. Windows 10 22H2 cuenta sin soporte desde el 14-10-2025; con ESU, `ciclos.fecha_aviso:
+  {windows: extendido}`. No avisa de versión mayor: las de características las ofrece Windows Update.
 - **Contenedores** (PostgreSQL, MariaDB, MySQL, MongoDB, Redis, Valkey, Grafana, Prometheus, nginx, Traefik):
   `imagen_regex` saca la versión de la etiqueta de la imagen que ve cAdvisor (`postgres:16.4-alpine` → 16).
   Las etiquetas sin versión suficiente (`latest`, `redis:8` cuando los ciclos son `8.x`) no casan y no avisan;
@@ -90,7 +95,7 @@ El build genera `prometheus/rules/ciclos.yml` con reglas de grabación constante
 | `vigia_ciclos_catalogo_timestamp{producto}` | Última comprobación del catálogo de ese producto |
 | `vigia_ciclo_superado{producto, ciclo, ultimo}` | 1 por ciclo anterior al de referencia (si `aviso_version`) |
 | `vigia_ciclo_aviso_dias{producto}` | Margen de aviso: `aviso_dias` del producto o `umbrales.soporte_dias` |
-| `vigia_ciclo_version{producto, ciclo, version}` | Versión exacta → ciclo, para los productos con `windows_producto` |
+| `vigia_ciclo_version{producto, ciclo, version[, edicion]}` | Versión exacta (y edición, en los puestos) → ciclo, para los productos con `windows_producto` |
 | `vigia_politica_ciclo{producto, ciclo, lts, motivo}` | Política de rama vigente de un producto (ver arriba) |
 | `vigia_imagen_descartada{nombre, contenedor, local, remota, producto, motivo}` | 1 por imagen cuya versión nueva descarta la política de rama |
 | `vigia_imagen_fijada{imagen, motivo}` | 1 por imagen que `monitor.imagenes` fija por *digest* (`imagen` como la da What's Up Docker: sin registro ni etiqueta) |
@@ -99,7 +104,7 @@ Y, con la versión instalada en cada equipo, en el mismo grupo (en orden, en la 
 
 | Serie | Qué es |
 |-------|--------|
-| `vigia_producto_ciclo{nombre, producto, producto_nombre, ciclo, version}` | 1 por equipo y producto. La distribución sale de `node_os_info` (`os_ids` del catálogo: debian, raspbian, ubuntu, linuxmint); Windows Server, de `windows_os_info` (windows_exporter); OMV, Proxmox VE y DSM, de `vigia_producto_info` del updates-exporter ([actualizaciones.md](actualizaciones.md)); el software de los contenedores, de la imagen en cAdvisor (con la etiqueta `contenedor`) |
+| `vigia_producto_ciclo{nombre, producto, producto_nombre, ciclo, version}` | 1 por equipo y producto. La distribución sale de `node_os_info` (`os_ids` del catálogo: debian, raspbian, ubuntu, linuxmint); Windows Server y los puestos Windows 10/11, de `windows_os_info` (windows_exporter); OMV, Proxmox VE y DSM, de `vigia_producto_info` del updates-exporter ([actualizaciones.md](actualizaciones.md)); el software de los contenedores, de la imagen en cAdvisor (con la etiqueta `contenedor`) |
 | `vigia_soporte_restante_dias{…}` | Días hasta el fin de soporte; negativo si ya no tiene |
 | `vigia_version_mayor_disponible{…, ultimo}` | 1 si el ciclo instalado es anterior al de referencia |
 

@@ -9,6 +9,9 @@
   se recompila.
 - **Nuevo**: `/host` de un equipo SNMP muestra lo de sus paneles: impresora (estado, páginas, consumibles y errores),
   Synology (sistema, temperatura y RAID), switch y QNAP (interfaces conectadas) y SAI (vigia-0w4).
+- **Nuevo**: ciclos de vida de los puestos Windows 10/11 (producto `windows`), por build y edición (Pro, Enterprise,
+  LTSC, IoT LTSC): avisos de fin de soporte en alertas, Mantenimiento, `/host` y `/pendientes` (vigia-75q.7). Un
+  Windows 10 22H2 sale ya sin soporte; si el sitio paga ESU, `ciclos.fecha_aviso: {windows: extendido}`.
 
 ## 0.5.4 (2026-11-04)
 

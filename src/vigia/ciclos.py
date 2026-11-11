@@ -10,7 +10,8 @@ alertas, paneles y bot usen la misma tabla:
   vigia_ciclos_catalogo_timestamp{producto}             epoch de la última comprobación del producto
   vigia_ciclo_superado{producto, ciclo, ultimo}         1 por ciclo anterior al de referencia (aviso_version)
   vigia_ciclo_aviso_dias{producto}                      días de aviso antes del fin de soporte
-  vigia_ciclo_version{producto, ciclo, version}         versión exacta → ciclo (Windows: el build no lo dice)
+  vigia_ciclo_version{producto, ciclo, version[, edicion]}  versión exacta → ciclo (Windows: el build no lo
+                                                        dice; en los puestos, también la edición)
   vigia_politica_ciclo{producto, ciclo, lts, motivo}    1 por ciclo de un producto con política de rama
 
 y, con la versión instalada en cada equipo (node_os_info, windows_os_info, vigia_producto_info del
@@ -75,6 +76,27 @@ ProductoId = Annotated[str, StringConstraints(pattern=r"^[a-z][a-z0-9-]{0,39}$")
 CicloId = Annotated[str, StringConstraints(pattern=r"^[0-9A-Za-z][0-9A-Za-z._-]{0,19}$")]
 FechaAviso = Literal["normal", "extendido"]
 
+EDICIONES = ("w", "e", "e-lts", "iot-lts")
+"""Ediciones de Windows 10/11 con ciclo propio en endoflife.date: Home y Pro (`w`), Enterprise y Education
+(`e`), LTSC (`e-lts`) e IoT Enterprise LTSC (`iot-lts`)."""
+_EDICION_REGLAS = (
+    ("e", ".*(Enterprise|Education).*"),
+    ("w", ".*Pro.*"),  # Pro Education y Pro for Workstations siguen el ciclo de Pro
+    ("e-lts", ".*(LTSC|LTSB).*"),
+    ("iot-lts", ".*IoT.*(LTSC|LTSB).*"),
+)
+"""Edición a partir del `product` de windows_os_info: en orden, cada regla que casa pisa a la anterior (`w` si
+ninguna). La misma lista da la expresión de PromQL y `edicion_windows`."""
+_SUFIJO = re.compile(r"^(.+?)(?:-(w|e|e-lts|iot-lts|iot))?$")
+
+
+def edicion_windows(product: str) -> str:
+    ed = "w"
+    for e, rx in _EDICION_REGLAS:
+        if re.fullmatch(rx, product):
+            ed = e
+    return ed
+
 
 class _Base(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
@@ -133,6 +155,9 @@ class Producto(_Base):
     """Principio del `product` de windows_os_info (windows_exporter), p. ej. `Windows Server`. El ciclo sale
     de la versión exacta (`10.0.20348`), que se compara con `ultima_version` de cada ciclo, no de una
     expresión: en Windows el build no contiene el nombre del ciclo."""
+    windows_ediciones: bool = False
+    """Puestos (Windows 10/11): el ciclo depende también de la edición (`EDICIONES`, sacada del `product`) y
+    se excluye Windows Server. Sus `ejemplos` son `<versión> <product>`."""
     imagen_regex: str | None = None
     """Expresión que casa la imagen de un contenedor (`repo/nombre:etiqueta`, de cAdvisor) y extrae la
     versión de la etiqueta en su primer grupo. Las etiquetas sin versión suficiente (`latest`, `8` cuando los
@@ -182,6 +207,8 @@ class Producto(_Base):
             raise ValueError("indica `ciclo_regex` o `windows_producto` (uno de los dos)")
         if self.windows_producto and (self.os_ids or self.imagen_regex):
             raise ValueError("`windows_producto` no va con `os_ids` ni con `imagen_regex`")
+        if self.windows_ediciones and not self.windows_producto:
+            raise ValueError("`windows_ediciones` necesita `windows_producto`")
         if self.fuente == "manual" and not self.referencia:
             raise ValueError("un producto a mano necesita `referencia`")
         nombres = [c.ciclo for c in self.ciclos]
@@ -228,7 +255,27 @@ class Producto(_Base):
                 out[c.ultima_version] = c.ciclo
         return out
 
+    @property
+    def por_version_edicion(self) -> dict[tuple[str, str], str]:
+        """(versión exacta, edición) → ciclo, para los puestos. Un build con un solo ciclo sin sufijo
+        (`10-22h2`) vale para todas las ediciones; IoT LTSC usa el LTSC si no tiene ciclo propio."""
+        grupos: dict[str, dict[str | None, str]] = {}
+        for c in self.ciclos:
+            m = _SUFIJO.match(c.ciclo)
+            if c.ultima_version and m:
+                grupos.setdefault(c.ultima_version, {})[m.group(2)] = c.ciclo
+        out: dict[tuple[str, str], str] = {}
+        for version, g in grupos.items():
+            for ed in EDICIONES:
+                ciclo = g.get(ed) or (g.get("e-lts") if ed == "iot-lts" else None) or g.get(None)
+                if ciclo:
+                    out[(version, ed)] = ciclo
+        return out
+
     def ciclo_de(self, version: str) -> str | None:
+        if self.windows_ediciones:
+            v, _, product = version.partition(" ")
+            return self.por_version_edicion.get((v, edicion_windows(product)))
         if self.ciclo_regex is None:
             return self.por_version.get(version)
         m = re.match(self.ciclo_regex, version)
@@ -319,10 +366,19 @@ def _desde_windows(p: Producto) -> str:
     tabla vigia_ciclo_version; si no está, ciclo = versión (sale como «fuera del catálogo»)."""
     assert p.windows_producto
     por = "nombre, producto, producto_nombre, ciclo, version"
-    e = f"windows_os_info{{product=~{_q(p.windows_producto + '.*')}}}"
+    sel = f"product=~{_q(p.windows_producto + '.*')}"
+    if p.windows_ediciones:
+        sel += ', product!~"Windows Server.*"'
+    e = f"windows_os_info{{{sel}}}"
     e = _replace(e, "producto_nombre", p.nombre)
+    clave = "version"
+    if p.windows_ediciones:
+        e = _replace(e, "edicion", "w")
+        for ed, rx in _EDICION_REGLAS:
+            e = _replace(e, "edicion", ed, "product", rx)
+        clave = "version, edicion"
     tabla = f"{VERSION}{{producto={_q(p.producto)}}}"
-    conocido = f"max by ({por}) ({e} * on (version) group_left (producto, ciclo) {tabla})"
+    conocido = f"max by ({por}) ({e} * on ({clave}) group_left (producto, ciclo) {tabla})"
     otro = _replace(_replace(e, "producto", p.producto), "ciclo", "$1", "version", "(.*)")
     return f"{conocido} or on (nombre) max by ({por}) ({otro})"
 
@@ -409,7 +465,12 @@ def reglas(
             fin = c.fin(aviso)
             if fin:
                 tabla.append(_regla(FIN, _epoch(fin), producto=p.producto, ciclo=c.ciclo))
-        if p.windows_producto:
+        if p.windows_ediciones:
+            for (version, ed), ciclo in p.por_version_edicion.items():
+                tabla.append(
+                    _regla(VERSION, 1, producto=p.producto, ciclo=ciclo, version=version, edicion=ed)
+                )
+        elif p.windows_producto:
             for version, ciclo in p.por_version.items():
                 tabla.append(_regla(VERSION, 1, producto=p.producto, ciclo=ciclo, version=version))
         for c in p.superados if p.aviso_version else []:

@@ -1,0 +1,274 @@
+producto: windows
+nombre: Windows
+fuente: endoflife
+endoflife: windows
+fecha_aviso: normal
+ultimo_lts: false
+os_ids: []
+windows_producto: Windows
+windows_ediciones: true
+ejemplos:
+  10.0.26100 Windows 11 Pro: 11-24h2-w
+  10.0.26100 Windows 11 Home: 11-24h2-w
+  10.0.26100 Windows 11 Pro Education: 11-24h2-w
+  10.0.26100 Windows 11 Enterprise: 11-24h2-e
+  10.0.26100 Windows 11 Education: 11-24h2-e
+  10.0.26100 Windows 11 Enterprise LTSC 2024: 11-24h2-e-lts
+  10.0.26100 Windows 11 IoT Enterprise LTSC 2024: 11-24h2-iot-lts
+  10.0.22631 Windows 10 Pro: 11-23h2-w
+  10.0.19045 Windows 10 Pro: 10-22h2
+  10.0.19045 Windows 10 Enterprise: 10-22h2
+  10.0.19044 Windows 10 Enterprise LTSC 2021: 10-21h2-e-lts
+  10.0.17763 Windows 10 IoT Enterprise LTSC 2019: 10-1809-e-lts
+ejemplos_imagen: {}
+aviso_version: false
+comprobado: '2026-11-11'
+ciclos:
+- ciclo: 11-26h2-e
+  publicado: '2026-09-29'
+  fin_soporte: '2029-10-09'
+  ultima_version: 10.0.26300
+  lts: false
+- ciclo: 11-26h2-w
+  publicado: '2026-09-29'
+  fin_soporte: '2028-10-10'
+  ultima_version: 10.0.26300
+  lts: false
+- ciclo: 11-26h1-e
+  publicado: '2026-02-10'
+  fin_soporte: '2029-03-13'
+  ultima_version: 10.0.28000
+  lts: false
+- ciclo: 11-26h1-w
+  publicado: '2026-02-10'
+  fin_soporte: '2028-03-14'
+  ultima_version: 10.0.28000
+  lts: false
+- ciclo: 11-25h2-e
+  publicado: '2025-09-30'
+  fin_soporte: '2028-10-10'
+  ultima_version: 10.0.26200
+  lts: false
+- ciclo: 11-25h2-w
+  publicado: '2025-09-30'
+  fin_soporte: '2027-10-12'
+  ultima_version: 10.0.26200
+  lts: false
+- ciclo: 11-24h2-iot-lts
+  publicado: '2024-10-01'
+  fin_soporte: '2034-10-10'
+  ultima_version: 10.0.26100
+  lts: true
+- ciclo: 11-24h2-e-lts
+  publicado: '2024-10-01'
+  fin_soporte: '2029-10-09'
+  ultima_version: 10.0.26100
+  lts: true
+- ciclo: 11-24h2-e
+  publicado: '2024-10-01'
+  fin_soporte: '2027-10-12'
+  ultima_version: 10.0.26100
+  lts: false
+- ciclo: 11-24h2-w
+  publicado: '2024-10-01'
+  fin_soporte: '2026-10-13'
+  ultima_version: 10.0.26100
+  lts: false
+- ciclo: 11-23h2-e
+  publicado: '2023-10-31'
+  fin_soporte: '2026-11-10'
+  ultima_version: 10.0.22631
+  lts: false
+- ciclo: 11-23h2-w
+  publicado: '2023-10-31'
+  fin_soporte: '2025-11-11'
+  ultima_version: 10.0.22631
+  lts: false
+- ciclo: 10-22h2
+  publicado: '2022-10-18'
+  fin_soporte: '2025-10-14'
+  fin_extendido: '2028-10-10'
+  ultima_version: 10.0.19045
+  lts: false
+- ciclo: 11-22h2-e
+  publicado: '2022-09-20'
+  fin_soporte: '2025-10-14'
+  ultima_version: 10.0.22621
+  lts: false
+- ciclo: 11-22h2-w
+  publicado: '2022-09-20'
+  fin_soporte: '2024-10-08'
+  ultima_version: 10.0.22621
+  lts: false
+- ciclo: 10-21h2-iot-lts
+  publicado: '2021-11-16'
+  fin_soporte: '2032-01-13'
+  ultima_version: 10.0.19044
+  lts: true
+- ciclo: 10-21h2-e-lts
+  publicado: '2021-11-16'
+  fin_soporte: '2027-01-12'
+  fin_extendido: '2030-01-12'
+  ultima_version: 10.0.19044
+  lts: true
+- ciclo: 10-21h2-e
+  publicado: '2021-11-16'
+  fin_soporte: '2024-06-11'
+  ultima_version: 10.0.19044
+  lts: false
+- ciclo: 10-21h2-w
+  publicado: '2021-11-16'
+  fin_soporte: '2023-06-13'
+  ultima_version: 10.0.19044
+  lts: false
+- ciclo: 11-21h2-e
+  publicado: '2021-10-04'
+  fin_soporte: '2024-10-08'
+  ultima_version: 10.0.22000
+  lts: false
+- ciclo: 11-21h2-w
+  publicado: '2021-10-04'
+  fin_soporte: '2023-10-10'
+  ultima_version: 10.0.22000
+  lts: false
+- ciclo: 10-21h1
+  publicado: '2021-05-18'
+  fin_soporte: '2022-12-13'
+  ultima_version: 10.0.19043
+  lts: false
+- ciclo: 10-20h2-e
+  publicado: '2020-10-20'
+  fin_soporte: '2023-05-09'
+  ultima_version: 10.0.19042
+  lts: false
+- ciclo: 10-20h2-w
+  publicado: '2020-10-20'
+  fin_soporte: '2022-05-10'
+  ultima_version: 10.0.19042
+  lts: false
+- ciclo: 10-2004
+  publicado: '2020-05-27'
+  fin_soporte: '2021-12-14'
+  ultima_version: 10.0.19041
+  lts: false
+- ciclo: 10-1909-e
+  publicado: '2019-11-12'
+  fin_soporte: '2022-05-10'
+  ultima_version: 10.0.18363
+  lts: false
+- ciclo: 10-1909-w
+  publicado: '2019-11-12'
+  fin_soporte: '2021-05-11'
+  ultima_version: 10.0.18363
+  lts: false
+- ciclo: 10-1903
+  publicado: '2019-05-21'
+  fin_soporte: '2020-12-08'
+  ultima_version: 10.0.18362
+  lts: false
+- ciclo: 10-1809-e-lts
+  publicado: '2018-11-13'
+  fin_soporte: '2029-01-09'
+  ultima_version: 10.0.17763
+  lts: true
+- ciclo: 10-1809-e
+  publicado: '2018-11-13'
+  fin_soporte: '2021-05-11'
+  ultima_version: 10.0.17763
+  lts: false
+- ciclo: 10-1809-w
+  publicado: '2018-11-13'
+  fin_soporte: '2020-11-10'
+  ultima_version: 10.0.17763
+  lts: false
+- ciclo: 10-1803-e
+  publicado: '2018-04-30'
+  fin_soporte: '2021-05-11'
+  ultima_version: 10.0.17134
+  lts: false
+- ciclo: 10-1803-w
+  publicado: '2018-04-30'
+  fin_soporte: '2019-11-12'
+  ultima_version: 10.0.17134
+  lts: false
+- ciclo: 10-1709-e
+  publicado: '2017-10-17'
+  fin_soporte: '2020-10-13'
+  ultima_version: 10.0.16299
+  lts: false
+- ciclo: 10-1709-w
+  publicado: '2017-10-17'
+  fin_soporte: '2019-04-09'
+  ultima_version: 10.0.16299
+  lts: false
+- ciclo: 10-1703-e
+  publicado: '2017-04-11'
+  fin_soporte: '2019-10-08'
+  ultima_version: 10.0.15063
+  lts: false
+- ciclo: 10-1703-w
+  publicado: '2017-04-11'
+  fin_soporte: '2018-10-09'
+  ultima_version: 10.0.15063
+  lts: false
+- ciclo: 10-1607-e-lts
+  publicado: '2016-08-02'
+  fin_soporte: '2026-10-13'
+  fin_extendido: '2029-10-13'
+  ultima_version: 10.0.14393
+  lts: true
+- ciclo: 10-1607-e
+  publicado: '2016-08-02'
+  fin_soporte: '2019-04-09'
+  ultima_version: 10.0.14393
+  lts: false
+- ciclo: 10-1607-w
+  publicado: '2016-08-02'
+  fin_soporte: '2018-04-10'
+  ultima_version: 10.0.14393
+  lts: false
+- ciclo: 10-1511
+  publicado: '2015-11-10'
+  fin_soporte: '2017-10-10'
+  ultima_version: 10.0.10586
+  lts: false
+- ciclo: 10-1507-e-lts
+  publicado: '2015-07-29'
+  fin_soporte: '2025-10-14'
+  ultima_version: 10.0.10240
+  lts: true
+- ciclo: 10-1507
+  publicado: '2015-07-29'
+  fin_soporte: '2017-05-09'
+  ultima_version: 10.0.10240
+  lts: false
+- ciclo: 10-1507-iot
+  publicado: '2015-04-29'
+  fin_soporte: '2020-11-10'
+  ultima_version: 10.0.10240
+  lts: false
+- ciclo: '8.1'
+  publicado: '2013-11-13'
+  fin_soporte: '2023-01-10'
+  ultima_version: 6.3.9600
+  lts: false
+- ciclo: '8'
+  publicado: '2012-10-30'
+  fin_soporte: '2016-01-12'
+  ultima_version: 6.2.9200
+  lts: false
+- ciclo: 7-sp1
+  publicado: '2011-02-22'
+  fin_soporte: '2020-01-14'
+  ultima_version: 6.1.7601
+  lts: false
+- ciclo: 6-sp2
+  publicado: '2009-04-29'
+  fin_soporte: '2017-04-11'
+  ultima_version: 6.0.6002
+  lts: false
+- ciclo: 5-sp3
+  publicado: '2008-04-21'
+  fin_soporte: '2014-04-08'
+  ultima_version: 5.1.2600
+  lts: false
