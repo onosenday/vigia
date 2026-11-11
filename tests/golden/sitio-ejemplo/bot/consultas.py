@@ -45,6 +45,27 @@ CONSUMIBLES = (
     f'prtMarkerSuppliesType!~"waste.*"}} / (prtMarkerSuppliesMaxCapacity{{{_PJ}}} > 0) >= 0)'
 )
 """Igual que la regla «Consumible de impresora bajo» de vigia.alerting (un test lo vigila)."""
+# /host de los equipos SNMP: las series de sus paneles (vigia.dashboards.printers y extra)
+IMPRESORA_ESTADO = f"max by (nombre, hrPrinterStatus) (hrPrinterStatus{{{_PJ}}} == 1)"
+IMPRESORA_PAGINAS = f"max by (nombre) (prtMarkerLifeCount{{{_PJ}}})"
+IMPRESORA_PAGINAS_24H = f"max by (nombre) (increase(prtMarkerLifeCount{{{_PJ}}}[24h]))"
+IMPRESORA_ERRORES = (
+    f"max by (nombre, vigia_impresora_error) (vigia_impresora_error{{{_PJ}, "
+    'vigia_impresora_error=~"noPaper|noToner|doorOpen|jammed|offline|serviceRequested|inputTrayMissing|'
+    'outputTrayMissing|markerSupplyMissing|outputFull|overduePreventMaint"})'
+)
+"""Igual que la regla «Error de impresora» de vigia.alerting (un test lo vigila)."""
+_SJ = 'job="snmp", tipo="synology"'
+NAS_SISTEMA = f"max by (nombre) (systemStatus{{{_SJ}}})"
+NAS_TEMP = f"max by (nombre) (temperature{{{_SJ}}})"
+NAS_RAID_USO = f"max by (nombre, raidName) (100 * (1 - raidFreeSize{{{_SJ}}} / raidTotalSize{{{_SJ}}}))"
+NAS_RAID_ESTADO = f"max by (nombre, raidName) (raidStatus{{{_SJ}}})"
+IF_ARRIBA = 'count by (nombre) (ifOperStatus{job="snmp"} == 1)'
+IF_ACTIVAS = 'count by (nombre) (ifAdminStatus{job="snmp"} == 1)'
+_UJ = 'job="snmp", tipo="sai"'
+SAI_CARGA = f"min by (nombre) (upsEstimatedChargeRemaining{{{_UJ}}})"
+SAI_MINUTOS = f"min by (nombre) (upsEstimatedMinutesRemaining{{{_UJ}}})"
+SAI_SALIDA = f"max by (nombre) (upsOutputPercentLoad{{{_UJ}}})"
 _PRODUCTO = "nombre, contenedor, producto, producto_nombre, ciclo, version"
 PRODUCTOS = f"max by ({_PRODUCTO}) (vigia_producto_ciclo)"
 SOPORTE = f"min by ({_PRODUCTO}) (vigia_soporte_restante_dias)"

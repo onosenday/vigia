@@ -336,3 +336,10 @@ def test_fijadas_es_la_serie_de_ciclos() -> None:
     from vigia import ciclos
 
     assert ciclos.FIJADA in c.FIJADAS
+
+
+def test_errores_de_impresora_igual_que_la_alerta(example_data: dict[str, object]) -> None:
+    (regla,) = [
+        r for r in printer_rules(Site.model_validate(example_data)) if r["uid"] == "vigia-impresora-error"
+    ]
+    assert regla["data"][0]["model"]["expr"] == c.IMPRESORA_ERRORES

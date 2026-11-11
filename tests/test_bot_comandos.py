@@ -201,3 +201,52 @@ def test_lista_sin_tipo_va_a_sin_clasificar() -> None:
     sin_tipo = {**TELE, "encendido": "●"}
     d: dict[str, Serie] = {q.DISP_INFO: [(sin_tipo, 1)]}
     assert responder("/lista", contexto(d)) == "<b>Encendidos: 1</b>\nsin clasificar (1): tele-salon ¿?"
+
+
+SNMP_HOSTS = (
+    HostCfg("imp", "Impresora", "10.99.0.30", "impresora"),
+    HostCfg("nas", "NAS", "10.99.0.20", "synology"),
+    HostCfg("sw", "Switch", "10.99.0.2", "switch"),
+    HostCfg("sai", "SAI", "10.99.0.40", "sai"),
+)
+IMP, SW, SAI = {"nombre": "Impresora"}, {"nombre": "Switch"}, {"nombre": "SAI"}
+PROM_SNMP: dict[str, Serie] = {
+    q.SERVIDORES: [(IMP, 1), (NAS, 1), (SW, 1), (SAI, 1)],
+    q.IMPRESORA_ESTADO: [(IMP | {"hrPrinterStatus": "idle"}, 1)],
+    q.IMPRESORA_PAGINAS: [(IMP, 12345)],
+    q.IMPRESORA_PAGINAS_24H: [(IMP, 37.2)],
+    q.CONSUMIBLES: [
+        (IMP | {"prtMarkerSuppliesDescription": "Tóner negro;SN123"}, 45.0),
+        (IMP | {"prtMarkerSuppliesDescription": "Tóner cian;SN124"}, 8.0),
+    ],
+    q.IMPRESORA_ERRORES: [(IMP | {"vigia_impresora_error": "jammed"}, 1)],
+    q.NAS_SISTEMA: [(NAS, 1)],
+    q.NAS_TEMP: [(NAS, 41.0)],
+    q.NAS_RAID_USO: [(NAS | {"raidName": "Volume 1"}, 62.0), (NAS | {"raidName": "Volume 2"}, 93.0)],
+    q.NAS_RAID_ESTADO: [(NAS | {"raidName": "Volume 1"}, 1), (NAS | {"raidName": "Volume 2"}, 11)],
+    q.IF_ACTIVAS: [(SW, 8)],
+    q.IF_ARRIBA: [(SW, 5)],
+    q.SAI_CARGA: [(SAI, 100)],
+    q.SAI_MINUTOS: [(SAI, 45)],
+    q.SAI_SALIDA: [(SAI, 23)],
+}
+
+
+def test_host_snmp() -> None:
+    def ficha(nombre: str) -> str:
+        return responder(f"/host {nombre}", contexto(PROM_SNMP, hosts=SNMP_HOSTS)) or ""
+
+    assert ficha("impresora") == (
+        "✅ <b>Impresora</b> · 10.99.0.30 · impresora\n"
+        "En espera · 12345 páginas (+37 en 24 h)\n"
+        "🖨 Tóner cian 8% ⚠ · Tóner negro 45%\n"
+        "Errores: jammed ⚠"
+    )
+    assert ficha("nas") == (
+        "✅ <b>NAS</b> · 10.99.0.20 · synology\n"
+        "Sistema normal · 41 °C\n"
+        "💾 Volume 1 62%\n"
+        "💾 Volume 2 93% ⚠ · degradado ⚠"
+    )
+    assert ficha("switch") == "✅ <b>Switch</b> · 10.99.0.2 · switch\nInterfaces conectadas: 5 de 8"
+    assert ficha("sai") == "✅ <b>SAI</b> · 10.99.0.40 · sai\nBatería 100% · 45 min de autonomía · carga 23%"

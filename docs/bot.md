@@ -7,7 +7,7 @@ El bot de las alertas también responde a comandos en el mismo chat: solo consul
 | `/estado` | cada host (✅/❌/❔; CPU, RAM y disco si tiene node_exporter) y las alertas activas |
 | `/alertas` | alertas disparadas, desde cuándo («desde ?» si la fecha no se puede leer) |
 | `/pendientes` | mantenimiento: certificados, consumibles, discos, fin de soporte, versiones mayores, actualizaciones e imágenes nuevas (ver abajo) |
-| `/host <nombre o IP>` | ficha de un servidor: CPU, RAM, carga, temperatura, discos, contenedores y versión y soporte de su sistema |
+| `/host <nombre o IP>` | ficha de un servidor: CPU, RAM, carga, temperatura, discos, contenedores y versión y soporte de su sistema. De los equipos SNMP, lo de sus paneles: impresora (estado, páginas, consumibles y errores), Synology (sistema, temperatura y RAID), switch y QNAP (interfaces conectadas) y SAI (batería, autonomía y carga) |
 | `/dispositivo <nombre, IP o MAC>` | si está conectado; si está encendido pero sin hora de última vez, responde «conectado» |
 | `/info <nombre, IP o MAC>` | ficha del dispositivo: tipo, ubicación, fabricante, IP, MAC, primera y última vez |
 | `/lista [tipo]` | dispositivos encendidos, por tipo |

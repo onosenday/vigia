@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import time
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
@@ -10,14 +11,28 @@ from .buscar import buscar, normalizar
 from .config import Config, HostCfg
 from .consultas import (
     CARGA,
+    CONSUMIBLES,
     CONTENEDORES,
     CPU,
     DISCO_MAX,
     DISCOS,
     GRAFANA_CAIDO,
+    IF_ACTIVAS,
+    IF_ARRIBA,
+    IMPRESORA_ERRORES,
+    IMPRESORA_ESTADO,
+    IMPRESORA_PAGINAS,
+    IMPRESORA_PAGINAS_24H,
+    NAS_RAID_ESTADO,
+    NAS_RAID_USO,
+    NAS_SISTEMA,
+    NAS_TEMP,
     PING,
     PROM_CAIDO,
     RAM,
+    SAI_CARGA,
+    SAI_MINUTOS,
+    SAI_SALIDA,
     SERVIDORES,
     TEMP,
     UPTIME,
@@ -41,6 +56,9 @@ MAX_PENDIENTES = 60
 """/pendientes tiene varias secciones: más líneas que el resto (Telegram limita a 4096 caracteres)."""
 SIN_NETINV = "Este sitio no tiene netinv: no hay inventario de dispositivos."
 SIN_TIPO = "sin clasificar"
+ESTADO_IMPRESORA = {"idle": "en espera", "printing": "imprimiendo", "warmup": "calentando"}
+ESTADO_RAID = {2: "reparando", 3: "migrando", 4: "ampliando", 11: "degradado", 12: "roto"}
+"""raidStatus del MIB de Synology (1 = normal); el resto, por su número."""
 
 AYUDA: tuple[tuple[str, str, str], ...] = (
     ("estado", "", "servidores y alertas de un vistazo"),
@@ -185,8 +203,72 @@ def _ficha_host(ctx: Contexto, h: HostCfg) -> str:
     cont = por(ctx.prom, av, CONTENEDORES)
     if n in cont:
         lineas.append(f"Contenedores en marcha: {cont[n]:.0f}")
+    lineas += _snmp(ctx, av, h)
     lineas += versiones_host(ctx.cfg, ctx.prom, av, n, ctx.ahora())
     return recortar(lineas + av.lineas)
+
+
+def _de(ctx: Contexto, av: Avisos, expr: str, nombre: str) -> list[tuple[dict[str, str], float]]:
+    return [(m, v) for m, v in serie(ctx.prom, av, expr) if m.get("nombre") == nombre]
+
+
+def _consumible(m: dict[str, str], v: float, umbral: int) -> str:
+    # «Tóner negro;SN123»: el número de serie del cartucho sobra
+    desc = re.sub(r";.*", "", m.get("prtMarkerSuppliesDescription", "")).strip()
+    return f"{esc(desc)} {v:.0f}%" + (" ⚠" if v < umbral else "")
+
+
+def _snmp(ctx: Contexto, av: Avisos, h: HostCfg) -> list[str]:
+    """Lo que da SNMP según el tipo del equipo: las mismas series que sus paneles."""
+    n, out = h.nombre, []
+    if h.tipo == "impresora":
+        partes = [
+            ESTADO_IMPRESORA.get(e, e).capitalize()
+            for m, _ in _de(ctx, av, IMPRESORA_ESTADO, n)
+            if (e := m.get("hrPrinterStatus", ""))
+        ]
+        pag = por(ctx.prom, av, IMPRESORA_PAGINAS)
+        if n in pag:
+            dia = por(ctx.prom, av, IMPRESORA_PAGINAS_24H).get(n)
+            partes.append(f"{pag[n]:.0f} páginas" + (f" (+{dia:.0f} en 24 h)" if dia else ""))
+        if partes:
+            out.append(" · ".join(esc(p) for p in partes))
+        cons = sorted(_de(ctx, av, CONSUMIBLES, n), key=lambda x: x[1])
+        if cons:
+            out.append("🖨 " + " · ".join(_consumible(m, v, ctx.cfg.consumible_pct) for m, v in cons))
+        errores = sorted(
+            m.get("vigia_impresora_error", "") for m, v in _de(ctx, av, IMPRESORA_ERRORES, n) if v
+        )
+        if errores:
+            out.append("Errores: " + ", ".join(esc(e) for e in errores) + " ⚠")
+    elif h.tipo == "synology":
+        sis = por(ctx.prom, av, NAS_SISTEMA).get(n)
+        temp = por(ctx.prom, av, NAS_TEMP).get(n)
+        partes = [] if sis is None else ["Sistema normal" if sis == 1 else "Sistema con FALLO ⚠"]
+        if temp is not None:
+            partes.append(f"{temp:.0f} °C")
+        if partes:
+            out.append(" · ".join(partes))
+        estado = {m.get("raidName", ""): v for m, v in _de(ctx, av, NAS_RAID_ESTADO, n)}
+        for m, v in sorted(_de(ctx, av, NAS_RAID_USO, n), key=lambda x: x[0].get("raidName", "")):
+            r = m.get("raidName", "")
+            st = estado.get(r, 1.0)
+            mal = "" if st == 1 else f" · {esc(ESTADO_RAID.get(int(st), f'estado {st:.0f}'))} ⚠"
+            out.append(f"💾 {esc(r)} {_disco(v, ctx.cfg.disco_pct)}{mal}")
+    elif h.tipo == "sai":
+        carga, minutos = por(ctx.prom, av, SAI_CARGA).get(n), por(ctx.prom, av, SAI_MINUTOS).get(n)
+        salida = por(ctx.prom, av, SAI_SALIDA).get(n)
+        partes = [] if carga is None else [f"Batería {pct(carga)}"]
+        if minutos is not None:
+            partes.append(f"{minutos:.0f} min de autonomía")
+        if salida is not None:
+            partes.append(f"carga {pct(salida)}")
+        if partes:
+            out.append(" · ".join(partes))
+    activas = por(ctx.prom, av, IF_ACTIVAS).get(n) if h.tipo in ("switch", "qnap") else None
+    if activas:
+        out.append(f"Interfaces conectadas: {por(ctx.prom, av, IF_ARRIBA).get(n, 0):.0f} de {activas:.0f}")
+    return out
 
 
 def pendientes(ctx: Contexto, arg: str) -> str:

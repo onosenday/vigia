@@ -7,6 +7,8 @@
 - **Arreglo**: una imagen fijada por *digest* en `monitor.imagenes` ya no avisa como «Imagen nueva sin aplicar» ni sale
   en el panel «Imágenes nuevas»; en `/pendientes` va a «Decidido» con `(vigia)` (vigia-5n7). Tras `vigia deploy`, el bot
   se recompila.
+- **Nuevo**: `/host` de un equipo SNMP muestra lo de sus paneles: impresora (estado, páginas, consumibles y errores),
+  Synology (sistema, temperatura y RAID), switch y QNAP (interfaces conectadas) y SAI (vigia-0w4).
 
 ## 0.5.4 (2026-11-04)
 
