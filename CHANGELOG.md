@@ -13,6 +13,8 @@ nuevo, porque cambia la agrupación.
   (vigia-cmj.9).
 - **Nuevo**: en Telegram solo suenan las incidencias. Mantenimiento e información llegan al mismo grupo sin sonido
   (contact point `vigia-silencioso`, con `disable_notification`); el correo no cambia (vigia-cmj.10).
+- **Arreglo**: dos `tareas` con el mismo nombre en hosts distintos ya no dan «tareas repetidas»: el nombre solo tiene
+  que ser único en cada host (vigia-cmj.11).
 
 ## 0.5.5 (2026-11-11)
 

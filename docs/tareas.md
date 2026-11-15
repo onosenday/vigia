@@ -22,6 +22,8 @@ tareas:
   textfile, úsala en las tareas con `VIGIA_TEXTFILE_DIR` (la ruta no influye en las alertas); si no la
   tiene, añade `--collector.textfile.directory=/var/lib/vigia/textfile`.
 - `max_horas`: margen sin una ejecución correcta antes de avisar (para una tarea diaria, 26).
+- `nombre`: único en cada host. La misma tarea puede estar en varios hosts con el mismo nombre (p. ej. la copia
+  del estado del sistema en dos controladores de dominio): cada una avisa y sale en el panel por separado.
 
 ## En la tarea
 

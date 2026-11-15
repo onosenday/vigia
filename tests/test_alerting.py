@@ -314,3 +314,12 @@ def test_mantenimiento_e_info_sin_sonido(example_data: dict[str, Any]) -> None:
         ("vigia-silencioso", [["gravedad", "=", "info"]]),
         ("vigia-silencioso", [["categoria", "=", "mantenimiento"]]),
     ]
+
+
+def test_misma_tarea_en_dos_hosts(example_data: dict[str, Any]) -> None:
+    d = _con_tareas(example_data)
+    d["hosts"][1]["node_exporter"]["textfile"] = True
+    d["tareas"].append({"nombre": "copias-bd", "host": "nodo1", "max_horas": 30})
+    expr = _rules(_build(d))["vigia-tarea-retrasada"]["data"][0]["model"]["expr"]
+    assert 'nombre="nodo2", tarea="copias-bd"})) / 3600 - 26' in expr
+    assert 'nombre="Nodo 1", tarea="copias-bd"})) / 3600 - 30' in expr

@@ -223,7 +223,14 @@ def test_tarea_en_windows_con_textfile(example_data: dict[str, Any]) -> None:
 def test_tareas_repetidas(example_data: dict[str, Any]) -> None:
     d = _con_tareas(example_data)
     d["tareas"].append(dict(d["tareas"][0]))
-    _assert_invalid(d, "tareas repetidas")
+    _assert_invalid(d, "tareas repetidas en nodo2: ['copias-bd']")
+
+
+def test_misma_tarea_en_hosts_distintos(example_data: dict[str, Any]) -> None:
+    d = _con_tareas(example_data)
+    d["hosts"][1]["node_exporter"]["textfile"] = True  # nodo1
+    d["tareas"].append(dict(d["tareas"][0], host="nodo1"))
+    Site.model_validate(d)
 
 
 @pytest.mark.parametrize("horas", [0, 745])

@@ -1131,9 +1131,11 @@ class Site(Base):
             if b.host not in hosts_by_id:
                 errors.append(f"bridges: host desconocido {b.host!r}")
 
-        nombres = [t.nombre for t in self.tareas]
-        if len(nombres) != len(set(nombres)):
-            errors.append(f"tareas repetidas: {sorted({n for n in nombres if nombres.count(n) > 1})}")
+        # el nombre es único por host: las alertas y el panel separan por (host, tarea)
+        claves = [(t.host, t.nombre) for t in self.tareas]
+        for host in sorted({h for h, n in claves if claves.count((h, n)) > 1}):
+            repetidas = sorted({n for h, n in claves if h == host and claves.count((h, n)) > 1})
+            errors.append(f"tareas repetidas en {host}: {repetidas}")
         for t in self.tareas:
             th = hosts_by_id.get(t.host)
             if th is None:
