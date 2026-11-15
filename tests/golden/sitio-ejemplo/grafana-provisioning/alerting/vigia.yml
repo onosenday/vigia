@@ -809,8 +809,30 @@ contactPoints:
       message: '{{ template "vigia.titulo" . }}
 
         {{ template "vigia.mensaje" . }}'
+      disable_notification: false
     disableResolveMessage: false
   - uid: vigia-correo
+    type: email
+    settings:
+      addresses: "$ALERTAS_CORREO_DESTINO"
+      singleEmail: true
+      subject: '{{ template "vigia.titulo" . }}'
+      message: '{{ template "vigia.mensaje" . }}'
+    disableResolveMessage: false
+- orgId: 1
+  name: vigia-silencioso
+  receivers:
+  - uid: vigia-telegram-silencioso
+    type: telegram
+    settings:
+      bottoken: "$ALERTAS_TELEGRAM_TOKEN"
+      chatid: '-1000000000001'
+      message: '{{ template "vigia.titulo" . }}
+
+        {{ template "vigia.mensaje" . }}'
+      disable_notification: true
+    disableResolveMessage: false
+  - uid: vigia-correo-silencioso
     type: email
     settings:
       addresses: "$ALERTAS_CORREO_DESTINO"
@@ -829,9 +851,14 @@ policies:
   group_interval: 5m
   repeat_interval: 12h
   routes:
-  - receiver: vigia
+  - receiver: vigia-silencioso
     object_matchers:
     - - gravedad
       - '='
       - info
     repeat_interval: 168h
+  - receiver: vigia-silencioso
+    object_matchers:
+    - - categoria
+      - '='
+      - mantenimiento

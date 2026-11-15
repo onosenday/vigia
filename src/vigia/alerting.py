@@ -465,18 +465,21 @@ def _templates(s: Site) -> str:
     )
 
 
-def _receivers(s: Site) -> list[dict[str, Any]]:
+def _receivers(s: Site, silencioso: bool = False) -> list[dict[str, Any]]:
+    """Telegram y correo; `silencioso`: Telegram entrega sin sonido (mantenimiento e información)."""
     a = s.alertas
+    sufijo = "-silencioso" if silencioso else ""
     out: list[dict[str, Any]] = []
     if a.telegram:
         out.append(
             {
-                "uid": "vigia-telegram",
+                "uid": "vigia-telegram" + sufijo,
                 "type": "telegram",
                 "settings": {
                     "bottoken": EnvRef(f"${a.telegram.token}"),
                     "chatid": a.telegram.chat_id,
                     "message": '{{ template "vigia.titulo" . }}\n{{ template "vigia.mensaje" . }}',
+                    "disable_notification": silencioso,
                 },
                 "disableResolveMessage": False,
             }
@@ -484,7 +487,7 @@ def _receivers(s: Site) -> list[dict[str, Any]]:
     if a.correo:
         out.append(
             {
-                "uid": "vigia-correo",
+                "uid": "vigia-correo" + sufijo,
                 "type": "email",
                 "settings": {
                     "addresses": EnvRef(f"${a.correo.destinatarios}"),
@@ -513,7 +516,10 @@ def alerting(s: Site, header: Raw) -> str:
             }
         ],
         "templates": [{"orgId": 1, "name": "vigia", "template": _templates(s)}],
-        "contactPoints": [{"orgId": 1, "name": "vigia", "receivers": _receivers(s)}],
+        "contactPoints": [
+            {"orgId": 1, "name": "vigia", "receivers": _receivers(s)},
+            {"orgId": 1, "name": "vigia-silencioso", "receivers": _receivers(s, silencioso=True)},
+        ],
         "policies": [
             {
                 "orgId": 1,
@@ -523,12 +529,17 @@ def alerting(s: Site, header: Raw) -> str:
                 "group_wait": "30s",
                 "group_interval": "5m",
                 "repeat_interval": a.repetir,
+                # solo las incidencias suenan en Telegram; gana la primera ruta que encaja
                 "routes": [
                     {
-                        "receiver": "vigia",
+                        "receiver": "vigia-silencioso",
                         "object_matchers": [["gravedad", "=", "info"]],
                         "repeat_interval": a.repetir_info,
-                    }
+                    },
+                    {
+                        "receiver": "vigia-silencioso",
+                        "object_matchers": [["categoria", "=", "mantenimiento"]],
+                    },
                 ],
             }
         ],

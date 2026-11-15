@@ -1,6 +1,6 @@
 # Alertas (Telegram y correo)
 
-vigia provisiona en Grafana cuatro reglas, un contact point `vigia` (Telegram, correo o los dos), la política
+vigia provisiona en Grafana las reglas, dos contact points (`vigia` y `vigia-silencioso`: Telegram, correo o los dos), la política
 de avisos y una plantilla con la marca del sitio (`[Oficina] 🔴 Alarma: Nodo 1`). Todo sale de `site.yaml`:
 
 ```yaml
@@ -54,6 +54,8 @@ El título del mensaje dice qué tipo de aviso es; solo una incidencia crítica 
 
 Al resolverse, `✅ Resuelto`. Los avisos se agrupan por `nombre`, `gravedad` y `categoria`: si un servidor se cae,
 la sonda y su exporter llegan en el mismo mensaje, pero nunca junto a un aviso de mantenimiento.
+En Telegram solo suenan las incidencias: mantenimiento e información van por `vigia-silencioso`, el mismo bot,
+grupo y correo con `disable_notification` (llegan igual, sin sonido).
 Lo que se apaga (o se duerme, como muchas impresoras) se marca con `alerta: false` en su entrada de `ping`, `servicios` o
 `web.objetivos`: sigue en los paneles, pero no avisa (en un ping, tampoco avisa si su exporter calla). Solo se alerta de la infraestructura de `site.yaml`;
 los dispositivos que descubre netinv (móviles, televisores) nunca generan avisos.
@@ -107,7 +109,7 @@ Si una contraseña lleva `$`, escríbela como `$$` en el fichero de entorno (com
   están (solo los nombres) y aborta sin tocar nada si falta alguna: con un token vacío Grafana no provisiona
   las alertas y **se para**.
 
-Prueba: en Grafana, *Alerting ▸ Contact points ▸ vigia ▸ Test*. Por API (Grafana 12 o posterior):
+Prueba: en Grafana, *Alerting ▸ Contact points ▸ vigia* (o *vigia-silencioso*) *▸ Test*. Por API (Grafana 12 o posterior):
 `POST /apis/notifications.alerting.grafana.app/v1beta1/namespaces/default/receivers/<uid>/test` con la
 integración (`uid`, `type`, `settings`, `secureFields`) y una alerta de ejemplo; el endpoint antiguo
 `/api/alertmanager/grafana/config/api/v1/receivers/test` ya no existe. Los cambios en reglas o contact point se hacen

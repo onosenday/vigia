@@ -207,7 +207,7 @@ def test_todas_las_reglas_llevan_gravedad_y_categoria(example_data: dict[str, An
 def test_avisos_info_con_su_propia_repeticion(example_data: dict[str, Any]) -> None:
     example_data["alertas"]["repetir_info"] = "72h"
     (politica,) = yaml.safe_load(_build(example_data)[ALERTING])["policies"]
-    (ruta,) = politica["routes"]
+    ruta, _ = politica["routes"]
     assert ruta["object_matchers"] == [["gravedad", "=", "info"]]
     assert ruta["repeat_interval"] == "72h"
     assert politica["repeat_interval"] == example_data["alertas"].get("repetir", "12h")
@@ -297,3 +297,20 @@ def test_titulo_segun_gravedad_y_categoria(example_data: dict[str, Any]) -> None
     assert set(alerting.CLASIFICACION.values()) <= set(alerting.TIPOS)
     (politica,) = datos["policies"]
     assert politica["group_by"] == ["nombre", "gravedad", "categoria"]
+
+
+def test_mantenimiento_e_info_sin_sonido(example_data: dict[str, Any]) -> None:
+    datos = yaml.safe_load(_build(example_data)[ALERTING])
+    puntos = {c["name"]: c["receivers"] for c in datos["contactPoints"]}
+    tele = {n: next(r for r in rs if r["type"] == "telegram") for n, rs in puntos.items()}
+    assert tele["vigia"]["settings"]["disable_notification"] is False
+    assert tele["vigia-silencioso"]["settings"]["disable_notification"] is True
+    assert {r["type"] for r in puntos["vigia"]} == {r["type"] for r in puntos["vigia-silencioso"]}
+    uids = [r["uid"] for rs in puntos.values() for r in rs]
+    assert len(uids) == len(set(uids))
+    (politica,) = datos["policies"]
+    assert politica["receiver"] == "vigia"
+    assert [(r["receiver"], r["object_matchers"]) for r in politica["routes"]] == [
+        ("vigia-silencioso", [["gravedad", "=", "info"]]),
+        ("vigia-silencioso", [["categoria", "=", "mantenimiento"]]),
+    ]
