@@ -599,12 +599,27 @@ class Netinv(Base):
     dispositivos: SitePath | None = None
     """devices.yaml del sitio (clasificación manual). Nunca entra en el paquete."""
     autorizacion: Authorization | None = None
+    nombres_anunciados: bool = True
+    """false: no recoge ni exporta los nombres que anuncian los aparatos (pueden ser de personas)."""
+    escucha: IP | None = None
+    """IP del host en la que sirve /metrics y /devices.json; por defecto, la del monitor."""
 
     @model_validator(mode="after")
     def _check_authorized(self) -> Netinv:
         if self.activo and self.autorizacion is None:
             raise ValueError("netinv activo exige `autorizacion` (responsable, fecha y referencia)")
         return self
+
+    @field_validator("escucha")
+    @classmethod
+    def _check_listen(cls, v: str | None) -> str | None:
+        if v is not None:
+            ip = ipaddress.ip_address(v)
+            if ip.is_loopback or ip.is_unspecified:
+                raise ValueError(
+                    f"escucha {v}: Prometheus (red de Docker) no llegaría; usa una IP del host del monitor"
+                )
+        return v
 
 
 class PiholeExporter(Base):

@@ -12,6 +12,8 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
+import yaml
+
 from vigia import __version__, ciclos
 from vigia.alerting import alerting, smtp_env
 from vigia.decisiones import Decision, a_json, load_decisiones
@@ -297,7 +299,7 @@ def build_site(s: Site, site_root: Path) -> dict[str, str | bytes]:
     if s.modulos.netinv.activo:
         out.update(_bundled_image("netinv", "netinv"))
         if s.modulos.netinv.dispositivos:
-            out["netinv/devices.yaml"] = (site_root / s.modulos.netinv.dispositivos).read_bytes()
+            out["netinv/devices.yaml"] = _devices(s, site_root / s.modulos.netinv.dispositivos)
 
     if s.modulos.bot.activo:
         out.update(_bot(s, site_root))
@@ -346,6 +348,19 @@ def build_site(s: Site, site_root: Path) -> dict[str, str | bytes]:
     for name, content in dashboards_for(s, site_root).items():
         out[f"dashboards/{name}"] = content
     return out
+
+
+def _devices(s: Site, path: Path) -> bytes:
+    """devices.yaml tal cual; sin nombres anunciados, una ficha por `nombre_dhcp` nunca casaría."""
+    raw = path.read_bytes()
+    if not s.modulos.netinv.nombres_anunciados:
+        doc = yaml.safe_load(raw) or {}
+        if any(isinstance(x, dict) and x.get("nombre_dhcp") for x in doc.get("dispositivos") or []):
+            raise ValueError(
+                f"{path.name}: con netinv.nombres_anunciados: false no se recogen nombres DHCP; "
+                "clasifica esas fichas por `mac` y quita `nombre_dhcp`"
+            )
+    return raw
 
 
 def _has_agents(h: Host) -> bool:

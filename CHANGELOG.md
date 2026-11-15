@@ -1,5 +1,18 @@
 # Cambios
 
+## Sin publicar
+
+Al actualizar un sitio: nada cambia en `site.yaml`. Tras `vigia deploy`, netinv se recompila y escucha solo en la IP
+del monitor (antes, en todas las del host).
+
+- **Nuevo**: `modulos.netinv.nombres_anunciados: false` para sitios con datos sensibles: netinv no recoge ni exporta
+  los nombres que anuncian los aparatos (DHCP, mDNS, NetBIOS, `friendlyName` de UPnP, título web), que pueden ser de
+  personas; borra los ya guardados. En `/metrics`, `/devices.json`, el panel y el bot solo quedan MAC, IP, fabricante,
+  datos técnicos y la clasificación manual. Las fichas por `nombre_dhcp` dejan de servir y `vigia build` las rechaza
+  (vigia-cmj.12).
+- **Nuevo**: netinv sirve `/metrics` y `/devices.json` solo en la IP del monitor, o en `modulos.netinv.escucha`
+  (IP del host; no `127.0.0.1`, porque Prometheus no llegaría) (vigia-cmj.13).
+
 ## 0.5.6 (2026-11-15)
 
 Al actualizar un sitio: nada cambia en `site.yaml`. Tras `vigia deploy`, Grafana recarga las alertas (contact point

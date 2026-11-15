@@ -51,6 +51,8 @@ modulos:
   blackbox: true
   netinv:
     activo: false   # descubrimiento activo: solo con autorización escrita del responsable de la red
+    # nombres_anunciados: false   # no recoger nombres DHCP/mDNS/NetBIOS/UPnP (pueden ser de personas)
+    # escucha: 10.0.0.10          # IP del host para /metrics y /devices.json (por defecto, la del monitor)
 
 # Alertas por Telegram y/o correo (docs/alertas.md de vigia). Solo nombres de variables del entorno.
 alertas:

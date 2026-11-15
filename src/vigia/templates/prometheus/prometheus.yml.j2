@@ -97,7 +97,7 @@ scrape_configs:
   - job_name: netinv
     scrape_interval: 60s
     static_configs:
-      - targets: [{{ s.monitor_host.ip ~ ":" ~ s.modulos.netinv.puerto }}]
+      - targets: [{{ (s.modulos.netinv.escucha or s.monitor_host.ip) ~ ":" ~ s.modulos.netinv.puerto }}]
 {% endif %}
 {% if s.modulos.updates_exporter.activo %}
 

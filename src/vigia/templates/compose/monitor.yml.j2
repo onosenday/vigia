@@ -151,6 +151,10 @@ services:
       - {{ "LAN_IP=" ~ s.monitor_host.ip }}
       - {{ "INTERVAL=" ~ s.modulos.netinv.intervalo }}
       - {{ "PORT=" ~ s.modulos.netinv.puerto }}
+      - {{ "LISTEN=" ~ (s.modulos.netinv.escucha or s.monitor_host.ip) }}
+{% if not s.modulos.netinv.nombres_anunciados %}
+      - NAMES=0                        # sin nombres anunciados (pueden ser de personas)
+{% endif %}
 {% if not s.modulos.netinv.nmap %}
       - NMAP=0
 {% endif %}

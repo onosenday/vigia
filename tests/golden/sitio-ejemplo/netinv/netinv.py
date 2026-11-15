@@ -9,7 +9,9 @@ Cada INTERVAL segundos cruza por MAC:
   5. Huella DNS de IoT: de las consultas de cada cliente SOLO se anota con qué nube de fabricante IoT
      habla (Tuya, eWeLink, Shelly...). No se guardan dominios ni historial de navegación.
 Clasificación manual: /etc/netinv/devices.yaml (del repo, network/devices.yaml).
-Salida: /data/state.json, http://:9877/devices.json y /metrics (Prometheus).
+Salida: /data/state.json, http://LISTEN:9877/devices.json y /metrics (Prometheus).
+Con NAMES=0 no se recoge ningún nombre que anuncien los aparatos (DHCP, mDNS, NetBIOS, UPnP, título web):
+pueden ser nombres de personas. Solo quedan MAC, IP, fabricante, datos técnicos y la clasificación manual.
 """
 import json, os, re, socket, subprocess, threading, time, urllib.error, urllib.request
 import xml.etree.ElementTree as ET
@@ -22,6 +24,10 @@ SUBNET = os.environ["SUBNET"]
 IFACE = os.environ.get("IFACE", "")
 INTERVAL = int(os.environ.get("INTERVAL", "900"))
 PORT = int(os.environ.get("PORT", "9877"))
+LISTEN = os.environ.get("LISTEN", "")  # IP del host en la que se sirve /metrics y /devices.json
+NAMES_ENABLED = os.environ.get("NAMES", "1") == "1"
+NAME_FIELDS = ("n_dhcp", "n_mdns", "n_netbios")
+FREE_MODEL = ("fn=", "friendlyName=", "web=")  # texto libre que pone el usuario: puede ser un nombre
 LAN_IP = os.environ.get("LAN_IP", "")  # mDNS solo por la LAN (el host tiene decenas de redes Docker)
 STATE = "/data/state.json"
 CLASSIFICATION = "/etc/netinv/devices.yaml"
@@ -100,6 +106,31 @@ def add(d, key, value):
         d[key] = sorted(s)
 
 
+def add_name(d, key, value):
+    if NAMES_ENABLED:
+        add(d, key, value)
+
+
+def add_model(d, value):
+    if NAMES_ENABLED or not value.startswith(FREE_MODEL):
+        add(d, "modelo", value)
+
+
+def visible(d):
+    """El dispositivo tal como puede salir de netinv: sin nombres anunciados si NAMES=0."""
+    if NAMES_ENABLED:
+        return d
+    out = {k: v for k, v in d.items() if k not in NAME_FIELDS}
+    if "modelo" in out:
+        out["modelo"] = [m for m in out["modelo"] if not m.startswith(FREE_MODEL)]
+    return out
+
+
+def purge_names():
+    """Quita del estado guardado los nombres recogidos antes de desactivarlos."""
+    state["devices"] = {m: visible(d) for m, d in state["devices"].items()}
+
+
 # --- 1. arp-scan ---------------------------------------------------------------------------
 def arp_scan(now):
     cmd = ["arp-scan", "--plain", "--retry=2", "--format=${ip}\t${mac}\t${vendor}"]
@@ -173,7 +204,7 @@ def from_pihole(now, ip2mac):
                 mac = norm_mac(l.get("hwaddr"))
                 # Las concesiones DHCP van por MAC: su nombre es el que anuncia el propio aparato.
                 if mac and mac in state["devices"] and l.get("name") not in (None, "", "*"):
-                    add(state["devices"][mac], "n_dhcp", l["name"])
+                    add_name(state["devices"][mac], "n_dhcp", l["name"])
             # consultas DNS de cada cliente en las últimas 24 h (cuenta de la propia Pi-hole)
             for c in ph.get("/api/stats/top_clients?count=500").get("clients", []):
                 mac = ip2mac.get(c.get("ip"))
@@ -231,11 +262,11 @@ def mdns(ip2mac):
             continue
         d = state["devices"][mac]
         add(d, "mdns", type_.replace("._tcp.local.", "").replace("._udp.local.", "").lstrip("_"))
-        add(d, "n_mdns", (server or "").rstrip(".").replace(".local", ""))
-        add(d, "n_mdns", name.split("._")[0])
+        add_name(d, "n_mdns", (server or "").rstrip(".").replace(".local", ""))
+        add_name(d, "n_mdns", name.split("._")[0])
         for k in ("md", "model", "ty", "fn", "am", "product", "manufacturer", "vendor", "rpMd"):
             if props.get(k):
-                add(d, "modelo", f"{k}={props[k][:60]}")
+                add_model(d, f"{k}={props[k][:60]}")
 
 
 def ssdp(ip2mac):
@@ -264,7 +295,7 @@ def ssdp(ip2mac):
             for tag in ("friendlyName", "manufacturer", "modelName", "modelDescription"):
                 el = root.find(f".//{{*}}{tag}")
                 if el is not None and el.text:
-                    add(state["devices"][mac], "modelo", f"{tag}={el.text.strip()[:60]}")
+                    add_model(state["devices"][mac], f"{tag}={el.text.strip()[:60]}")
         except Exception:
             pass  # descripción UPnP opcional
 
@@ -293,7 +324,7 @@ def nmap_new(now):
                 ports.append(f'{p.get("portid")}/{p.get("protocol")} {desc}'.strip())
                 for sc in p.findall("script"):
                     if sc.get("id") == "http-title":
-                        add(d, "modelo", "web=" + sc.get("output", "")[:60])
+                        add_model(d, "web=" + sc.get("output", "")[:60])
             d["puertos"] = ports
             om = root.find(".//osmatch")
             d["so"] = om.get("name")[:60] if om is not None else None
@@ -301,7 +332,7 @@ def nmap_new(now):
                 if sc.get("id") == "nbstat":
                     m = re.search(r"NetBIOS name: ([^,]+)", sc.get("output", ""))
                     if m:
-                        add(d, "n_netbios", m.group(1).strip())
+                        add_name(d, "n_netbios", m.group(1).strip())
             d["nmap_fecha"] = now
             log("nmap", d["ip"], mac, len(ports), "puertos")
             save()          # nmap es lento: no perder lo analizado si el contenedor se reinicia
@@ -347,7 +378,7 @@ def metrics():
     dns = ["# HELP netinv_device_dns_queries_24h Consultas DNS del dispositivo en 24 h (suma de las dos Pi-hole).",
            "# TYPE netinv_device_dns_queries_24h gauge"]
     with lock:
-        devs = list(state["devices"].values())
+        devs = [visible(d) for d in state["devices"].values()]
     for d in devs:
         seen = max(d.get("visto_ultima", 0), d.get("pihole_ultima", 0))
         if now - seen > KEEP_DAYS * 86400:
@@ -379,7 +410,8 @@ class Handler(BaseHTTPRequestHandler):
             body, ctype = metrics().encode(), "text/plain; version=0.0.4"
         elif self.path.startswith("/devices.json"):
             with lock:
-                body = json.dumps({m: {**d, "nombres": names(d)} for m, d in state["devices"].items()},
+                body = json.dumps({m: {**visible(d), "nombres": names(visible(d))}
+                                   for m, d in state["devices"].items()},
                                   ensure_ascii=False, indent=1).encode()
             ctype = "application/json"
         else:
@@ -426,7 +458,9 @@ if __name__ == "__main__":
                 d.pop(k, None)
         state["queries_since"] = {}
         state["version"] = 3
-    threading.Thread(target=ThreadingHTTPServer(("", PORT), Handler).serve_forever, daemon=True).start()
+    if not NAMES_ENABLED:
+        purge_names()
+    threading.Thread(target=ThreadingHTTPServer((LISTEN, PORT), Handler).serve_forever, daemon=True).start()
     while True:
         try:
             cycle()

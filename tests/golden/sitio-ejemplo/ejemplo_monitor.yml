@@ -188,6 +188,7 @@ services:
       - "LAN_IP=10.99.0.10"
       - "INTERVAL=900"
       - "PORT=9877"
+      - "LISTEN=10.99.0.10"
       - NMAP=0
       - "PIHOLE_URLS=http://10.99.0.10:8081"
       - "PIHOLE_PASSWORDS=${PIHOLE_PASSWORDS}"
