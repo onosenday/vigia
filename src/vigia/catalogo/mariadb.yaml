@@ -15,7 +15,7 @@ ejemplos_imagen:
   lscr.io/linuxserver/mariadb:11.4.5-r0-ls1: '11.4'
   mariadb:11: null
 aviso_version: true
-comprobado: '2026-11-11'
+comprobado: '2026-11-15'
 ciclos:
 - ciclo: '13.0'
   publicado: '2026-09-15'
@@ -25,7 +25,8 @@ ciclos:
 - ciclo: '12.3'
   publicado: '2026-05-28'
   fin_soporte: '2029-06-12'
-  ultima_version: 12.3.3
+  fin_extendido: '2034-11-03'
+  ultima_version: 12.3.4
   lts: true
 - ciclo: '12.2'
   publicado: '2026-02-13'
@@ -46,7 +47,7 @@ ciclos:
   publicado: '2025-06-04'
   fin_soporte: '2028-06-04'
   fin_extendido: '2033-10-22'
-  ultima_version: 11.8.9
+  ultima_version: 11.8.10
   lts: true
 - ciclo: '11.7'
   publicado: '2025-02-12'
@@ -67,7 +68,7 @@ ciclos:
   publicado: '2024-05-29'
   fin_soporte: '2029-05-29'
   fin_extendido: '2033-01-16'
-  ultima_version: 11.4.13
+  ultima_version: 11.4.14
   lts: true
 - ciclo: '11.3'
   publicado: '2024-02-16'
@@ -93,7 +94,7 @@ ciclos:
   publicado: '2023-02-16'
   fin_soporte: '2028-02-16'
   fin_extendido: '2028-02-16'
-  ultima_version: 10.11.19
+  ultima_version: 10.11.20
   lts: true
 - ciclo: '10.10'
   publicado: '2022-11-07'

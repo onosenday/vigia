@@ -1,9 +1,10 @@
 # Cambios
 
-## 0.5.6 (sin publicar)
+## 0.5.6 (2026-11-15)
 
 Al actualizar un sitio: nada cambia en `site.yaml`. Tras `vigia deploy`, Grafana recarga las alertas (contact point
-nuevo `vigia-silencioso` y política nueva). Los avisos que ya estaban activos pueden llegar una vez más con el título
+nuevo `vigia-silencioso` y política nueva) y el bot y netinv se recompilan (imagen base nueva; *Build* o *Pull* en su stack
+si no se recompilan solos). Los avisos que ya estaban activos pueden llegar una vez más con el título
 nuevo, porque cambia la agrupación.
 
 - **Nuevo**: el título del aviso dice qué es, no siempre «Problema»: `🔴 Alarma` (incidencia crítica: caído, puerto
@@ -15,6 +16,7 @@ nuevo, porque cambia la agrupación.
   (contact point `vigia-silencioso`, con `disable_notification`); el correo no cambia (vigia-cmj.10).
 - **Arreglo**: dos `tareas` con el mismo nombre en hosts distintos ya no dan «tareas repetidas»: el nombre solo tiene
   que ser único en cada host (vigia-cmj.11).
+- **Catálogo** refrescado (Traefik 3.7.19 y 2.11.63).
 
 ## 0.5.5 (2026-11-11)
 

@@ -22,7 +22,7 @@ ejemplos:
   10.0.17763 Windows 10 IoT Enterprise LTSC 2019: 10-1809-e-lts
 ejemplos_imagen: {}
 aviso_version: false
-comprobado: '2026-11-11'
+comprobado: '2026-11-15'
 ciclos:
 - ciclo: 11-26h2-e
   publicado: '2026-09-29'

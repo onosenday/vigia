@@ -13,7 +13,7 @@ ejemplos:
   '22.04': '22.04'
 ejemplos_imagen: {}
 aviso_version: true
-comprobado: '2026-11-11'
+comprobado: '2026-11-15'
 ciclos:
 - ciclo: '26.10'
   publicado: '2026-10-15'

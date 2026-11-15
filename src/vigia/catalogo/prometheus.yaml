@@ -18,7 +18,7 @@ aviso_version: false
 politica:
   rama: lts
   motivo: vigia sigue la LTS de Prometheus; las demás ramas duran 6 semanas
-comprobado: '2026-11-11'
+comprobado: '2026-11-15'
 ciclos:
 - ciclo: '3.16'
   publicado: '2026-11-04'

@@ -17,7 +17,7 @@ ejemplos_imagen:
   postgres:16.4-alpine: '16'
   postgres:latest: null
 aviso_version: true
-comprobado: '2026-11-11'
+comprobado: '2026-11-15'
 ciclos:
 - ciclo: '18'
   publicado: '2025-09-25'

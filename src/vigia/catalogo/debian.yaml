@@ -14,7 +14,7 @@ ejemplos:
   '13': '13'
 ejemplos_imagen: {}
 aviso_version: true
-comprobado: '2026-11-11'
+comprobado: '2026-11-15'
 ciclos:
 - ciclo: '13'
   publicado: '2025-08-09'
