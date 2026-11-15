@@ -1,6 +1,6 @@
 # Cambios
 
-## Sin publicar
+## 0.5.7 (2026-11-15)
 
 Al actualizar un sitio: nada cambia en `site.yaml`. Tras `vigia deploy`, netinv se recompila y escucha solo en la IP
 del monitor (antes, en todas las del host).
