@@ -1,7 +1,7 @@
 # Alertas (Telegram y correo)
 
 vigia provisiona en Grafana cuatro reglas, un contact point `vigia` (Telegram, correo o los dos), la política
-de avisos y una plantilla con la marca del sitio (`[Oficina] Problema: Nodo 1`). Todo sale de `site.yaml`:
+de avisos y una plantilla con la marca del sitio (`[Oficina] 🔴 Alarma: Nodo 1`). Todo sale de `site.yaml`:
 
 ```yaml
 alertas:
@@ -44,7 +44,16 @@ Cada regla lleva las etiquetas `gravedad` (`critical`, `warning`, `info`) y `cat
 falla ahora, `mantenimiento` si pide una acción planificada (certificados, discos, consumibles, soporte). Los
 avisos `info` se repiten cada `repetir_info` en vez de cada `repetir`.
 
-Los avisos se agrupan por `nombre`: si un servidor se cae, la sonda y su exporter llegan en el mismo mensaje.
+El título del mensaje dice qué tipo de aviso es; solo una incidencia crítica es una alarma:
+
+| Gravedad | Incidencia | Mantenimiento |
+|----------|------------|---------------|
+| `critical` | 🔴 Alarma (caído, puerto expuesto) | 🟠 Mantenimiento urgente (sistema sin soporte) |
+| `warning` | 🟠 Aviso (exporter, impresora, tareas) | 🔧 Mantenimiento (disco, certificado, consumible…) |
+| `info` | 🔵 Información | 🔵 Información (versión mayor, catálogo, imágenes) |
+
+Al resolverse, `✅ Resuelto`. Los avisos se agrupan por `nombre`, `gravedad` y `categoria`: si un servidor se cae,
+la sonda y su exporter llegan en el mismo mensaje, pero nunca junto a un aviso de mantenimiento.
 Lo que se apaga (o se duerme, como muchas impresoras) se marca con `alerta: false` en su entrada de `ping`, `servicios` o
 `web.objetivos`: sigue en los paneles, pero no avisa (en un ping, tampoco avisa si su exporter calla). Solo se alerta de la infraestructura de `site.yaml`;
 los dispositivos que descubre netinv (móviles, televisores) nunca generan avisos.

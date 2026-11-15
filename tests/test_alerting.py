@@ -9,6 +9,7 @@ import pytest
 import yaml
 from pydantic import ValidationError
 
+from vigia import alerting
 from vigia.build import build_site
 from vigia.deploy import secret_names
 from vigia.model import Site
@@ -282,3 +283,17 @@ def test_reglas_de_imagenes(example_data: dict[str, Any]) -> None:
     for h in example_data["hosts"]:
         h.pop("imagenes", None)
     assert not {"vigia-imagen-version", "vigia-imagen-sin-aplicar"} & set(_rules(_build(example_data)))
+
+
+def test_titulo_segun_gravedad_y_categoria(example_data: dict[str, Any]) -> None:
+    datos = yaml.safe_load(_build(example_data)[ALERTING])
+    (plantilla,) = datos["templates"]
+    texto = plantilla["template"]
+    assert "Problema" not in texto
+    for icono, nombre in alerting.TIPOS.values():
+        assert f"}}}}{icono}" in texto and f"}}}}{nombre}" in texto
+    assert '{{ template "vigia.tipo" .CommonLabels }}' in texto
+    # cada clasificación de las reglas tiene su tipo de aviso
+    assert set(alerting.CLASIFICACION.values()) <= set(alerting.TIPOS)
+    (politica,) = datos["policies"]
+    assert politica["group_by"] == ["nombre", "gravedad", "categoria"]

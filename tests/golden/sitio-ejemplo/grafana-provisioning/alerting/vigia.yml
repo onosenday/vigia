@@ -774,10 +774,23 @@ groups:
 templates:
 - orgId: 1
   name: vigia
-  template: '{{ define "vigia.titulo" }}[Ejemplo] {{ if eq .Status "firing" }}Problema{{ else }}Resuelto{{ end }}{{ with .CommonLabels.nombre
-    }}: {{ . }}{{ end }}{{ end }}
+  template: '{{ define "vigia.icono" }}{{ if and (eq .gravedad "critical") (eq .categoria "incidencia") }}🔴{{ else if and
+    (eq .gravedad "warning") (eq .categoria "incidencia") }}🟠{{ else if and (eq .gravedad "info") (eq .categoria "incidencia")
+    }}🔵{{ else if and (eq .gravedad "critical") (eq .categoria "mantenimiento") }}🟠{{ else if and (eq .gravedad "warning")
+    (eq .categoria "mantenimiento") }}🔧{{ else if and (eq .gravedad "info") (eq .categoria "mantenimiento") }}🔵{{ else }}⚪{{
+    end }}{{ end }}
 
-    {{ define "vigia.mensaje" }}{{ range .Alerts.Firing }}🔴 {{ .Labels.alertname }}: {{ .Annotations.summary }}
+    {{ define "vigia.tipo" }}{{ if and (eq .gravedad "critical") (eq .categoria "incidencia") }}Alarma{{ else if and (eq .gravedad
+    "warning") (eq .categoria "incidencia") }}Aviso{{ else if and (eq .gravedad "info") (eq .categoria "incidencia") }}Información{{
+    else if and (eq .gravedad "critical") (eq .categoria "mantenimiento") }}Mantenimiento urgente{{ else if and (eq .gravedad
+    "warning") (eq .categoria "mantenimiento") }}Mantenimiento{{ else if and (eq .gravedad "info") (eq .categoria "mantenimiento")
+    }}Información{{ else }}Aviso{{ end }}{{ end }}
+
+    {{ define "vigia.titulo" }}[Ejemplo] {{ if eq .Status "firing" }}{{ template "vigia.icono" .CommonLabels }} {{ template
+    "vigia.tipo" .CommonLabels }}{{ else }}✅ Resuelto{{ end }}{{ with .CommonLabels.nombre }}: {{ . }}{{ end }}{{ end }}
+
+    {{ define "vigia.mensaje" }}{{ range .Alerts.Firing }}{{ template "vigia.icono" .Labels }} {{ .Labels.alertname }}: {{
+    .Annotations.summary }}
 
     {{ end }}{{ range .Alerts.Resolved }}✅ {{ .Labels.alertname }}: {{ .Annotations.summary }}
 
@@ -810,6 +823,8 @@ policies:
   receiver: vigia
   group_by:
   - nombre
+  - gravedad
+  - categoria
   group_wait: 30s
   group_interval: 5m
   repeat_interval: 12h

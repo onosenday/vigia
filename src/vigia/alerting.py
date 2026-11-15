@@ -428,14 +428,38 @@ def image_rules(s: Site) -> list[dict[str, Any]]:
     ]
 
 
+TIPOS: dict[tuple[Gravedad, Categoria], tuple[str, str]] = {
+    ("critical", "incidencia"): ("🔴", "Alarma"),
+    ("warning", "incidencia"): ("🟠", "Aviso"),
+    ("info", "incidencia"): ("🔵", "Información"),
+    ("critical", "mantenimiento"): ("🟠", "Mantenimiento urgente"),
+    ("warning", "mantenimiento"): ("🔧", "Mantenimiento"),
+    ("info", "mantenimiento"): ("🔵", "Información"),
+}
+"""Icono y nombre del aviso según gravedad y categoría: solo una incidencia crítica es una alarma."""
+
+
+def _tipo(campo: int) -> str:
+    """Rama de plantilla que elige el icono (0) o el nombre (1) con `.Labels` (alerta) o `.CommonLabels`."""
+    out = ""
+    for (gravedad, categoria), valores in TIPOS.items():
+        cond = f'and (eq .gravedad "{gravedad}") (eq .categoria "{categoria}")'
+        out += ("{{ if " if not out else "{{ else if ") + cond + " }}" + valores[campo]
+    return out + "{{ else }}" + ("⚪", "Aviso")[campo] + "{{ end }}"
+
+
 def _templates(s: Site) -> str:
     brand = s.branding.nombre  # Text: sin `$`, llaves ni `<>`
     return (
+        '{{ define "vigia.icono" }}' + _tipo(0) + "{{ end }}\n"
+        '{{ define "vigia.tipo" }}' + _tipo(1) + "{{ end }}\n"
         '{{ define "vigia.titulo" }}[' + brand + "] "
-        '{{ if eq .Status "firing" }}Problema{{ else }}Resuelto{{ end }}'
+        '{{ if eq .Status "firing" }}{{ template "vigia.icono" .CommonLabels }} '
+        '{{ template "vigia.tipo" .CommonLabels }}{{ else }}✅ Resuelto{{ end }}'
         "{{ with .CommonLabels.nombre }}: {{ . }}{{ end }}{{ end }}\n"
         '{{ define "vigia.mensaje" }}'
-        "{{ range .Alerts.Firing }}🔴 {{ .Labels.alertname }}: {{ .Annotations.summary }}\n{{ end }}"
+        '{{ range .Alerts.Firing }}{{ template "vigia.icono" .Labels }} {{ .Labels.alertname }}: '
+        "{{ .Annotations.summary }}\n{{ end }}"
         "{{ range .Alerts.Resolved }}✅ {{ .Labels.alertname }}: {{ .Annotations.summary }}\n{{ end }}"
         "{{ end }}\n"
     )
@@ -494,7 +518,8 @@ def alerting(s: Site, header: Raw) -> str:
             {
                 "orgId": 1,
                 "receiver": "vigia",
-                "group_by": ["nombre"],
+                # un mensaje no mezcla una alarma con un aviso de mantenimiento
+                "group_by": ["nombre", "gravedad", "categoria"],
                 "group_wait": "30s",
                 "group_interval": "5m",
                 "repeat_interval": a.repetir,
