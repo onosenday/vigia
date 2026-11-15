@@ -1,5 +1,19 @@
 # Cambios
 
+## 0.5.6 (sin publicar)
+
+Al actualizar un sitio: nada cambia en `site.yaml`. Tras `vigia deploy`, Grafana recarga las alertas (contact point
+nuevo `vigia-silencioso` y política nueva). Los avisos que ya estaban activos pueden llegar una vez más con el título
+nuevo, porque cambia la agrupación.
+
+- **Nuevo**: el título del aviso dice qué es, no siempre «Problema»: `🔴 Alarma` (incidencia crítica: caído, puerto
+  expuesto), `🟠 Aviso` (exporter, impresora, tareas), `🔧 Mantenimiento` (disco, certificado, consumible), `🟠
+  Mantenimiento urgente` (sistema sin soporte), `🔵 Información` (versión mayor, catálogo, imágenes) y `✅ Resuelto`.
+  Un mensaje ya no mezcla una alarma con un aviso de mantenimiento: se agrupa por `nombre`, `gravedad` y `categoria`
+  (vigia-cmj.9).
+- **Nuevo**: en Telegram solo suenan las incidencias. Mantenimiento e información llegan al mismo grupo sin sonido
+  (contact point `vigia-silencioso`, con `disable_notification`); el correo no cambia (vigia-cmj.10).
+
 ## 0.5.5 (2026-11-11)
 
 Al actualizar un sitio: nada cambia en `site.yaml`. Tras `vigia deploy`, el bot, netinv y el updates-exporter se
